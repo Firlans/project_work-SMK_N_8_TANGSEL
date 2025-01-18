@@ -1,0 +1,47 @@
+alur 
+1. landing page
+2. menu login
+3. masuk homepage 
+	- siswa
+	- guru
+	- admin
+	- konselor
+4. menu monitoring
+
+
+
+breakdown fitur
+1. monitoring jadwal
+2. manajemen jadwal 
+	- crud jadwal
+3. admin
+	- 
+
+
+database
+1. siswa
+2. guru
+	- role (admin/conselor/staff)
+	- 
+3. jadwal
+4. chat
+5. orang tua
+6. mapel
+7. kehadiran
+8. kelas 
+9. detail chat
+catatan
+Monitoring absen fitur
+- absen realtime notifikasi ke orangtua saat di input
+- murid bisa melihat absen masing masing
+- guru bisa crud absensi murid yang di ajar
+
+menejemen jadwal
+- notif jika ada tambahan/perubahan jadwal ke ortu, guru, siswa
+
+Monitoring ortu
+- mengambil link akses ke siswa terkait dengan nisn dan nomer telpon, link dikirim via wa
+
+Konseling 
+- room non-anon menampilkan profile siswa
+- siswa dapat mengajukan jadwal pertemuan konseling tatap muka/g-meet
