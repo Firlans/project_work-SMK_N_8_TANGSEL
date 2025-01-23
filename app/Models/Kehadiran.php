@@ -9,4 +9,27 @@ class Kehadiran extends Model
 {
     /** @use HasFactory<\Database\Factories\KehadiranFactory> */
     use HasFactory;
+
+    protected $table = 'kehadiran';
+
+    protected $primaryKey = 'id';
+
+    protected $fillable = [
+        'id_siswa',
+        'tanggal',
+        'status',
+        'mata_pelajaran_id',
+        'jam',
+        'keterangan'
+    ];
+
+    public function siswa()
+    {
+        return $this->belongsTo(Siswa::class, 'id_siswa', 'id');
+    }
+
+    public function mataPelajaran()
+    {
+        return $this->belongsTo(MataPelajaran::class, 'mata_pelajaran_id', 'id');
+    }
 }
