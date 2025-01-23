@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('kelas', function (Blueprint $table) {
             $table->id();
+            $table->string('nama_kelas');
+            $table->enum('tingkat', ['10', '11', '12']);
+            $table->unsignedBigInteger('ketua_kelas')->nullable();
             $table->timestamps();
+
+            $table->foreign('ketua_kelas')->references('id_siswa')->on('siswa');
         });
     }
 

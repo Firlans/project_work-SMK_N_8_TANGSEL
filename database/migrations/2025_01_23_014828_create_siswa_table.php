@@ -13,7 +13,18 @@ return new class extends Migration
     {
         Schema::create('siswa', function (Blueprint $table) {
             $table->id();
+            $table->string('nama_lengkap');
+            $table->string('jenis_kelamin', 1);
+            $table->date('tanggal_lahir');
+            $table->text('alamat');
+            $table->string('no_telp');
+            $table->string('nisn', 20)->unique();
+            $table->string('nis', 20)->unique();
+            $table->boolean('is_active')->default(true);
+            $table->unsignedBigInteger('id_kelas');
             $table->timestamps();
+            
+            $table->foreign('id_kelas')->references('id_kelas')->on('kelas');
         });
     }
 
