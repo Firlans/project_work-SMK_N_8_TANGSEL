@@ -29,4 +29,9 @@ class Siswa extends Model
     {
         return $this->belongsTo(Kelas::class, 'id_kelas', 'id');
     }
+
+    public function sentMessages()
+    {
+        return $this->morphMany(ChatDetail::class, 'sender');
+    }
 }

@@ -18,9 +18,6 @@ return new class extends Migration
             $table->enum('status', ['Open', 'Closed']);
             $table->boolean('is_private')->default(false);
             $table->timestamps();
-
-            $table->foreign('id_siswa')->references('id_siswa')->on('siswa');
-            $table->foreign('id_guru')->references('id_guru')->on('guru');
         });
     }
 

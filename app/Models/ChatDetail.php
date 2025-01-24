@@ -15,12 +15,21 @@ class ChatDetail extends Model
 
     protected $fillable = [
         'id_chat_room',
+        'message',
         'sender_id',
-        'message'
+        'sender_type'
     ];
 
     public function chatRoom()
     {
         return $this->belongsTo(ChatRoom::class, 'id_chat_room', 'id');
+    }
+
+    /**
+     * Relasi polimorfik ke model pengirim (Siswa/Guru).
+     */
+    public function sender()
+    {
+        return $this->morphTo();
     }
 }

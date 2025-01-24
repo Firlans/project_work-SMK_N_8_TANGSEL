@@ -14,11 +14,9 @@ return new class extends Migration
         Schema::create('chat_details', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_chat_room');
-            $table->unsignedBigInteger('sender_id');
+            $table->morphs('sender');
             $table->text('message');
             $table->timestamps();
-
-            $table->foreign('id_chat_room')->references('id_chat_room')->on('chat_rooms');
         });
     }
 

@@ -25,4 +25,9 @@ class Guru extends Model
     {
         return $this->hasMany(MataPelajaran::class, 'id_guru', 'id');
     }
+
+    public function sentMessages()
+    {
+        return $this->morphMany(ChatDetail::class, 'sender');
+    }
 }

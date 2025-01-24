@@ -14,14 +14,11 @@ return new class extends Migration
         Schema::create('jadwal', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_kelas');
-            $table->unsignedBigInteger('mata_pelajaran_id');
+            $table->unsignedBigInteger('id_mata_pelajaran');
             $table->time('jam_mulai');
             $table->time('jam_selesai');
             $table->enum('hari', ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']);
             $table->timestamps();
-
-            $table->foreign('id_kelas')->references('id_kelas')->on('kelas');
-            $table->foreign('mata_pelajaran_id')->references('id_mata_pelajaran')->on('mata_pelajaran');
         });
     }
 

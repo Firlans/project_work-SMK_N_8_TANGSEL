@@ -20,9 +20,6 @@ return new class extends Migration
             $table->time('jam');
             $table->text('keterangan')->nullable();
             $table->timestamps();
-            
-            $table->foreign('id_siswa')->references('id_siswa')->on('siswa');
-            $table->foreign('mata_pelajaran_id')->references('id_mata_pelajaran')->on('mata_pelajaran');
         });
     }
 
