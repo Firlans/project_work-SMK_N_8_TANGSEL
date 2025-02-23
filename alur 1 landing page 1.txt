@@ -3,7 +3,10 @@ alur
 2. menu login
 3. masuk homepage 
 	- siswa
-	- guru
+	- guru (
+		+ page booking jadwal (persetujuan pihak sekolah)
+		+ 
+	)
 	- admin
 	- konselor
 4. menu monitoring
@@ -45,3 +48,17 @@ Monitoring ortu
 Konseling 
 - room non-anon menampilkan profile siswa
 - siswa dapat mengajukan jadwal pertemuan konseling tatap muka/g-meet
+
+
+admin 
+- import dari excel/csv
+- CRUD user, siswa, guru, dll
+- penyesuaian jadwal
+
+
+awal semester 	-> mapping jadwal
+				-> mapping guru
+				-> mapping 
+
+
+chat : bu maaf mengganggu, terkait project yang kami kerjakan, kami perlu komunikasi untuk tahu alur sistem berjalan saat ini untuk pembagian jadwal untuk setiap kelas pada awal semester. tapi karena salah satu dari kami ada yang kerja apakah ibu ada waktu luang pada hari libur untuk mendiskusikan project ini?
