@@ -15,6 +15,8 @@ class Siswa extends Model
 
     protected $fillable = [
         'nama_lengkap',
+        'email',
+        'passsword',
         'jenis_kelamin',
         'tanggal_lahir',
         'alamat',
@@ -24,6 +26,16 @@ class Siswa extends Model
         'is_active',
         'id_kelas'
     ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected $casts = [
+        'password' => 'hashed',
+    ];
+
 
     public function kelas()
     {

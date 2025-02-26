@@ -40,6 +40,7 @@ return new class extends Migration {
                 ->references('id')
                 ->on('wali_murid')
                 ->onDelete('set null');
+            $table->rememberToken();
         });
 
         // Relasi antara jadwal dan kelas

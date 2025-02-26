@@ -2,6 +2,7 @@
 Created by Firlan Syah 
 Decription : 
 
+- PHP 8.2.12
 - Laravel 11
 - route
     - 
