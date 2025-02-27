@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('siswa', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('nama_lengkap');
-            $table->string('email')->unique();
-            $table->string('password');
             $table->string('jenis_kelamin', 1);
             $table->date('tanggal_lahir');
             $table->text('alamat');

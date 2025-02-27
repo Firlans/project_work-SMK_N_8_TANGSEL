@@ -12,11 +12,11 @@ return new class extends Migration {
     {
         Schema::create('guru', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_lengkap');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('nama');
+            $table->enum('role', ['Admin', 'Guru']);
             $table->string('jenis_kelamin', 1);
             $table->string('nip', 20)->unique();
-            $table->enum('role', ['Admin', 'Guru']);
-            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

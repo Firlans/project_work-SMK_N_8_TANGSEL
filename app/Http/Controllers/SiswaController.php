@@ -27,4 +27,12 @@ class SiswaController extends Controller
             'message' => 'Invalid credentials'
         ], 401);
     }
+
+    public function test()
+    {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Server Sedang Berjalan',
+        ], 200);
+    }
 }
