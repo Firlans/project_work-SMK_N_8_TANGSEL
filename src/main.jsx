@@ -4,9 +4,11 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LandingPage from "./Pages/landingPage";
 import LoginPage from "./Pages/loginPage";
-import DashboardGuru from "./Pages/dashboardGuru";
-import Presensi from "./Pages/presensi";
-import JadwalGuru from "./Pages/jadwalGuru";
+import DashboardGuruPage from "./Pages/dashboardGuruPage";
+import DashboardSiswaPage from "./Pages/dashboardSiswaPage";
+import JadwalGuruPage from "./Pages/jadwalGuruPage";
+import MonitoringPresensiPage from "./Pages/monitoringPresensiPage";
+import DashboardAdminPage from "./Pages/dashboardAdminPage";
 
 const router = createBrowserRouter([
   {
@@ -18,16 +20,24 @@ const router = createBrowserRouter([
     element: <LoginPage />,
   },
   {
-    path: "/dashboardGuru",
-    element: <DashboardGuru />,
+    path: "/dashboard-guru",
+    element: <DashboardGuruPage />,
   },
   {
-    path: "/presensi",
-    element: <Presensi />,
+    path: "/monitoring-presensi",
+    element: <MonitoringPresensiPage />,
   },
   {
     path: "/jadwal-guru",
-    element: <JadwalGuru />,
+    element: <JadwalGuruPage />,
+  },
+  {
+    path: "/dashboard-siswa",
+    element: <DashboardSiswaPage />,
+  },
+  {
+    path: "/dashboard-admin",
+    element: <DashboardAdminPage />,
   },
 ]);
 

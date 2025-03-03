@@ -1,15 +1,16 @@
-const Button = (props) => {
-  const {
-    children = "ini button",
-    classname = "",
-    onClick = () => {},
-    type = "button",
-  } = props;
+import React from "react";
+
+const Button = ({
+  children,
+  className = "",
+  onClick,
+  type = "button",
+}) => {
   return (
     <button
-      className={`h-10 px-6 font-semibold rounded-md bg-slate-700 ${classname} text-white`}
       type={type}
-      onClick={() => onClick()}
+      onClick={onClick}
+      className={`h-10 px-6 rounded-md font-medium ${className}`}
     >
       {children}
     </button>

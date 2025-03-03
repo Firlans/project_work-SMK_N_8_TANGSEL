@@ -1,46 +1,65 @@
-// import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import Button from "../Elements/Button";
 import InputForm from "../Elements/Input/Index";
-// import { useState } from "react";
+import axiosClient from "../../axiosClient.js";
 
 const FormLogin = () => {
-  // const [nisnOrNip, setNisnOrNip] = useState("");
-  // const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
 
-  const handleLogin = (event) => {
+  const [error, setError] = useState("");
+
+  const handleChange = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleLogin = async (event) => {
     event.preventDefault();
-    window.location.href = "/dashboardGuru";
+    setError(""); // Reset error sebelum mencoba login
 
-    // if (nisnOrNip.startsWith("G") && password) {
-    //   window.location.href = "/dashboardGuru";
-    // } else if (nisnOrNip.startsWith("S") && password) {
-    //   window.location.href = "/dashboardSiswa";
-    // } else {
-    //   alert("NISN/NIP atau Password salah. Silakan coba lagi.");
-    // }
+    try {
+      // 1. Ambil CSRF token dari backend
+      await axiosClient.get("/sanctum/csrf-cookie");
+
+      // 2. Kirim data login ke backend
+      const response = await axiosClient.post("/api/login", formData);
+
+      console.log("Login berhasil:", response.data);
+
+      // 3. Redirect ke dashboard jika login sukses
+      window.location.href = "/dashboard-siswa";
+    } catch (error) {
+      console.error("Login gagal:", error.response?.data);
+      setError(error.response?.data?.message || "Login gagal. Coba lagi.");
+    }
   };
 
   return (
     <form onSubmit={handleLogin}>
+      {error && <p className="text-red-500">{error}</p>}{" "}
+      {/* Tampilkan error jika ada */}
       <InputForm
-        label="NIP / NISN"
+        label="Username"
         type="text"
-        placeholder="NIP / NISN"
+        placeholder="Username"
         name="nisnOrNip"
-        // value={nisnOrNip}
-        // onChange={(e) => setNisnOrNip(e.target.value)}
-        // required
+        value={formData.nisnOrNip}
+        onChange={handleChange}
       />
       <InputForm
         label="Password"
         type="password"
         placeholder="*****"
         name="password"
-        // value={password}
-        // onChange={(e) => setPassword(e.target.value)}
-        // required
+        value={formData.password}
+        onChange={handleChange}
       />
-      <Button type="submit" classname="bg-amber-500 w-full">
+      <Button className="bg-yellow-600 text-white" type="submit">
         Login
       </Button>
     </form>
