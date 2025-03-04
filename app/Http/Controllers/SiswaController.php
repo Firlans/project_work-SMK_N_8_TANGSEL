@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -28,11 +28,11 @@ class SiswaController extends Controller
         ], 401);
     }
 
-    public function test()
+    public function siswa()
     {
         return response()->json([
             'status' => 'success',
-            'message' => 'Server Sedang Berjalan',
+            'message' => 'route siswa',
         ], 200);
     }
 }
