@@ -2,7 +2,7 @@
 
 return [
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['*'],
 
     'allowed_methods' => [
         'GET',
@@ -14,9 +14,8 @@ return [
     ],
 
     'allowed_origins' => [
-        'http://localhost:3000',
+        'http://localhost:5173',
         'http://localhost:8000',
-        'https://your-production-frontend.com',
         'https://*.ngrok-free.app'
     ],
 
