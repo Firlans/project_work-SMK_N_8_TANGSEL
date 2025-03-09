@@ -27,7 +27,20 @@ const FormLogin = () => {
       await axiosClient.get("/sanctum/csrf-cookie");
 
       // 2. Kirim data login ke backend
-      const response = await axiosClient.post("/api/login", formData);
+      const response = await axiosClient.post(
+        "login",
+        {
+          email: "johndoe@exampel.com",
+          password: "password123",
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "X-XSRF-TOKEN": getCookie("XSRF-TOKEN"),
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       console.log("Login berhasil:", response.data);
 
