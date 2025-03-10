@@ -3,9 +3,17 @@ import Button from "../Elements/Button";
 import InputForm from "../Elements/Input/Index";
 import axiosClient from "../../axiosClient.js";
 
+const getCookie = (name) => {
+  const cookies = document.cookie.split("; ");
+  const cookie = cookies.find((c) => c.startsWith(`${name}=`));
+  if (cookie) {
+    return decodeURIComponent(cookie.split("=")[1]);
+  }
+  return null;
+};
 const FormLogin = () => {
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -30,7 +38,7 @@ const FormLogin = () => {
       const response = await axiosClient.post(
         "login",
         {
-          username: "johndoe@example.com",
+          email: "johndoe@example.com",
           password: "password123",
         },
         {
@@ -60,8 +68,8 @@ const FormLogin = () => {
         label="Username"
         type="text"
         placeholder="Username"
-        name="username"
-        value={formData.username}
+        name="email"
+        value={formData.email}
         onChange={handleChange}
       />
       <InputForm
