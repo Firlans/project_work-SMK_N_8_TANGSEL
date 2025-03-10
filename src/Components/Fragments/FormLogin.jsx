@@ -30,7 +30,7 @@ const FormLogin = () => {
       const response = await axiosClient.post(
         "login",
         {
-          email: "johndoe@exampel.com",
+          username: "johndoe@example.com",
           password: "password123",
         },
         {
@@ -60,8 +60,8 @@ const FormLogin = () => {
         label="Username"
         type="text"
         placeholder="Username"
-        name="nisnOrNip"
-        value={formData.nisnOrNip}
+        name="username"
+        value={formData.username}
         onChange={handleChange}
       />
       <InputForm
