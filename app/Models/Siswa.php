@@ -14,18 +14,21 @@ class Siswa extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
+        'user_id',
         'nama_lengkap',
-        'email',
-        'passsword',
         'jenis_kelamin',
         'tanggal_lahir',
         'alamat',
         'no_telp',
         'nisn',
         'nis',
-        'is_active',
+        'id_semester',
+        'id_ayah',
+        'id_ibu',
+        'id_wali_murid',
         'id_kelas'
     ];
+
 
     protected $hidden = [
         'password',
@@ -36,6 +39,10 @@ class Siswa extends Model
         'password' => 'hashed',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function kelas()
     {
