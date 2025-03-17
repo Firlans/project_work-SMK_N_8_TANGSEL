@@ -7,6 +7,7 @@ import {
   FaPaperPlane,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import axiosClient from "../axiosClient";
 
 const Sidebar = ({ setActivePage, activePage }) => {
   const menuItems = [
@@ -43,13 +44,20 @@ const Sidebar = ({ setActivePage, activePage }) => {
 
 const Header = () => {
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Hapus token dari localStorage
+    delete axiosClient.defaults.headers.common["Authorization"]; // Hapus token dari axios
+    navigate("/login"); // Redirect ke halaman login
+  };
+
   return (
     <div className="w-full bg-white border-b p-4 flex justify-between items-center">
       <h1 className="text-xl font-bold text-gray-800">
         SMK Negeri 8 Kota Tangerang Selatan
       </h1>
       <button
-        onClick={() => navigate("/")}
+        onClick={handleLogout} // Gunakan handleLogout di sini
         className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
       >
         Logout
