@@ -3,14 +3,6 @@ import Button from "../Elements/Button";
 import InputForm from "../Elements/Input/Index";
 import axiosClient from "../../axiosClient.js";
 
-const getCookie = (name) => {
-  const cookies = document.cookie.split("; ");
-  const cookie = cookies.find((c) => c.startsWith(`${name}=`));
-  if (cookie) {
-    return decodeURIComponent(cookie.split("=")[1]);
-  }
-  return null;
-};
 const FormLogin = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -20,43 +12,42 @@ const FormLogin = () => {
   const [error, setError] = useState("");
 
   const handleChange = (event) => {
-    setFormData({
-      ...formData,
+    setFormData((prevState) => ({
+      ...prevState,
       [event.target.name]: event.target.value,
-    });
+    }));
   };
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    setError(""); // Reset error sebelum mencoba login
+    setError("");
+
+    if (!formData.email || !formData.password) {
+      setError("Email dan password harus diisi!");
+      return;
+    }
 
     try {
-      // 1. Ambil CSRF token dari backend
-      await axiosClient.get("/sanctum/csrf-cookie");
-
-      // 2. Kirim data login ke backend
-      const response = await axiosClient.post(
-        "login",
-        {
-          email: "johndoe@example.com",
-          password: "password123",
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "X-XSRF-TOKEN": getCookie("XSRF-TOKEN"),
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axiosClient.post("/login", {
+        email: formData.email,
+        password: formData.password,
+      });
 
       console.log("Login berhasil:", response.data);
 
-      // 3. Redirect ke dashboard jika login sukses
+      // Simpan token JWT ke localStorage
+      localStorage.setItem("token", response.data.data.token);
+
+      // Set token di axios untuk request berikutnya
+      axiosClient.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${response.data.data.token}`;
+
+      // Redirect ke dashboard
       window.location.href = "/dashboard-siswa";
     } catch (error) {
       console.error("Login gagal:", error.response?.data);
-      setError(error.response?.data?.message || "Login gagal. Coba lagi.");
+      setError(error.response?.data?.error || "Email atau password salah.");
     }
   };
 
@@ -65,9 +56,9 @@ const FormLogin = () => {
       {error && <p className="text-red-500">{error}</p>}{" "}
       {/* Tampilkan error jika ada */}
       <InputForm
-        label="Username"
-        type="text"
-        placeholder="Username"
+        label="Email"
+        type="email"
+        placeholder="Email"
         name="email"
         value={formData.email}
         onChange={handleChange}
