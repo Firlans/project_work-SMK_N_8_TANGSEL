@@ -14,12 +14,17 @@ class Guru extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'nama_lengkap',
-        'jenis_kelamin',
-        'nip',
+        'user_id',
+        'nama',
         'role',
-        'is_active'
+        'jenis_kelamin',
+        'nip'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function mataPelajaran()
     {

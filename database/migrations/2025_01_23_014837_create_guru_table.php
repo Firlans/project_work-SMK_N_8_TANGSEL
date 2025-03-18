@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('nama');
-            $table->enum('role', ['Admin', 'Guru']);
             $table->string('jenis_kelamin', 1);
             $table->string('nip', 20)->unique();
             $table->timestamps();
