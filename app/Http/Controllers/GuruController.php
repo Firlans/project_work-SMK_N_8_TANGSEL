@@ -9,7 +9,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class GuruController extends Controller
 {
-    public function profile()
+    public function profile(Request $request)
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();

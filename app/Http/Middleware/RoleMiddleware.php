@@ -29,10 +29,8 @@ class RoleMiddleware
                 case 'konselor':
                 case 'guru':
                     return app(\App\Http\Controllers\GuruController::class)->profile($request);
-
                 case 'siswa':
                     return app(\App\Http\Controllers\SiswaController::class)->profile($request);
-
                 default:
                     return response()->json(['error' => 'Invalid role'], 403);
             }
