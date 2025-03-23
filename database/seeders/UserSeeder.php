@@ -20,10 +20,10 @@ class UserSeeder extends Seeder
                 'role' => 'admin',
             ],
             [
-                'name' => 'Conselor Test',
-                'email' => 'conselor@test.com',
+                'name' => 'Konselor Test',
+                'email' => 'konselor@test.com',
                 'password' => Hash::make('password123'),
-                'role' => 'conselor',
+                'role' => 'konselor',
             ],
             [
                 'name' => 'Guru Test',
@@ -61,7 +61,7 @@ class UserSeeder extends Seeder
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,
                 'password' => Hash::make('password123'),
-                'role' => 'conselor',
+                'role' => 'konselor',
             ]);
         }
 

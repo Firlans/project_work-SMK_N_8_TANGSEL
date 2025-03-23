@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Guru;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class GuruController extends Controller
+class AdminController extends Controller
 {
     public function profile()
     {
@@ -19,9 +19,8 @@ class GuruController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => "Profile retrieved successfully",
                 'data' => $guru
-            ], 200);
+            ]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }

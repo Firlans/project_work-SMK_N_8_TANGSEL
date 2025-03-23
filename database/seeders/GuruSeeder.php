@@ -59,7 +59,7 @@ class GuruSeeder extends Seeder
         }
 
         // Seed Counselor users
-        $conselors = User::where('role', 'conselor')->get();
+        $conselors = User::where('role', 'konselor')->get();
         foreach ($conselors as $conselor) {
             Guru::create([
                 'user_id' => $conselor->id,

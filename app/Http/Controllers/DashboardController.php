@@ -20,11 +20,11 @@ class DashboardController extends Controller
             'message' => 'ini route admin',
         ], 200);
     }
-    public function conselor()
+    public function konselor()
     {
         return response()->json([
             'status' => 'success',
-            'message' => 'ini route conselor',
+            'message' => 'ini route konselor',
         ], 200);
     }
     public function siswa()
