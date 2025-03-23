@@ -38,7 +38,10 @@ class RoleMiddleware
                     ], 403);
             }
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Token invalid or expired'], 401);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Token invalid or expired'
+            ], 401);
         }
     }
 }

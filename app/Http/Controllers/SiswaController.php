@@ -22,7 +22,10 @@ class SiswaController extends Controller
                 'data' => $siswa
             ], 200);
         }catch(error){
-            return response()->json(['error' => 'Siswa not found'], 404);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Siswa not found'
+            ], 404);
         }
 
     }
