@@ -32,7 +32,10 @@ class RoleMiddleware
                 case 'siswa':
                     return app(\App\Http\Controllers\SiswaController::class)->profile($request);
                 default:
-                    return response()->json(['error' => 'Invalid role'], 403);
+                    return response()->json([
+                        'error' => 'error',
+                        'message' => 'Invalid role'
+                    ], 403);
             }
         } catch (\Exception $e) {
             return response()->json(['error' => 'Token invalid or expired'], 401);
