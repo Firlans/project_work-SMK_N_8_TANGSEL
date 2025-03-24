@@ -6,8 +6,8 @@ import {
   FaUser,
   FaPaperPlane,
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import axiosClient from "../axiosClient";
+import Header from "../Components/Elements/Header/Index";
+import ProfileSiswa from "../Components/Fragments/ProfileSiswa";
 
 const Sidebar = ({ setActivePage, activePage }) => {
   const menuItems = [
@@ -42,29 +42,7 @@ const Sidebar = ({ setActivePage, activePage }) => {
   );
 };
 
-const Header = () => {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("token"); // Hapus token dari localStorage
-    delete axiosClient.defaults.headers.common["Authorization"]; // Hapus token dari axios
-    navigate("/login"); // Redirect ke halaman login
-  };
-
-  return (
-    <div className="w-full bg-white border-b p-4 flex justify-between items-center">
-      <h1 className="text-xl font-bold text-gray-800">
-        SMK Negeri 8 Kota Tangerang Selatan
-      </h1>
-      <button
-        onClick={handleLogout} // Gunakan handleLogout di sini
-        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
-      >
-        Logout
-      </button>
-    </div>
-  );
-};
+<Header />;
 
 const JadwalBelajar = () => {
   const jadwal = [
@@ -232,148 +210,7 @@ const KehadiranSiswa = () => {
   );
 };
 
-const Profile = () => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedData, setEditedData] = useState({
-    alamat: "",
-    noTelp: "",
-    email: "",
-  });
-
-  const profileData = {
-    nama: "Ahmad Fauzi",
-    nis: "2021001234",
-    jenisKelamin: "Laki-laki",
-    kelas: "XII RPL 1",
-    tempatLahir: "Jakarta",
-    tanggalLahir: "15 Agustus 2006",
-    alamat: "Jl. Raya Serpong No. 123, Tangerang Selatan",
-    noTelp: "081234567890",
-    email: "ahmadfauzi@gmail.com",
-  };
-
-  const handleEdit = () => {
-    setIsEditing(true);
-    setEditedData({
-      alamat: profileData.alamat,
-      noTelp: profileData.noTelp,
-      email: profileData.email,
-    });
-  };
-
-  const handleSave = () => {
-    // Here you would typically make an API call to update the data
-    console.log("Saving updated data:", editedData);
-    setIsEditing(false);
-  };
-
-  return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Profile Siswa</h2>
-        {!isEditing ? (
-          <button
-            onClick={handleEdit}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
-          >
-            Edit Profile
-          </button>
-        ) : (
-          <div className="space-x-2">
-            <button
-              onClick={() => setIsEditing(false)}
-              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200"
-            >
-              Save
-            </button>
-          </div>
-        )}
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          {/* Non-editable fields */}
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Nama Lengkap</span>
-            <span className="font-medium">{profileData.nama}</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Nomor Induk Siswa</span>
-            <span className="font-medium">{profileData.nis}</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Jenis Kelamin</span>
-            <span className="font-medium">{profileData.jenisKelamin}</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Kelas</span>
-            <span className="font-medium">{profileData.kelas}</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Tempat, Tanggal Lahir</span>
-            <span className="font-medium">
-              {profileData.tempatLahir}, {profileData.tanggalLahir}
-            </span>
-          </div>
-        </div>
-        <div className="space-y-4">
-          {/* Editable fields */}
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Alamat</span>
-            {isEditing ? (
-              <input
-                type="text"
-                value={editedData.alamat}
-                onChange={(e) =>
-                  setEditedData({ ...editedData, alamat: e.target.value })
-                }
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            ) : (
-              <span className="font-medium">{profileData.alamat}</span>
-            )}
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Nomor Telepon</span>
-            {isEditing ? (
-              <input
-                type="tel"
-                value={editedData.noTelp}
-                onChange={(e) =>
-                  setEditedData({ ...editedData, noTelp: e.target.value })
-                }
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            ) : (
-              <span className="font-medium">{profileData.noTelp}</span>
-            )}
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Email</span>
-            {isEditing ? (
-              <input
-                type="email"
-                value={editedData.email}
-                onChange={(e) =>
-                  setEditedData({ ...editedData, email: e.target.value })
-                }
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            ) : (
-              <span className="font-medium">{profileData.email}</span>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
+<ProfileSiswa />;
 const KonselingBK = () => {
   const [messages, setMessages] = useState([
     {
@@ -500,7 +337,7 @@ const DashboardSiswaPage = () => {
       <div className="flex-1 flex flex-col">
         <Header />
         <div className="p-6 flex-1 overflow-auto">
-          {activePage === "profile" && <Profile />}
+          {activePage === "profile" && <ProfileSiswa />}
           {activePage === "jadwal" && <JadwalBelajar />}
           {activePage === "kehadiran" && <KehadiranSiswa />}
           {activePage === "bk" && <KonselingBK />}

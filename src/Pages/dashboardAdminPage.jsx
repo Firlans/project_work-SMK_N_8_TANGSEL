@@ -5,7 +5,8 @@ import {
   FaUserGraduate,
   FaCalendarAlt,
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import Header from "../Components/Elements/Header/Index";
+import ProfileAdmin from "../Components/Fragments/ProfileAdmin";
 
 const dummyData = {
   profile: {
@@ -73,42 +74,9 @@ const Sidebar = ({ setActivePage, activePage }) => {
   );
 };
 
-const Header = () => {
-  const navigate = useNavigate();
-  return (
-    <div className="w-full bg-white border-b p-4 flex justify-between items-center">
-      <h1 className="text-xl font-bold text-gray-800">
-        SMK Negeri 8 Kota Tangerang Selatan
-      </h1>
-      <button
-        onClick={() => navigate("/")}
-        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
-      >
-        Logout
-      </button>
-    </div>
-  );
-};
+<Header />;
 
-const Profile = () => {
-  return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Profile Admin</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Nama</span>
-            <span className="font-medium">{dummyData.profile.name}</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Role</span>
-            <span className="font-medium">{dummyData.profile.role}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+<ProfileAdmin />;
 
 const TeachersList = () => {
   return (
@@ -264,7 +232,7 @@ export default function AdminDashboard() {
       <div className="flex-1 flex flex-col">
         <Header />
         <div className="p-6 flex-1 overflow-auto">
-          {activePage === "profile" && <Profile />}
+          {activePage === "profile" && <ProfileAdmin />}
           {activePage === "teachers" && <TeachersList />}
           {activePage === "students" && <StudentsList />}
           {activePage === "schedule" && <Schedule />}
