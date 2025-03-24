@@ -1,14 +1,19 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import LandingPage from "./Pages/landingPage";
 import LoginPage from "./Pages/loginPage";
 import DashboardGuruPage from "./Pages/dashboardGuruPage";
 import DashboardSiswaPage from "./Pages/dashboardSiswaPage";
-import JadwalGuruPage from "./Pages/jadwalGuruPage";
-import MonitoringPresensiPage from "./Pages/monitoringPresensiPage";
 import DashboardAdminPage from "./Pages/dashboardAdminPage";
+import ProtectedRoute from "./protectedRoute";
+import Unauthorized from "./Pages/unauthorizedPage";
+import DashboardKonselorPage from "./Pages/dashboardKonselorPage";
 
 const router = createBrowserRouter([
   {
@@ -19,26 +24,34 @@ const router = createBrowserRouter([
     path: "/login",
     element: <LoginPage />,
   },
+  // Proteksi Dashboard Guru
   {
     path: "/dashboard-guru",
-    element: <DashboardGuruPage />,
+    element: <ProtectedRoute allowedRoles={["guru"]} />,
+    children: [{ path: "/dashboard-guru", element: <DashboardGuruPage /> }],
   },
-  {
-    path: "/monitoring-presensi",
-    element: <MonitoringPresensiPage />,
-  },
-  {
-    path: "/jadwal-guru",
-    element: <JadwalGuruPage />,
-  },
+  // Proteksi Dashboard Siswa
   {
     path: "/dashboard-siswa",
-    element: <DashboardSiswaPage />,
+    element: <ProtectedRoute allowedRoles={["siswa"]} />,
+    children: [{ path: "/dashboard-siswa", element: <DashboardSiswaPage /> }],
   },
+  // Proteksi Dashboard Admin
   {
     path: "/dashboard-admin",
-    element: <DashboardAdminPage />,
+    element: <ProtectedRoute allowedRoles={["admin"]} />,
+    children: [{ path: "/dashboard-admin", element: <DashboardAdminPage /> }],
   },
+  {
+    path: "/dashboard-konselor",
+    element: <ProtectedRoute allowedRoles={["conselor"]} />,
+    children: [
+      { path: "/dashboard-konselor", element: <DashboardKonselorPage /> },
+    ],
+  },
+  { path: "/unauthorized", element: <Unauthorized /> },
+  // Jika path tidak ditemukan, redirect ke "/"
+  { path: "*", element: <Navigate to="/" replace /> },
 ]);
 
 createRoot(document.getElementById("root")).render(
