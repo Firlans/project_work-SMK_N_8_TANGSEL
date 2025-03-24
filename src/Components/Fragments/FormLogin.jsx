@@ -2,14 +2,16 @@ import { useState } from "react";
 import Button from "../Elements/Button";
 import InputForm from "../Elements/Input/Index";
 import axiosClient from "../../axiosClient.js";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const FormLogin = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     setFormData((prevState) => ({
@@ -33,21 +35,37 @@ const FormLogin = () => {
         password: formData.password,
       });
 
+      const { token, user } = response.data.data;
+      // debugging;
       console.log("Login berhasil:", response.data);
+      console.log("Role:", user.role);
 
-      // Simpan token JWT ke localStorage
-      localStorage.setItem("token", response.data.data.token);
+      // Simpan token di cookie
+      Cookies.set("token", token, {
+        expires: 1,
+        secure: false, // Set to true jika sudah di deploy dengan HTTPS
+        sameSite: "Strict",
+      });
+      Cookies.set("userRole", user.role, {
+        expires: 1,
+        secure: false, // Set to true jika sudah di deploy dengan HTTPS
+        sameSite: "Strict",
+      });
 
-      // Set token di axios untuk request berikutnya
-      axiosClient.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${response.data.data.token}`;
+      // Set token di axios
+      axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      // Redirect ke dashboard
-      window.location.href = "/dashboard-siswa";
+      // Redirect berdasarkan role
+      navigate(`/dashboard-${user.role}`);
     } catch (error) {
       console.error("Login gagal:", error.response?.data);
-      setError(error.response?.data?.error || "Email atau password salah.");
+
+      const errorMessage =
+        error.response?.data?.error === "Invalid credentials"
+          ? "Email atau password salah"
+          : error.response?.data?.error || "Terjadi kesalahan, coba lagi.";
+
+      setError(errorMessage);
     }
   };
 
