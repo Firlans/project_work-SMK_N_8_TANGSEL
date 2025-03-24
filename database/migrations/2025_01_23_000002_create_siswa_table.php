@@ -22,9 +22,6 @@ return new class extends Migration
             $table->string('nisn', 20)->unique();
             $table->string('nis', 20)->unique();
             $table->unsignedBigInteger('id_semester')->nullable();
-            $table->unsignedBigInteger('id_ayah')->nullable();
-            $table->unsignedBigInteger('id_ibu')->nullable();
-            $table->unsignedBigInteger('id_wali_murid')->nullable();
             $table->unsignedBigInteger('id_kelas');
             $table->timestamps();
         });

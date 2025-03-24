@@ -23,9 +23,6 @@ class Siswa extends Model
         'nisn',
         'nis',
         'id_semester',
-        'id_ayah',
-        'id_ibu',
-        'id_wali_murid',
         'id_kelas'
     ];
 
@@ -47,6 +44,16 @@ class Siswa extends Model
     public function kelas()
     {
         return $this->belongsTo(Kelas::class, 'id_kelas', 'id');
+    }
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class, 'id_semester');
+    }
+
+    public function waliMurid()
+    {
+        return $this->hasOne(WaliMurid::class, 'id_siswa');
     }
 
     public function sentMessages()

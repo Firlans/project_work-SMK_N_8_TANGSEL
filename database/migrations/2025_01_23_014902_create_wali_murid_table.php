@@ -12,9 +12,11 @@ return new class extends Migration {
     {
         Schema::create('wali_murid', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('id_siswa')->constrained('siswa')->onDelete('cascade');
             $table->string('nama_lengkap');
             $table->string('no_telp')->unique();
             $table->string('email')->unique();
+            $table->enum('status', ['ayah', 'ibu', 'wali murid']);
             $table->text('alamat');
             $table->timestamps();
         });

@@ -44,9 +44,6 @@ class SiswaSeeder extends Seeder
                 'nisn' => '10' . str_pad($user->id, 8, '0', STR_PAD_LEFT),
                 'nis' => '2023' . str_pad($user->id, 4, '0', STR_PAD_LEFT),
                 'id_semester' => rand(1, 6),  // Assuming 6 semesters
-                'id_ayah' => null,  // These can be updated later if needed
-                'id_ibu' => null,   // These can be updated later if needed
-                'id_wali_murid' => null,  // These can be updated later if needed
                 'id_kelas' => rand(1, 3)  // Assuming you have classes with IDs 1-3
             ]);
         }

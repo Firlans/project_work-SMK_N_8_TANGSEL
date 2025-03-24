@@ -28,18 +28,6 @@ return new class extends Migration {
                 ->references('id')
                 ->on('semester')
                 ->onDelete('set null');
-            $table->foreign('id_ayah')
-                ->references('id')
-                ->on('wali_murid')
-                ->onDelete('set null');
-            $table->foreign('id_ibu')
-                ->references('id')
-                ->on('wali_murid')
-                ->onDelete('set null');
-            $table->foreign('id_wali_murid')
-                ->references('id')
-                ->on('wali_murid')
-                ->onDelete('set null');
             $table->rememberToken();
         });
 
