@@ -1,42 +1,37 @@
 import { useNavigate } from "react-router-dom";
 import Button from "../Button";
+import axiosClient from "../../../axiosClient";
+import Cookies from "js-cookie";
 
 const Header = () => {
   const navigate = useNavigate();
 
+  const handleLogout = async () => {
+    try {
+      const response = await axiosClient.post("/logout");
+      console.log("Logout berhasil:", response.data); // Debugging
+    } catch (error) {
+      console.error("Logout gagal:", error.response?.data); // Debugging jika gagal
+    }
+
+    Cookies.remove("token");
+    Cookies.remove("userRole"); // Hapus token dari localStorage
+    delete axiosClient.defaults.headers.common["Authorization"]; // Hapus token dari axios
+    navigate("/login"); // Redirect ke halaman login
+  };
+
   return (
-    <header className="w-full flex items-center justify-between px-6 py-4 bg-white shadow-md">
-      <div className="flex items-center space-x-3">
-        <img
-          src="images/logo-smkn8tangsel.png"
-          alt="Logo SMK"
-          className="w-12 h-12"
-        />
-        <h1 className="text-xl font-semibold">
-          SMK Negeri 8 Kota Tangerang Selatan
-        </h1>
-      </div>
+    <div className="w-full bg-white border-b p-4 flex justify-between items-center">
+      <h1 className="text-xl font-bold text-gray-800">
+        SMK Negeri 8 Kota Tangerang Selatan
+      </h1>
       <Button
-        className="w-fit bg-red-600 text-white flex items-center"
-        onClick={() => navigate("/")}
+        onClick={handleLogout} // Gunakan handleLogout di sini
+        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="size-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
-          />
-        </svg>
         Logout
       </Button>
-    </header>
+    </div>
   );
 };
 
