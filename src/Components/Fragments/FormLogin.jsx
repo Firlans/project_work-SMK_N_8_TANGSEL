@@ -89,7 +89,7 @@ const FormLogin = () => {
         value={formData.password}
         onChange={handleChange}
       />
-      <Button className="bg-yellow-600 text-white" type="submit">
+      <Button type="submit" className="bg-yellow-600 text-white">
         Login
       </Button>
     </form>
