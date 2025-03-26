@@ -7,7 +7,7 @@ const ProfileAdmin = () => {
   const [profileData, setProfileData] = useState(null);
   const [editedData, setEditedData] = useState({
     alamat: "",
-    noTelp: "",
+    no_telp: "",
     email: "",
   });
 
@@ -99,7 +99,8 @@ const ProfileAdmin = () => {
           </div>
           <div className="flex flex-col">
             <span className="text-sm text-gray-500">Tempat, Tanggal Lahir</span>
-            <span className="font-medium">...
+            <span className="font-medium">
+              {profileData.data.tanggal_lahir}
             </span>
           </div>
         </div>
@@ -117,7 +118,7 @@ const ProfileAdmin = () => {
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             ) : (
-              <span className="font-medium">...</span>
+              <span className="font-medium">{profileData.data.alamat}</span>
             )}
           </div>
           <div className="flex flex-col">
@@ -125,14 +126,14 @@ const ProfileAdmin = () => {
             {isEditing ? (
               <input
                 type="tel"
-                value={editedData.noTelp}
+                value={editedData.no_telp}
                 onChange={(e) =>
-                  setEditedData({ ...editedData, noTelp: e.target.value })
+                  setEditedData({ ...editedData, no_telp: e.target.value })
                 }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             ) : (
-              <span className="font-medium">...</span>
+              <span className="font-medium">{profileData.data.no_telp}</span>
             )}
           </div>
           <div className="flex flex-col">
