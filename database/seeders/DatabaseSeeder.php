@@ -11,11 +11,12 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             KelasSeeder::class,
-            MataPelajaranSeeder::class, // Add this line
+            MataPelajaranSeeder::class,
             GuruSeeder::class,
             SemesterSeeder::class,
             SiswaSeeder::class,
             WaliMuridSeeder::class,
+            KehadiranSeeder::class, // Add this line
         ]);
     }
 }

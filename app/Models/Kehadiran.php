@@ -18,7 +18,7 @@ class Kehadiran extends Model
         'id_siswa',
         'tanggal',
         'status',
-        'mata_pelajaran_id',
+        'guru_id',
         'jam',
         'keterangan'
     ];
@@ -31,5 +31,10 @@ class Kehadiran extends Model
     public function mataPelajaran()
     {
         return $this->belongsTo(MataPelajaran::class, 'mata_pelajaran_id', 'id');
+    }
+
+    public function guru()
+    {
+        return $this->belongsTo(Guru::class, 'guru_id', 'id');
     }
 }

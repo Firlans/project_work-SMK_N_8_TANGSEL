@@ -48,9 +48,9 @@ return new class extends Migration {
                 ->references('id')
                 ->on('siswa')
                 ->onDelete('cascade');
-            $table->foreign('mata_pelajaran_id')
+            $table->foreign('guru_id')
                 ->references('id')
-                ->on('mata_pelajaran')
+                ->on('guru')
                 ->onDelete('cascade');
         });
 

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_siswa');
             $table->date('tanggal');
             $table->enum('status', ['Hadir', 'Izin', 'Sakit', 'Alfa']);
-            $table->unsignedBigInteger('mata_pelajaran_id');
+            $table->unsignedBigInteger('guru_id');
             $table->time('jam');
             $table->text('keterangan')->nullable();
             $table->timestamps();
