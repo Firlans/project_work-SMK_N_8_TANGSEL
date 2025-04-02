@@ -64,7 +64,12 @@ return new class extends Migration {
                 ->on('guru')
                 ->onDelete('cascade');
         });
-
+        Schema::table('guru', function (Blueprint $table) {
+            $table->foreign('mata_pelajaran_id')
+            ->references('id')
+            ->on('mata_pelajaran')
+            ->onDelete('cascade');
+        });
         Schema::table('chat_details', function (Blueprint $table) {
             $table->foreign('id_chat_room')
                 ->references('id')

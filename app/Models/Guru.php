@@ -15,11 +15,11 @@ class Guru extends Model
 
     protected $fillable = [
         'user_id',
+        'mata_pelajaran_id',
         'nama',
         'tanggal_lahir',
         'alamat',
         'no_telp',
-        'role',
         'jenis_kelamin',
         'nip'
     ];
@@ -29,9 +29,9 @@ class Guru extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function mataPelajaran()
+    public function mata_pelajaran()
     {
-        return $this->hasMany(MataPelajaran::class, 'id_guru', 'id');
+        return $this->belongsTo(MataPelajaran::class);
     }
 
     public function sentMessages()

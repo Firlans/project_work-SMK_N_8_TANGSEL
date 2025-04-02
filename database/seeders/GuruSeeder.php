@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Guru;
+use App\Models\MataPelajaran;
 use Faker\Factory as Faker;
 
 class GuruSeeder extends Seeder
@@ -12,6 +13,9 @@ class GuruSeeder extends Seeder
     public function run(): void
     {
         $faker = Faker::create('id_ID');
+
+        // Get all mata pelajaran IDs
+        $mataPelajaranIds = MataPelajaran::pluck('id')->toArray();
 
         // Create static test profiles
         $staticProfiles = [
@@ -22,7 +26,8 @@ class GuruSeeder extends Seeder
                 'nip' => '199001012020011001',
                 'tanggal_lahir' => '1990-01-01',
                 'alamat' => 'Jl. Admin No. 1',
-                'no_telp' => '081234567890'
+                'no_telp' => '081234567890',
+                'mata_pelajaran_id' => $mataPelajaranIds[0] // Assign first subject
             ],
             [
                 'email' => 'counselor@test.com',
@@ -31,7 +36,8 @@ class GuruSeeder extends Seeder
                 'nip' => '199101012020011002',
                 'tanggal_lahir' => '1991-01-01',
                 'alamat' => 'Jl. Konselor No. 2',
-                'no_telp' => '081234567891'
+                'no_telp' => '081234567891',
+                'mata_pelajaran_id' => $mataPelajaranIds[1] // Assign second subject
             ],
             [
                 'email' => 'guru@test.com',
@@ -40,7 +46,8 @@ class GuruSeeder extends Seeder
                 'nip' => '199201012020011003',
                 'tanggal_lahir' => '1992-01-01',
                 'alamat' => 'Jl. Guru No. 3',
-                'no_telp' => '081234567892'
+                'no_telp' => '081234567892',
+                'mata_pelajaran_id' => $mataPelajaranIds[2] // Assign third subject
             ],
         ];
 
@@ -49,6 +56,7 @@ class GuruSeeder extends Seeder
             if ($user) {
                 Guru::create([
                     'user_id' => $user->id,
+                    'mata_pelajaran_id' => $profile['mata_pelajaran_id'],
                     'nama' => $profile['nama'],
                     'jenis_kelamin' => $profile['jenis_kelamin'],
                     'nip' => $profile['nip'],
@@ -64,6 +72,7 @@ class GuruSeeder extends Seeder
         foreach ($admins as $admin) {
             Guru::create([
                 'user_id' => $admin->id,
+                'mata_pelajaran_id' => $faker->randomElement($mataPelajaranIds),
                 'nama' => $admin->name,
                 'jenis_kelamin' => $faker->randomElement(['L', 'P']),
                 'nip' => '1990' . str_pad($admin->id, 8, '0', STR_PAD_LEFT),
@@ -78,6 +87,7 @@ class GuruSeeder extends Seeder
         foreach ($conselors as $conselor) {
             Guru::create([
                 'user_id' => $conselor->id,
+                'mata_pelajaran_id' => $faker->randomElement($mataPelajaranIds),
                 'nama' => $conselor->name,
                 'jenis_kelamin' => $faker->randomElement(['L', 'P']),
                 'nip' => '1991' . str_pad($conselor->id, 8, '0', STR_PAD_LEFT),
@@ -92,6 +102,7 @@ class GuruSeeder extends Seeder
         foreach ($teachers as $teacher) {
             Guru::create([
                 'user_id' => $teacher->id,
+                'mata_pelajaran_id' => $faker->randomElement($mataPelajaranIds),
                 'nama' => $teacher->name,
                 'jenis_kelamin' => $faker->randomElement(['L', 'P']),
                 'nip' => '1992' . str_pad($teacher->id, 8, '0', STR_PAD_LEFT),

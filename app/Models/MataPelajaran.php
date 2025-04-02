@@ -15,13 +15,12 @@ class MataPelajaran extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'nama_pelajaran',
-        'id_guru'
+        'nama_pelajaran'
     ];
 
     public function guru()
     {
-        return $this->belongsTo(Guru::class, 'id_guru', 'id');
+        return $this->hasMany(Guru::class);
     }
 
     public function kehadiran()

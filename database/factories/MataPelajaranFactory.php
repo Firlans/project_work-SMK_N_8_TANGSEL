@@ -17,7 +17,18 @@ class MataPelajaranFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nama_pelajaran' => $this->faker->randomElement([
+                'Matematika',
+                'Bahasa Indonesia',
+                'Bahasa Inggris',
+                'Fisika',
+                'Kimia',
+                'Biologi',
+                'Sejarah',
+                'Ekonomi',
+                'Pendidikan Agama',
+                'Pendidikan Kewarganegaraan'
+            ]),
         ];
     }
 }
