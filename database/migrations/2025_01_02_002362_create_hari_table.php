@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jadwal', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('id_kelas');
-            $table->unsignedBigInteger('id_mata_pelajaran');
-            $table->unsignedBigInteger('hari_id');
-            $table->time('jam_mulai');
-            $table->time('jam_selesai');
+        Schema::create('hari', function (Blueprint $table) {
+            $table->id();  // This creates an auto-incrementing unsignedBigInteger
+            $table->string('nama_hari', 10)->unique();
             $table->timestamps();
         });
     }
@@ -27,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jadwal');
+        Schema::dropIfExists('hari');
     }
 };

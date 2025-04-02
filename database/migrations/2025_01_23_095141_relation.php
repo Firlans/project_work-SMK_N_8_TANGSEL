@@ -41,6 +41,10 @@ return new class extends Migration {
                 ->references('id')
                 ->on('mata_pelajaran')
                 ->onDelete('cascade');
+            $table->foreign('hari_id')
+                ->references('id')
+                ->on('hari')
+                ->onDelete('cascade');
         });
 
         Schema::table('kehadiran', function (Blueprint $table) {
@@ -76,7 +80,6 @@ return new class extends Migration {
                 ->on('chat_rooms')
                 ->onDelete('cascade');
         });
-
     }
 
     /**
@@ -96,16 +99,22 @@ return new class extends Migration {
 
         Schema::table('kehadiran', function (Blueprint $table) {
             $table->dropForeign(['id_siswa']);
+            $table->dropForeign(['guru_id']);
+        });
+
+        Schema::table('guru', function (Blueprint $table) {
             $table->dropForeign(['mata_pelajaran_id']);
         });
 
         Schema::table('jadwal', function (Blueprint $table) {
             $table->dropForeign(['id_kelas']);
             $table->dropForeign(['id_mata_pelajaran']);
+            $table->dropForeign(['hari_id']);
         });
 
         Schema::table('siswa', function (Blueprint $table) {
             $table->dropForeign(['id_kelas']);
+            $table->dropForeign(['id_semester']);
         });
 
         Schema::table('kelas', function (Blueprint $table) {
