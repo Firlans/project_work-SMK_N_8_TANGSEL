@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Kehadiran;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
+use App\Http\Resources\KehadiranResource;
 
 class AbsenController extends Controller
 {
@@ -14,13 +15,6 @@ class AbsenController extends Controller
         try {
             $user = JWTAuth::parseToken()->authenticate();
 
-            // Debug user and siswa relationship
-            error_log("User Data Details:");
-            foreach ($user->toArray() as $key => $value) {
-                error_log("$key => $value");
-            }
-
-            // Get siswa_id from user's siswa relationship
             $siswa = $user->siswa;
             if (!$siswa) {
                 return response()->json([
@@ -29,15 +23,13 @@ class AbsenController extends Controller
                 ], 404);
             }
 
-            $kehadiran = Kehadiran::with(['jadwal' => function($query) {
-                    $query->with('mataPelajaran'); // Ensure proper eager loading
-                }])
+            $kehadiran = Kehadiran::with(['jadwal.mataPelajaran'])
                 ->where('id_siswa', $siswa->id)
                 ->get();
 
             return response()->json([
                 'status' => 'success',
-                'data' => $kehadiran
+                'data' => KehadiranResource::collection($kehadiran)
             ], 200);
         } catch (\Exception $e) {
             Log::error('Error in getKehadiran:', [
