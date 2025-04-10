@@ -111,7 +111,33 @@ class JadwalSeeder extends Seeder
                 'jam_mulai' => '07:00:00',
                 'jam_selesai' => '08:30:00',
             ],
-            // ... Add more schedules for Tuesday
+            [
+                'id_kelas' => 1,
+                'id_mata_pelajaran' => 4, // IPA
+                'hari_id' => 2,
+                'jam_mulai' => '08:30:00',
+                'jam_selesai' => '09:30:00',
+            ],
+            // Add more entries for Wednesday (hari_id: 3), Thursday (hari_id: 4), and Friday (hari_id: 5)
+            // Following similar pattern but with different subject arrangements
+
+            // TUESDAY - Kelas X-2
+            [
+                'id_kelas' => 2,
+                'id_mata_pelajaran' => 6, // Seni Budaya
+                'hari_id' => 2,
+                'jam_mulai' => '07:00:00',
+                'jam_selesai' => '08:30:00',
+            ],
+            [
+                'id_kelas' => 2,
+                'id_mata_pelajaran' => 5, // IPS
+                'hari_id' => 2,
+                'jam_mulai' => '08:30:00',
+                'jam_selesai' => '09:30:00',
+            ],
+            // Add more entries for Wednesday (hari_id: 3), Thursday (hari_id: 4), and Friday (hari_id: 5)
+            // Following similar pattern but with different subject arrangements
         ];
 
         foreach ($jadwals as $jadwal) {

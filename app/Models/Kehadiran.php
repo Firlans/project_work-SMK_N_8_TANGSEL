@@ -18,8 +18,7 @@ class Kehadiran extends Model
         'id_siswa',
         'tanggal',
         'status',
-        'guru_id',
-        'jam',
+        'jadwal_id',
         'keterangan'
     ];
 

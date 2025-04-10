@@ -17,8 +17,8 @@ class DatabaseSeeder extends Seeder
             SemesterSeeder::class,
             SiswaSeeder::class,
             WaliMuridSeeder::class,
+            JadwalSeeder::class,
             KehadiranSeeder::class,
-            JadwalSeeder::class, // Add this line
         ]);
     }
 }
