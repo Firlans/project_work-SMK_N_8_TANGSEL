@@ -16,10 +16,10 @@ class Jadwal extends Model
 
     protected $fillable = [
         'id_kelas',
-        'mata_pelajaran_id',
+        'id_mata_pelajaran', // This matches the database column
+        'hari_id',
         'jam_mulai',
-        'jam_selesai',
-        'hari'
+        'jam_selesai'
     ];
 
     public function kelas()
@@ -29,6 +29,7 @@ class Jadwal extends Model
 
     public function mataPelajaran()
     {
-        return $this->belongsTo(MataPelajaran::class, 'mata_pelajaran_id', 'id');
+        // Fix: Change foreign key to match database column
+        return $this->belongsTo(MataPelajaran::class, 'id_mata_pelajaran', 'id');
     }
 }

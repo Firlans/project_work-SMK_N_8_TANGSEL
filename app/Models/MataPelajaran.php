@@ -30,6 +30,7 @@ class MataPelajaran extends Model
 
     public function jadwal()
     {
-        return $this->hasMany(Jadwal::class, 'mata_pelajaran_id', 'id');
+        // Fix: Change foreign key to match database column
+        return $this->hasMany(Jadwal::class, 'id_mata_pelajaran', 'id');
     }
 }

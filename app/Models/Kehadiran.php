@@ -36,4 +36,9 @@ class Kehadiran extends Model
     {
         return $this->belongsTo(Guru::class, 'guru_id', 'id');
     }
+
+    public function jadwal()
+    {
+        return $this->belongsTo(Jadwal::class, 'jadwal_id', 'id');
+    }
 }
