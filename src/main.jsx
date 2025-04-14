@@ -7,13 +7,16 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import LandingPage from "./Pages/landingPage";
-import LoginPage from "./Pages/loginPage";
 import DashboardGuruPage from "./Pages/dashboardGuruPage";
 import DashboardSiswaPage from "./Pages/dashboardSiswaPage";
 import DashboardAdminPage from "./Pages/dashboardAdminPage";
 import ProtectedRoute from "./protectedRoute";
 import Unauthorized from "./Pages/unauthorizedPage";
 import DashboardKonselorPage from "./Pages/dashboardKonselorPage";
+import LoginGuru from "./Pages/loginGuru";
+import LoginSiswa from "./Pages/loginSiswa";
+import LoginAdmin from "./Pages/loginAdmin";
+import LoginKonselor from "./Pages/loginKonselor";
 
 const router = createBrowserRouter([
   {
@@ -21,8 +24,20 @@ const router = createBrowserRouter([
     element: <LandingPage />,
   },
   {
-    path: "/login",
-    element: <LoginPage />,
+    path: "/login-siswa",
+    element: <LoginSiswa />,
+  },
+  {
+    path: "/login-guru",
+    element: <LoginGuru />,
+  },
+  {
+    path: "/login-admin",
+    element: <LoginAdmin />,
+  },
+  {
+    path: "/login-konselor",
+    element: <LoginKonselor />,
   },
   // Proteksi Dashboard Guru
   {
@@ -44,7 +59,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard-konselor",
-    element: <ProtectedRoute allowedRoles={["conselor"]} />,
+    element: <ProtectedRoute allowedRoles={["konselor"]} />,
     children: [
       { path: "/dashboard-konselor", element: <DashboardKonselorPage /> },
     ],

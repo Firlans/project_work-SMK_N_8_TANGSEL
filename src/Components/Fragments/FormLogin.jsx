@@ -5,7 +5,7 @@ import axiosClient from "../../axiosClient.js";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
-const FormLogin = () => {
+const FormLogin = ({ role }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -39,6 +39,12 @@ const FormLogin = () => {
       // debugging;
       console.log("Login berhasil:", response.data);
       console.log("Role:", user.role);
+
+      // Cek apakah role dari backend sesuai dengan halaman login
+      if (user.role !== role) {
+        setError("Anda tidak memiliki akses ke halaman ini.");
+        return;
+      }
 
       // Simpan token di cookie
       Cookies.set("token", token, {
