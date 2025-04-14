@@ -15,21 +15,19 @@ class Jadwal extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'id_kelas',
-        'id_mata_pelajaran', // This matches the database column
-        'hari_id',
+        'id_mata_pelajaran',
+        'hari',
         'jam_mulai',
         'jam_selesai'
     ];
 
-    public function kelas()
-    {
-        return $this->belongsTo(Kelas::class, 'id_kelas', 'id');
-    }
-
     public function mataPelajaran()
     {
-        // Fix: Change foreign key to match database column
         return $this->belongsTo(MataPelajaran::class, 'id_mata_pelajaran', 'id');
+    }
+
+    public function kehadiran()
+    {
+        return $this->hasMany(Kehadiran::class, 'jadwal_id', 'id');
     }
 }
