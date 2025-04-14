@@ -109,19 +109,6 @@ const ProfileSiswa = () => {
               {profileData.data.tanggal_lahir}
             </span>
           </div>
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Semester</span>
-            <span className="font-medium">{profileData.data.id_semester}</span>
-          </div>
-
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Orang Tua</span>
-            <span className="font-medium">
-              {profileData.data.id_ibu
-                ? profileData.data.id_ibu
-                : "Belum Terdaftar"}
-            </span>
-          </div>
         </div>
 
         <div className="space-y-4">
@@ -170,6 +157,18 @@ const ProfileSiswa = () => {
             ) : (
               <span className="font-medium">{profileData.data.user.email}</span>
             )}
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm text-gray-500">Semester</span>
+            <span className="font-medium">{profileData.data.id_semester}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm text-gray-500">Orang Tua</span>
+            <span className="font-medium">
+              {profileData.data.id_ibu
+                ? profileData.data.id_ibu
+                : "Belum Terdaftar"}
+            </span>
           </div>
         </div>
       </div>
