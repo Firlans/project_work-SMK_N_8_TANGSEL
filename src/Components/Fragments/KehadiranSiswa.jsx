@@ -24,13 +24,13 @@ const KehadiranSiswa = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const kehadiranRes = await axiosClient.get("/absen"); // ganti dengan URL asli
+        const kehadiranRes = await axiosClient.get("/absen"); 
 
         const data = kehadiranRes.data.data;
-        console.log("Data Kehadiran:", kehadiranRes.data); // ✅ perbaikan di sini
+        console.log("Data Kehadiran:", kehadiranRes.data); 
         setDataKehadiran(data);
 
-        // Ambil daftar mata pelajaran unik
+        // Ambil daftar mata pelajaran
         const uniqueMapel = [];
         const mapelSet = new Set();
         data.forEach((item) => {
