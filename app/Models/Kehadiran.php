@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Kehadiran extends Model
 {
@@ -22,23 +23,17 @@ class Kehadiran extends Model
         'keterangan'
     ];
 
+    protected $hidden = ['jadwal_id'];
+
+    protected $with = ['jadwal'];
+
     public function siswa()
     {
         return $this->belongsTo(Siswa::class, 'id_siswa', 'id');
     }
 
-    public function mataPelajaran()
+    public function jadwal(): BelongsTo
     {
-        return $this->belongsTo(MataPelajaran::class, 'mata_pelajaran_id', 'id');
-    }
-
-    public function guru()
-    {
-        return $this->belongsTo(Guru::class, 'guru_id', 'id');
-    }
-
-    public function jadwal()
-    {
-        return $this->belongsTo(Jadwal::class, 'jadwal_id', 'id');
+        return $this->belongsTo(Jadwal::class, 'jadwal_id');
     }
 }
