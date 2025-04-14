@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AbsenController;
+use App\Http\Controllers\MataPelajaranController;
 use App\Http\Middleware\JwtMiddleware;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\SiswaMiddleware;
@@ -17,9 +17,13 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         Route::get('/profile', function(){});
     });
     Route::middleware([SiswaMiddleware::class])->group(function(){
+        // route absen
         Route::get('/absen', [AbsenController::class, 'getAllKehadiran']);
         Route::get('/absen/siswa', [AbsenController::class, 'getKehadiranBySiswaId']);
-        Route::get('/absen/mata_pelajaran', [AbsenController::class, 'getKehadiranByMataPelajaran']);
+        Route::get('/absen/mata-pelajaran', [AbsenController::class, 'getKehadiranByMataPelajaran']);
         Route::get('/absen/kelas/{id}', [AbsenController::class, 'getKehadiranByKelasId']);
+
+        // route jadwal
+        Route::get('/mata-pelajaran', [MataPelajaranController::class, 'getAllMataPelajaran']);
     });
 });
