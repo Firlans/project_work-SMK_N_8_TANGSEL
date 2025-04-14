@@ -8,6 +8,7 @@ import {
 } from "react-icons/fa";
 import Header from "../Components/Elements/Header/Index";
 import ProfileSiswa from "../Components/Fragments/ProfileSiswa";
+import KehadiranSiswa from "../Components/Fragments/KehadiranSiswa";
 
 const Sidebar = ({ setActivePage, activePage }) => {
   const menuItems = [
@@ -84,131 +85,7 @@ const JadwalBelajar = () => {
   );
 };
 
-const KehadiranSiswa = () => {
-  const [selectedMapel, setSelectedMapel] = useState("all");
-
-  const mataPelajaran = [
-    { id: "mtk", nama: "Matematika" },
-    { id: "fsk", nama: "Fisika" },
-    { id: "bio", nama: "Biologi" },
-    { id: "kim", nama: "Kimia" },
-  ];
-
-  const dataKehadiran = [
-    {
-      pertemuan: 1,
-      tanggal: "12 November 2025",
-      status: "Hadir",
-      mapel: "Matematika",
-    },
-    {
-      pertemuan: 2,
-      tanggal: "19 November 2025",
-      status: "Tidak Hadir",
-      mapel: "Matematika",
-    },
-    {
-      pertemuan: 1,
-      tanggal: "13 November 2025",
-      status: "Hadir",
-      mapel: "Fisika",
-    },
-    {
-      pertemuan: 2,
-      tanggal: "20 November 2025",
-      status: "Hadir",
-      mapel: "Fisika",
-    },
-    {
-      pertemuan: 1,
-      tanggal: "14 November 2025",
-      status: "Tidak Hadir",
-      mapel: "Biologi",
-    },
-    {
-      pertemuan: 1,
-      tanggal: "15 November 2025",
-      status: "Hadir",
-      mapel: "Kimia",
-    },
-  ];
-
-  const filteredData =
-    selectedMapel === "all"
-      ? dataKehadiran
-      : dataKehadiran.filter(
-          (item) =>
-            item.mapel ===
-            mataPelajaran.find((m) => m.id === selectedMapel)?.nama
-        );
-
-  return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Kehadiran Siswa</h2>
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-600">
-            Mata Pelajaran:
-          </label>
-          <select
-            value={selectedMapel}
-            onChange={(e) => setSelectedMapel(e.target.value)}
-            className="form-select rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-          >
-            <option value="all">Semua Mata Pelajaran</option>
-            {mataPelajaran.map((mapel) => (
-              <option key={mapel.id} value={mapel.id}>
-                {mapel.nama}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Pertemuan
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Mata Pelajaran
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Hari dan Tanggal
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredData.map((item, index) => (
-              <tr key={index} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  Pertemuan {item.pertemuan}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">{item.mapel}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{item.tanggal}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      item.status === "Hadir"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
+<KehadiranSiswa />;
 
 <ProfileSiswa />;
 const KonselingBK = () => {
