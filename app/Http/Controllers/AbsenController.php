@@ -114,4 +114,30 @@ class AbsenController extends Controller
             ], 500);
         }
     }
+
+    public function getKehadiranByKelasId($id)
+    {
+        try {
+            $kehadiran = Kehadiran::with(['jadwal.mataPelajaran'])
+                ->whereHas('jadwal', function($query) use ($id) {
+                    $query->where('id_kelas', $id);
+                })
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => KehadiranResource::collection($kehadiran)
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error in getKehadiranByKelasId:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch attendance data'
+            ], 500);
+        }
+    }
 }
