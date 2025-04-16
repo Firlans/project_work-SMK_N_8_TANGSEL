@@ -20,27 +20,28 @@ const KehadiranSiswa = () => {
   const [mataPelajaran, setMataPelajaran] = useState([]);
   const [selectedMapel, setSelectedMapel] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [kehadiranByMapel, setKehadiranByMapel] = useState(null);
+  const [idSiswa, setIdSiswa] = useState(null);
 
   useEffect(() => {
     const fetchKehadiran = async () => {
       try {
-        // Ambil data profil siswa
         const profileRes = await axiosClient.get("/profile");
-        const idSiswa = profileRes.data.data.id;
-        console.log("ID Siswa:", idSiswa); // Debugging
+        const id = profileRes.data.data.id;
 
-        if (!idSiswa) {
-          throw new Error("ID siswa tidak ditemukan di profile.");
+        setIdSiswa(id); // Simpan ID siswa ke state
+
+        // Validasi ID siswa
+        if (!id) {
+          throw new Error("ID siswa tidak tersedia");
         }
 
         // Ambil data kehadiran berdasarkan id_siswa
-        const response = await axiosClient.get(
-          `/absen/siswa?id_siswa=${idSiswa}`
-        );
+        const response = await axiosClient.get(`/absen/siswa?id_siswa=${id}`);
         const rawData = response.data.data;
         console.log("Data Kehadiran:", response.data); // Debugging
 
-        // Filter data jadwal yang valid
+        // Filter data jadwal yang valid - Dibutuhkan untuk menampilkan semua data ketika tidak ada filter
         const validData = rawData.filter(
           (schedule) =>
             schedule.jadwal &&
@@ -51,7 +52,7 @@ const KehadiranSiswa = () => {
 
         setSchedulesData(validData);
 
-        // Ambil daftar mata pelajaran unik
+        // Ambil daftar mata pelajaran unik - Dibutuhkan untuk mengisi opsi dropdown
         const uniqueMapel = validData.reduce((acc, schedule) => {
           const mapel = schedule.jadwal.mata_pelajaran;
           if (!acc.some((item) => item.id === mapel.id)) {
@@ -77,6 +78,36 @@ const KehadiranSiswa = () => {
     fetchKehadiran();
   }, []);
 
+  const fetchKehadiranByMapel = async (idMapel) => {
+    try {
+      setLoading(true);
+      const response = await axiosClient.get(
+        `/absen/mata_pelajaran?id_mata_pelajaran=${idMapel}&id_siswa=${idSiswa}`
+      );
+
+      const mapelName =
+        response.data.data[0]?.kelas?.mata_pelajaran?.nama_pelajaran ||
+        "Unknown";
+      console.log(`Data Kehadiran by Mapel: ${mapelName}`, response.data);
+      setKehadiranByMapel(response.data.data);
+    } catch (error) {
+      console.error("Gagal mengambil data kehadiran mata pelajaran:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle perubahan mata pelajaran
+  const handleMapelChange = (e) => {
+    const value = e.target.value;
+    setSelectedMapel(value);
+    if (value) {
+      fetchKehadiranByMapel(value);
+    } else {
+      setKehadiranByMapel(null);
+    }
+  };
+
   // Filter data berdasarkan mapel yang dipilih
   const filteredData = selectedMapel
     ? schedulesData.filter(
@@ -101,31 +132,80 @@ const KehadiranSiswa = () => {
     );
   }
 
-  return (
-    <div>
-      <div className="flex flex-col items-center justify-center mb-6">
-        <h2 className="text-2xl font-bold mb-4">Riwayat Kehadiran Siswa</h2>
+  const renderKehadiranContent = () => {
+    if (kehadiranByMapel) {
+      if (Array.isArray(kehadiranByMapel)) {
+        return kehadiranByMapel
+          .map((kelasData) => {
+            // Filter hanya kehadiran siswa yang sedang login
+            const kehadiranSiswa = kelasData.kehadiran.filter(
+              (item) => item.siswa.id === idSiswa
+            );
 
-        <div className="flex items-center">
-          <label htmlFor="filterMapel" className="font-semibold text-gray-600">
-            Mata Pelajaran:
-          </label>
-          <select
-            id="filterMapel"
-            value={selectedMapel || ""}
-            onChange={(e) => setSelectedMapel(e.target.value)}
-            className="ml-2 p-2 border rounded-md"
-          >
-            <option value="">Semua</option>
-            {mataPelajaran.map((mapel) => (
-              <option key={mapel.id} value={mapel.id}>
-                {mapel.nama}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+            if (kehadiranSiswa.length === 0) return null;
 
+            return (
+              <div key={`kelas-${kelasData.kelas.id}`} className="mb-6">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full bg-white border border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="py-2 px-4 border-b">Tanggal</th>
+                        <th className="py-2 px-4 border-b">Mata Pelajaran</th>
+                        <th className="py-2 px-4 border-b">Jam</th>
+                        <th className="py-2 px-4 border-b">Status</th>
+                        <th className="py-2 px-4 border-b">Keterangan</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {kehadiranSiswa.map((item, index) => (
+                        <tr
+                          key={`${item.id || index}`}
+                          className="hover:bg-gray-50"
+                        >
+                          <td className="py-2 px-4 border-b">
+                            {formatTanggal(item.tanggal)}
+                          </td>
+                          <td className="py-2 px-4 border-b">
+                            {kelasData.kelas.mata_pelajaran.nama_pelajaran}
+                          </td>
+                          <td className="py-2 px-4 border-b">
+                            {formatWaktu(kelasData.jadwal.jam_mulai)} -{" "}
+                            {formatWaktu(kelasData.jadwal.jam_selesai)}
+                          </td>
+                          <td className="py-2 px-4 border-b">
+                            <span
+                              className={`px-2 py-1 rounded-full text-sm ${
+                                item.status === "Hadir"
+                                  ? "bg-green-100 text-green-800"
+                                  : item.status === "Sakit"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : item.status === "Izin"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : "bg-red-100 text-red-800"
+                              }`}
+                            >
+                              {item.status}
+                            </span>
+                          </td>
+                          <td className="py-2 px-4 border-b">
+                            {item.keterangan || "-"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+          })
+          .filter(Boolean);
+      }
+      console.error("Data kehadiran bukan array:", kehadiranByMapel);
+      return <div>Format data tidak sesuai</div>;
+    }
+
+    return (
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
@@ -181,6 +261,35 @@ const KehadiranSiswa = () => {
           </tbody>
         </table>
       </div>
+    );
+  };
+
+  return (
+    <div>
+      <div className="flex flex-col items-center justify-center mb-6">
+        <h2 className="text-2xl font-bold mb-4">Riwayat Kehadiran Siswa</h2>
+
+        <div className="flex items-center">
+          <label htmlFor="filterMapel" className="font-semibold text-gray-600">
+            Mata Pelajaran:
+          </label>
+          <select
+            id="filterMapel"
+            value={selectedMapel || ""}
+            onChange={handleMapelChange}
+            className="ml-2 p-2 border rounded-md"
+          >
+            <option value="">Semua</option>
+            {mataPelajaran.map((mapel) => (
+              <option key={mapel.id} value={mapel.id}>
+                {mapel.nama}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {renderKehadiranContent()}
     </div>
   );
 };
