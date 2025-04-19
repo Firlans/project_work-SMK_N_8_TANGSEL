@@ -26,11 +26,13 @@ Route::middleware([JwtMiddleware::class])->group(function () {
 
         // route mata_pelajaran
         Route::get('/mata-pelajaran', [MataPelajaranController::class, 'getAllMataPelajaran']);
+        Route::post('/mata-pelajaran', [MataPelajaranController::class, 'createMataPelajaran']);
 
         // route jadwal
         Route::get('/jadwal', [JadwalController::class, 'getAllJadwal']);
         Route::get('/jadwal/siswa', [JadwalController::class, 'getJadwalBySiswa']);
         Route::get('/jadwal/mata-pelajaran', [JadwalController::class, 'getJadwalBySiswaMapel']);
         Route::get('/jadwal/hari', [JadwalController::class, 'getJadwalBySiswaHari']);
+
     });
 });
