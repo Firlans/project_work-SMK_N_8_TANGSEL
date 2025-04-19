@@ -16,25 +16,17 @@ class MataPelajaranController extends Controller
                 return $item;
             });
 
-            if ($mataPelajaran->isEmpty()) {
-                return response()->json([
-                    'status' => 'success',
-                    'data' => []
-                ], 200);
-            }
-
             return response()->json([
                 'status' => 'success',
+                'message' => $mataPelajaran->isEmpty() ? 'No subjects found' : 'Successfully retrieved subjects',
                 'data' => $mataPelajaran
             ], 200);
+
         } catch (\Exception $e) {
-            Log::error('Error in getAllMataPelajaran: ' . $e->getMessage());
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Terjadi kesalahan saat mengambil data mata pelajaran'
-            ], 500);
+            return $this->handleError($e, 'getAllMataPelajaran');
         }
     }
+
     public function createMataPelajaran(Request $request){
         try {
             $request->validate([
@@ -48,7 +40,7 @@ class MataPelajaranController extends Controller
             if ($existing) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Mata pelajaran sudah ada dalam database'
+                    'message' => 'Subject already exists in database'
                 ], 400);
             }
 
@@ -58,15 +50,91 @@ class MataPelajaranController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Mata pelajaran berhasil ditambahkan',
+                'message' => 'Subject successfully added',
                 'data' => $mataPelajaran
             ], 201);
         } catch (\Exception $e) {
-            Log::error('Error in createMataPelajaran: ' . $e->getMessage());
+            return $this->handleError($e, 'createMataPelajaran');
+        }
+    }
+
+    public function updateMataPelajaran(Request $request){
+        try {
+            $id = request()->route('id_mata_pelajaran');
+            $mataPelajaran = MataPelajaran::find($id);
+
+            if (!$mataPelajaran) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Subject not found'
+                ], 404);
+            }
+
+            $request->validate([
+                'nama_pelajaran' => 'required|string|max:255',
+            ]);
+            $namaPelajaran = $request->input('nama_pelajaran');
+            $existing = MataPelajaran::where('nama_pelajaran', $namaPelajaran)->first();
+            if($existing && $existing->id !== $mataPelajaran->id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Subject already exists in database'
+                ], 400);
+            }
+
+            $mataPelajaran->update([
+                'nama_pelajaran' => strtolower($namaPelajaran)
+            ]);
+
             return response()->json([
-                'status' => 'error',
-                'message' => 'Terjadi kesalahan saat menambahkan mata pelajaran'
-            ], 500);
+                'status' => 'success',
+                'message' => 'Subject successfully updated',
+                'data' => $mataPelajaran
+            ], 200);
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'updateMataPelajaran');
+        }
+    }
+
+    private function handleError(\Exception $e, $context)
+    {
+        Log::error("Error in {$context}:", [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        $response = [
+            'status' => 'error',
+            'message' => "An error occurred in {$context}"
+        ];
+
+        if (config('app.debug')) {
+            $response['error'] = $e->getMessage();
+        }
+
+        return response()->json($response, 500);
+    }
+
+    public function deleteMataPelajaran(Request $request){
+        try {
+            $id = request()->route('id_mata_pelajaran');
+            $mataPelajaran = MataPelajaran::find($id);
+
+            if (!$mataPelajaran) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Subject not found'
+                ], 404);
+            }
+
+            $mataPelajaran->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Subject successfully deleted'
+            ], 200);
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'deleteMataPelajaran');
         }
     }
 }

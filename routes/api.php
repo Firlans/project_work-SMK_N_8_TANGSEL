@@ -19,20 +19,29 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     });
     Route::middleware([SiswaMiddleware::class])->group(function(){
         // route absen
-        Route::get('/absen', [AbsenController::class, 'getAllKehadiran']);
-        Route::get('/absen/siswa', [AbsenController::class, 'getKehadiranBySiswaId']);
-        Route::get('/absen/mata-pelajaran', [AbsenController::class, 'getKehadiranByIdSiswaAndMataPelajaran']);
-        Route::get('/absen/kelas/', [AbsenController::class, 'getKehadiranByIdSiswaAndKelasId']);
 
-        // route mata_pelajaran
-        Route::get('/mata-pelajaran', [MataPelajaranController::class, 'getAllMataPelajaran']);
-        Route::post('/mata-pelajaran', [MataPelajaranController::class, 'createMataPelajaran']);
-
-        // route jadwal
-        Route::get('/jadwal', [JadwalController::class, 'getAllJadwal']);
-        Route::get('/jadwal/siswa', [JadwalController::class, 'getJadwalBySiswa']);
-        Route::get('/jadwal/mata-pelajaran', [JadwalController::class, 'getJadwalBySiswaMapel']);
-        Route::get('/jadwal/hari', [JadwalController::class, 'getJadwalBySiswaHari']);
 
     });
 });
+Route::get('/absen', [AbsenController::class, 'getAllKehadiran']);
+Route::get('/absen/siswa', [AbsenController::class, 'getKehadiranBySiswaId']);
+Route::get('/absen/mata-pelajaran', [AbsenController::class, 'getKehadiranByIdSiswaAndMataPelajaran']);
+Route::get('/absen/kelas/', [AbsenController::class, 'getKehadiranByIdSiswaAndKelasId']);
+Route::post('/absen', [AbsenController::class, 'createKehadiran']);
+Route::put('/absen/{id_kelas}', [AbsenController::class, 'updateKehadiran']);
+Route::delete('/absen/{id_kelas}', [AbsenController::class, 'deleteKehadiran']);
+
+// route mata_pelajaran
+Route::get('/mata-pelajaran', [MataPelajaranController::class, 'getAllMataPelajaran']);
+Route::post('/mata-pelajaran', [MataPelajaranController::class, 'createMataPelajaran']);
+Route::put("/mata-pelajaran/{id_mata_pelajaran}", [MataPelajaranController::class, 'updateMataPelajaran']); // Changed from POST to PUT
+Route::delete("/mata-pelajaran/{id_mata_pelajaran}", [MataPelajaranController::class, 'deleteMataPelajaran']);
+
+// route jadwal
+Route::get('/jadwal', [JadwalController::class, 'getAllJadwal']);
+Route::get('/jadwal/siswa', [JadwalController::class, 'getJadwalBySiswa']);
+Route::get('/jadwal/mata-pelajaran', [JadwalController::class, 'getJadwalBySiswaMapel']);
+Route::get('/jadwal/hari', [JadwalController::class, 'getJadwalBySiswaHari']);
+Route::post('/jadwal', [JadwalController::class, 'createJadwal']);
+Route::put('/jadwal/{id_jadwal}', [JadwalController::class, 'updateJadwal']);
+Route::delete('/jadwal/{id_jadwal}', [JadwalController::class, 'deleteJadwal']);

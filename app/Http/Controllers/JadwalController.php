@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Log;
 
 class JadwalController extends Controller
 {
@@ -20,11 +21,7 @@ class JadwalController extends Controller
                 'data' => $jadwal
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'An error occurred in getAllJadwal',
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->handleError($e, 'getAllJadwal');
         }
     }
 
@@ -53,11 +50,7 @@ class JadwalController extends Controller
                 'data' => $jadwal
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'An error occurred in getJadwalBySiswa',
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->handleError($e, 'getJadwalBySiswa');
         }
     }
 
@@ -88,11 +81,7 @@ class JadwalController extends Controller
                 'data' => $jadwal
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'An error occurred in getJadwalBySiswaMapel',
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->handleError($e, 'getJadwalBySiswaMapel');
         }
     }
     public function getJadwalBySiswaHari(Request $request)
@@ -122,11 +111,26 @@ class JadwalController extends Controller
                 'data' => $jadwal
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'An error occurred in getJadwalBySiswaHari',
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->handleError($e, 'getJadwalBySiswaHari');
         }
+    }
+
+    private function handleError(\Exception $e, $context)
+    {
+        Log::error("Error in {$context}:", [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        $response = [
+            'status' => 'error',
+            'message' => "An error occurred in {$context}"
+        ];
+
+        if (config('app.debug')) {
+            $response['error'] = $e->getMessage();
+        }
+
+        return response()->json($response, 500);
     }
 }
