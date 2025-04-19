@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Jadwal;
+use App\Traits\ApiResponseHandler;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
 
 class JadwalController extends Controller
 {
+    use ApiResponseHandler;
+
     public function getAllJadwal()
     {
         try {
@@ -113,24 +116,5 @@ class JadwalController extends Controller
         } catch (\Exception $e) {
             return $this->handleError($e, 'getJadwalBySiswaHari');
         }
-    }
-
-    private function handleError(\Exception $e, $context)
-    {
-        Log::error("Error in {$context}:", [
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        $response = [
-            'status' => 'error',
-            'message' => "An error occurred in {$context}"
-        ];
-
-        if (config('app.debug')) {
-            $response['error'] = $e->getMessage();
-        }
-
-        return response()->json($response, 500);
     }
 }

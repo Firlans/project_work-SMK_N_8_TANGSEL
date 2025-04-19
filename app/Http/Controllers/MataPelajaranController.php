@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\MataPelajaran;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use App\Traits\ApiResponseHandler;
 
 class MataPelajaranController extends Controller
 {
+    use ApiResponseHandler;
+
     public function getAllMataPelajaran(Request $request){
         try {
             $mataPelajaran = MataPelajaran::all()->map(function ($item) {
@@ -94,25 +96,6 @@ class MataPelajaranController extends Controller
         } catch (\Exception $e) {
             return $this->handleError($e, 'updateMataPelajaran');
         }
-    }
-
-    private function handleError(\Exception $e, $context)
-    {
-        Log::error("Error in {$context}:", [
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        $response = [
-            'status' => 'error',
-            'message' => "An error occurred in {$context}"
-        ];
-
-        if (config('app.debug')) {
-            $response['error'] = $e->getMessage();
-        }
-
-        return response()->json($response, 500);
     }
 
     public function deleteMataPelajaran(Request $request){

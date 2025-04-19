@@ -18,11 +18,11 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         Route::get('/profile', function(){});
     });
     Route::middleware([SiswaMiddleware::class])->group(function(){
-        // route absen
 
 
     });
 });
+// route absen
 Route::get('/absen', [AbsenController::class, 'getAllKehadiran']);
 Route::get('/absen/siswa', [AbsenController::class, 'getKehadiranBySiswaId']);
 Route::get('/absen/mata-pelajaran', [AbsenController::class, 'getKehadiranByIdSiswaAndMataPelajaran']);

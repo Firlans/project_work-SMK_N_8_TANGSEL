@@ -7,9 +7,11 @@ use App\Models\Kehadiran;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\KehadiranResource;
+use App\Traits\ApiResponseHandler;
 
 class AbsenController extends Controller
 {
+    use ApiResponseHandler;
 
     public function getAllKehadiran()
     {
@@ -113,18 +115,71 @@ class AbsenController extends Controller
         }
     }
 
-    private function handleError(\Exception $e, $context)
+    public function createKehadiran(Request $request)
     {
-        Log::error("Error in {$context}:", [
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            $data = $request->all();
 
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Failed to retrieve attendance data',
-            'debug' => config('app.debug') ? $e->getMessage() : null
-        ], 500);
+            $kehadiran = Kehadiran::create($data);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Attendance successfully created',
+                'data' => new KehadiranResource($kehadiran)
+            ], 201);
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'createKehadiran');
+        }
     }
 
+    public function updateKehadiran(Request $request, $id)
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            $data = $request->all();
+
+            $kehadiran = Kehadiran::find($id);
+
+            if (!$kehadiran) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Attendance not found'
+                ], 404);
+            }
+
+            $kehadiran->update($data);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Attendance successfully updated',
+                'data' => new KehadiranResource($kehadiran)
+            ], 200);
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'updateKehadiran');
+        }
+    }
+    public function deleteKehadiran($id)
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            $kehadiran = Kehadiran::find($id);
+
+            if (!$kehadiran) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Attendance not found'
+                ], 404);
+            }
+
+            $kehadiran->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Attendance successfully deleted'
+            ], 200);
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'deleteKehadiran');
+        }
+    }
 }
