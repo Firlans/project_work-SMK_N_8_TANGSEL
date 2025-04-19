@@ -28,6 +28,6 @@ class Jadwal extends Model
 
     public function kehadiran()
     {
-        return $this->hasMany(Kehadiran::class, 'jadwal_id', 'id');
+        return $this->hasMany(Kehadiran::class, 'id_jadwal', 'id');
     }
 }

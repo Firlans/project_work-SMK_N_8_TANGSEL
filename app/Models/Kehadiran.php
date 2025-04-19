@@ -19,8 +19,13 @@ class Kehadiran extends Model
         'id_siswa',
         'tanggal',
         'status',
-        'jadwal_id',
+        'id_jadwal',
         'keterangan'
+    ];
+
+    protected $casts = [
+        'status' => 'string',
+        'keterangan' => 'string'
     ];
 
     public function siswa()
@@ -30,6 +35,6 @@ class Kehadiran extends Model
 
     public function jadwal(): BelongsTo
     {
-        return $this->belongsTo(Jadwal::class, 'jadwal_id');
+        return $this->belongsTo(Jadwal::class, 'id_jadwal');
     }
 }

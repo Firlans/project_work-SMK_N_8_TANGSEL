@@ -52,7 +52,7 @@ return new class extends Migration {
                 ->references('id')
                 ->on('siswa')
                 ->onDelete('cascade');
-            $table->foreign('jadwal_id')
+            $table->foreign('id_jadwal')
                 ->references('id')
                 ->on('jadwal')
                 ->onDelete('cascade');
@@ -99,7 +99,7 @@ return new class extends Migration {
 
         Schema::table('kehadiran', function (Blueprint $table) {
             $table->dropForeign(['id_siswa']);
-            $table->dropForeign(['jadwal_id']);
+            $table->dropForeign(['id_jadwal']);
         });
 
         Schema::table('guru', function (Blueprint $table) {

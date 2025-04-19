@@ -39,7 +39,7 @@ class KehadiranSeeder extends Seeder
                 foreach ($classStudents as $siswa) {
                     Kehadiran::create([
                         'id_siswa' => $siswa->id,
-                        'jadwal_id' => $jadwal->id,
+                        'id_jadwal' => $jadwal->id,
                         'tanggal' => $date->format('Y-m-d'),
                         'status' => $statusKehadiran[array_rand($statusKehadiran)],
                         'keterangan' => fake()->optional(0.3)->sentence(),
