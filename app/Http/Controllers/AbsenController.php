@@ -15,11 +15,12 @@ class AbsenController extends Controller
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();
-            $kehadiran = Kehadiran::with(['jadwal.mataPelajaran', 'siswa'])->get();
+            $kehadiran = Kehadiran::all();
 
             return response()->json([
                 'status' => 'success',
-                'data' => $this->groupKehadiranBySiswa($kehadiran)
+                'message' => $kehadiran->isEmpty() ? 'No attendance data found' : 'Successfully retrieved attendance data',
+                'data' => $kehadiran
             ], 200);
         } catch (\Exception $e) {
             return $this->handleError($e, 'getAllKehadiran');
@@ -35,7 +36,7 @@ class AbsenController extends Controller
             if (!$id_siswa) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'id unknown'
+                    'message' => 'Student ID not found'
                 ], 400);
             }
 
@@ -43,63 +44,73 @@ class AbsenController extends Controller
                 ->where('id_siswa', $id_siswa)
                 ->get();
 
-            return $this->handleResponse($kehadiran);
+            return response()->json([
+                'status' => 'success',
+                'message' => $kehadiran->isEmpty() ? 'No student attendance records found' : 'Successfully retrieved student attendance',
+                'data' => $kehadiran
+            ], 200);
         } catch (\Exception $e) {
             return $this->handleError($e, 'getKehadiran');
         }
     }
 
-    public function getKehadiranByMataPelajaran(Request $request)
+    public function getKehadiranByIdSiswaAndMataPelajaran(Request $request)
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();
             $id_mata_pelajaran = $request->query('id_mata_pelajaran');
+            $id_siswa = $request->query('id_siswa');
 
-            if (!$id_mata_pelajaran) {
+            if (!$id_mata_pelajaran || !$id_siswa) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'id_mata_pelajaran is required'
+                    'message' => 'Subject ID and Student ID are required'
                 ], 400);
             }
 
-            $kehadiran = Kehadiran::with(['jadwal.mataPelajaran', 'siswa'])
-                ->whereHas('jadwal', function($query) use ($id_mata_pelajaran) {
+            $kehadiran = Kehadiran::where('id_siswa', $id_siswa)
+                ->whereHas('jadwal', function ($query) use ($id_mata_pelajaran) {
                     $query->where('id_mata_pelajaran', $id_mata_pelajaran);
                 })
                 ->get();
 
-                return response()->json([
+            return response()->json([
                 'status' => 'success',
-                'data' => $this->groupKehadiranByKelas($kehadiran),
-                'message' => $kehadiran->isEmpty() ? 'No attendance records found' : null
+                'message' => $kehadiran->isEmpty() ? 'No attendance records found' : 'Successfully retrieved attendance records',
+                'data' => $kehadiran
             ], 200);
         } catch (\Exception $e) {
-            return $this->handleError($e, 'getKehadiranByMataPelajaran');
+            return $this->handleError($e, 'getKehadiranByIdSiswaAndMataPelajaran');
         }
     }
 
-    public function getKehadiranByKelasId($id)
+    public function getKehadiranByIdSiswaAndKelasId()
     {
         try {
-            $kehadiran = Kehadiran::with(['jadwal.mataPelajaran', 'siswa'])
-                ->whereHas('jadwal', function($query) use ($id) {
-                    $query->where('id_kelas', $id);
+            $id_siswa = request()->query('id_siswa');
+            $id_kelas = request()->query('id_kelas');
+
+            if (!$id_siswa || !$id_kelas) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Student ID and Class ID are required'
+                ], 400);
+            }
+
+            $kehadiran = Kehadiran::where('id_siswa', $id_siswa)
+                ->whereHas('jadwal', function ($query) use ($id_kelas) {
+                    $query->where('id_kelas', $id_kelas);
                 })
                 ->get();
 
-            return $this->handleResponse($kehadiran);
+            return response()->json([
+                'status' => 'success',
+                'message' => $kehadiran->isEmpty() ? 'No attendance records found' : 'Successfully retrieved attendance records',
+                'data' => $kehadiran,
+            ], 200);
         } catch (\Exception $e) {
             return $this->handleError($e, 'getKehadiranByKelasId');
         }
-    }
-
-    private function handleResponse($data, $message = null)
-    {
-        return response()->json([
-            'status' => 'success',
-            'data' => $this->groupKehadiranByJadwal($data),
-            'message' => $message
-        ], 200);
     }
 
     private function handleError(\Exception $e, $context)
@@ -111,106 +122,9 @@ class AbsenController extends Controller
 
         return response()->json([
             'status' => 'error',
-            'message' => 'Failed to fetch attendance data',
+            'message' => 'Failed to retrieve attendance data',
             'debug' => config('app.debug') ? $e->getMessage() : null
         ], 500);
     }
 
-    private function groupKehadiranByJadwal($kehadiran)
-    {
-        return $kehadiran->groupBy('jadwal.id')->map(function ($group) {
-            $jadwal = $group->first()->jadwal;
-            return [
-                'jadwal' => [
-                    'id' => $jadwal->id,
-                    'id_kelas' => $jadwal->id_kelas,
-                    'hari_id' => $jadwal->hari_id,
-                    'jam_mulai' => $jadwal->jam_mulai,
-                    'jam_selesai' => $jadwal->jam_selesai,
-                    'mata_pelajaran' => [
-                        'id' => $jadwal->mataPelajaran->id,
-                        'nama_pelajaran' => $jadwal->mataPelajaran->nama_pelajaran,
-                    ],
-                ],
-                'absensi' => $group->map(function ($item) {
-                    return [
-                        'id' => $item->id,
-                        'id_siswa' => $item->id_siswa,
-                        'tanggal' => $item->tanggal,
-                        'status' => $item->status,
-                        'keterangan' => $item->keterangan,
-                        'siswa' => $item->siswa ? [
-                            'id' => $item->siswa->id,
-                            'nama' => $item->siswa->nama,
-                        ] : null,
-                    ];
-                })->values(),
-            ];
-        })->values();
-    }
-    private function groupKehadiranBySiswa($kehadiran)
-    {
-        return $kehadiran->groupBy('id_siswa')->map(function ($group) {
-            $firstRecord = $group->first();
-            return [
-                'siswa' => $firstRecord->siswa ? [
-                    'id' => $firstRecord->siswa->id,
-                    'nama' => $firstRecord->siswa->nama,
-                ] : null,
-                'kehadiran' => $group->map(function ($item) {
-                    return [
-                        'id' => $item->id,
-                        'tanggal' => $item->tanggal,
-                        'status' => $item->status,
-                        'keterangan' => $item->keterangan,
-                        'jadwal' => [
-                            'id' => $item->jadwal->id,
-                            'id_kelas' => $item->jadwal->id_kelas,
-                            'hari_id' => $item->jadwal->hari_id,
-                            'jam_mulai' => $item->jadwal->jam_mulai,
-                            'jam_selesai' => $item->jadwal->jam_selesai,
-                            'mata_pelajaran' => [
-                                'id' => $item->jadwal->mataPelajaran->id,
-                                'nama_pelajaran' => $item->jadwal->mataPelajaran->nama_pelajaran,
-                            ],
-                        ],
-                    ];
-                })->values(),
-            ];
-        })->values();
-    }
-
-    private function groupKehadiranByKelas($kehadiran)
-    {
-        return $kehadiran->groupBy('jadwal.id_kelas')->map(function ($kelasGroup) {
-            $firstRecord = $kelasGroup->first();
-            return [
-                'kelas' => [
-                    'id' => $firstRecord->jadwal->id_kelas,
-                    'mata_pelajaran' => [
-                        'id' => $firstRecord->jadwal->mataPelajaran->id,
-                        'nama_pelajaran' => $firstRecord->jadwal->mataPelajaran->nama_pelajaran,
-                    ],
-                ],
-                'jadwal' => [
-                    'id' => $firstRecord->jadwal->id,
-                    'hari_id' => $firstRecord->jadwal->hari_id,
-                    'jam_mulai' => $firstRecord->jadwal->jam_mulai,
-                    'jam_selesai' => $firstRecord->jadwal->jam_selesai,
-                ],
-                'kehadiran' => $kelasGroup->map(function ($item) {
-                    return [
-                        'id' => $item->id,
-                        'tanggal' => $item->tanggal,
-                        'status' => $item->status,
-                        'keterangan' => $item->keterangan,
-                        'siswa' => $item->siswa ? [
-                            'id' => $item->siswa->id,
-                            'nama' => $item->siswa->nama,
-                        ] : null,
-                    ];
-                })->values(),
-            ];
-        })->values();
-    }
 }

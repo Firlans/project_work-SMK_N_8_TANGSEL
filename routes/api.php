@@ -20,8 +20,8 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         // route absen
         Route::get('/absen', [AbsenController::class, 'getAllKehadiran']);
         Route::get('/absen/siswa', [AbsenController::class, 'getKehadiranBySiswaId']);
-        Route::get('/absen/mata-pelajaran', [AbsenController::class, 'getKehadiranByMataPelajaran']);
-        Route::get('/absen/kelas/{id}', [AbsenController::class, 'getKehadiranByKelasId']);
+        Route::get('/absen/mata-pelajaran', [AbsenController::class, 'getKehadiranByIdSiswaAndMataPelajaran']);
+        Route::get('/absen/kelas/', [AbsenController::class, 'getKehadiranByIdSiswaAndKelasId']);
 
         // route jadwal
         Route::get('/mata-pelajaran', [MataPelajaranController::class, 'getAllMataPelajaran']);

@@ -23,10 +23,6 @@ class Kehadiran extends Model
         'keterangan'
     ];
 
-    protected $hidden = ['jadwal_id'];
-
-    protected $with = ['jadwal'];
-
     public function siswa()
     {
         return $this->belongsTo(Siswa::class, 'id_siswa', 'id');
