@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Jadwal;
 use App\Traits\ApiResponseHandler;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Log;
 
 class JadwalController extends Controller
 {
@@ -116,5 +116,119 @@ class JadwalController extends Controller
         } catch (\Exception $e) {
             return $this->handleError($e, 'getJadwalBySiswaHari');
         }
+    }
+
+    public function createJadwal()
+    {
+        try {
+            $data = request()->all();
+            // Add check for empty request data
+            if (empty($data)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No data provided for update'
+                ], 400);
+            }
+
+            $validationResult = $this->validation($data);
+            if (!$validationResult) {
+                return $validationResult;
+            }
+
+            $user = JWTAuth::parseToken()->authenticate();
+
+            $jadwal = Jadwal::create($data);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Successfully created schedule',
+                'data' => $jadwal
+            ], 201);
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'createJadwal');
+        }
+    }
+
+    public function updateJadwal($id_jadwal)
+    {
+        try {
+            $data = request()->all();
+
+            // Add check for empty request data
+            if (empty($data)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No data provided for update'
+                ], 400);
+            }
+
+            $validationResult = $this->validation($data);
+            if (!$validationResult) {
+                return $validationResult;
+            }
+
+            $user = JWTAuth::parseToken()->authenticate();
+            $jadwal = Jadwal::find($id_jadwal);
+            if (!$jadwal) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Schedule not found'
+                ], 404);
+            }
+
+            $jadwal->update($data);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Successfully updated schedule',
+                'data' => $jadwal
+            ], 200);
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'updateJadwal');
+        }
+
+    }
+
+    public function deleteJadwal($id_jadwal)
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            $jadwal = Jadwal::find($id_jadwal);
+            if (!$jadwal) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Schedule not found'
+                ], 404);
+            }
+
+            $jadwal->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Successfully deleted schedule'
+            ], 200);
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'deleteJadwal');
+        }
+    }
+
+    private function validation($data)
+    {
+        $validator = Validator::make($data, [
+            'id_kelas' => 'required|exists:kelas,id',
+            'id_mata_pelajaran' => 'required|exists:mata_pelajaran,id',
+            'id_hari' => 'required|exists:hari,id',
+            'jam_mulai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()
+            ], 422);
+        }
+
+        return true;
     }
 }

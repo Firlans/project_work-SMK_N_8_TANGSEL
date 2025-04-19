@@ -23,11 +23,6 @@ class Kehadiran extends Model
         'keterangan'
     ];
 
-    protected $casts = [
-        'status' => 'string',
-        'keterangan' => 'string'
-    ];
-
     public function siswa()
     {
         return $this->belongsTo(Siswa::class, 'id_siswa', 'id');

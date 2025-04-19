@@ -165,14 +165,14 @@ class AbsenController extends Controller
 
     public function updateKehadiran(Request $request, $id)
     {
-        $validationResult = $this->validation($request->all());
-        if ($validationResult !== true) {
-            return $validationResult;
-        }
-
         try {
-            $user = JWTAuth::parseToken()->authenticate();
             $data = $request->all();
+            $validationResult = $this->validation($data);
+            if ($validationResult !== true) {
+                return $validationResult;
+            }
+
+            $user = JWTAuth::parseToken()->authenticate();
             $kehadiran = Kehadiran::find($id);
 
             if (!$kehadiran) {
