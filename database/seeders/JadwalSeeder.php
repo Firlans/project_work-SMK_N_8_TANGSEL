@@ -15,14 +15,14 @@ class JadwalSeeder extends Seeder
             [
                 'id_kelas' => 1,
                 'id_mata_pelajaran' => 1, // Matematika
-                'hari_id' => 1, // Senin
+                'id_hari' => 1, // Senin
                 'jam_mulai' => '07:00:00',
                 'jam_selesai' => '08:30:00',
             ],
             [
                 'id_kelas' => 1,
                 'id_mata_pelajaran' => 2, // B.Indonesia
-                'hari_id' => 1,
+                'id_hari' => 1,
                 'jam_mulai' => '08:30:00',
                 'jam_selesai' => '09:30:00',
             ],
@@ -30,14 +30,14 @@ class JadwalSeeder extends Seeder
             [
                 'id_kelas' => 1,
                 'id_mata_pelajaran' => 3, // B.Inggris
-                'hari_id' => 1,
+                'id_hari' => 1,
                 'jam_mulai' => '10:00:00',
                 'jam_selesai' => '11:00:00',
             ],
             [
                 'id_kelas' => 1,
                 'id_mata_pelajaran' => 4, // IPA
-                'hari_id' => 1,
+                'id_hari' => 1,
                 'jam_mulai' => '11:00:00',
                 'jam_selesai' => '12:00:00',
             ],
@@ -45,14 +45,14 @@ class JadwalSeeder extends Seeder
             [
                 'id_kelas' => 1,
                 'id_mata_pelajaran' => 5, // IPS
-                'hari_id' => 1,
+                'id_hari' => 1,
                 'jam_mulai' => '13:00:00',
                 'jam_selesai' => '14:15:00',
             ],
             [
                 'id_kelas' => 1,
                 'id_mata_pelajaran' => 6, // Seni Budaya
-                'hari_id' => 1,
+                'id_hari' => 1,
                 'jam_mulai' => '14:15:00',
                 'jam_selesai' => '15:30:00',
             ],
@@ -61,14 +61,14 @@ class JadwalSeeder extends Seeder
             [
                 'id_kelas' => 2,
                 'id_mata_pelajaran' => 3, // B.Inggris
-                'hari_id' => 1,
+                'id_hari' => 1,
                 'jam_mulai' => '07:00:00',
                 'jam_selesai' => '08:30:00',
             ],
             [
                 'id_kelas' => 2,
                 'id_mata_pelajaran' => 1, // Matematika
-                'hari_id' => 1,
+                'id_hari' => 1,
                 'jam_mulai' => '08:30:00',
                 'jam_selesai' => '09:30:00',
             ],
@@ -76,14 +76,14 @@ class JadwalSeeder extends Seeder
             [
                 'id_kelas' => 2,
                 'id_mata_pelajaran' => 2, // B.Indonesia
-                'hari_id' => 1,
+                'id_hari' => 1,
                 'jam_mulai' => '10:00:00',
                 'jam_selesai' => '11:00:00',
             ],
             [
                 'id_kelas' => 2,
                 'id_mata_pelajaran' => 5, // IPS
-                'hari_id' => 1,
+                'id_hari' => 1,
                 'jam_mulai' => '11:00:00',
                 'jam_selesai' => '12:00:00',
             ],
@@ -91,14 +91,14 @@ class JadwalSeeder extends Seeder
             [
                 'id_kelas' => 2,
                 'id_mata_pelajaran' => 4, // IPA
-                'hari_id' => 1,
+                'id_hari' => 1,
                 'jam_mulai' => '13:00:00',
                 'jam_selesai' => '14:15:00',
             ],
             [
                 'id_kelas' => 2,
                 'id_mata_pelajaran' => 7, // Penjas
-                'hari_id' => 1,
+                'id_hari' => 1,
                 'jam_mulai' => '14:15:00',
                 'jam_selesai' => '15:30:00',
             ],
@@ -107,36 +107,36 @@ class JadwalSeeder extends Seeder
             [
                 'id_kelas' => 1,
                 'id_mata_pelajaran' => 7, // Penjas
-                'hari_id' => 2,
+                'id_hari' => 2,
                 'jam_mulai' => '07:00:00',
                 'jam_selesai' => '08:30:00',
             ],
             [
                 'id_kelas' => 1,
                 'id_mata_pelajaran' => 4, // IPA
-                'hari_id' => 2,
+                'id_hari' => 2,
                 'jam_mulai' => '08:30:00',
                 'jam_selesai' => '09:30:00',
             ],
-            // Add more entries for Wednesday (hari_id: 3), Thursday (hari_id: 4), and Friday (hari_id: 5)
+            // Add more entries for Wednesday (id_hari: 3), Thursday (id_hari: 4), and Friday (id_hari: 5)
             // Following similar pattern but with different subject arrangements
 
             // TUESDAY - Kelas X-2
             [
                 'id_kelas' => 2,
                 'id_mata_pelajaran' => 6, // Seni Budaya
-                'hari_id' => 2,
+                'id_hari' => 2,
                 'jam_mulai' => '07:00:00',
                 'jam_selesai' => '08:30:00',
             ],
             [
                 'id_kelas' => 2,
                 'id_mata_pelajaran' => 5, // IPS
-                'hari_id' => 2,
+                'id_hari' => 2,
                 'jam_mulai' => '08:30:00',
                 'jam_selesai' => '09:30:00',
             ],
-            // Add more entries for Wednesday (hari_id: 3), Thursday (hari_id: 4), and Friday (hari_id: 5)
+            // Add more entries for Wednesday (id_hari: 3), Thursday (id_hari: 4), and Friday (id_hari: 5)
             // Following similar pattern but with different subject arrangements
         ];
 

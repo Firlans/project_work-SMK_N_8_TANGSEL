@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AbsenController;
+use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Middleware\JwtMiddleware;
 use App\Http\Middleware\RoleMiddleware;
@@ -23,7 +24,13 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         Route::get('/absen/mata-pelajaran', [AbsenController::class, 'getKehadiranByIdSiswaAndMataPelajaran']);
         Route::get('/absen/kelas/', [AbsenController::class, 'getKehadiranByIdSiswaAndKelasId']);
 
-        // route jadwal
+        // route mata_pelajaran
         Route::get('/mata-pelajaran', [MataPelajaranController::class, 'getAllMataPelajaran']);
+
+        // route jadwal
+        Route::get('/jadwal', [JadwalController::class, 'getAllJadwal']);
+        Route::get('/jadwal/siswa', [JadwalController::class, 'getJadwalBySiswa']);
+        Route::get('/jadwal/mata-pelajaran', [JadwalController::class, 'getJadwalBySiswaMapel']);
+        Route::get('/jadwal/hari', [JadwalController::class, 'getJadwalBySiswaHari']);
     });
 });

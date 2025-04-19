@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_kelas');
             $table->unsignedBigInteger('id_mata_pelajaran');
-            $table->unsignedBigInteger('hari_id');
+            $table->unsignedBigInteger('id_hari');
             $table->time('jam_mulai');
             $table->time('jam_selesai');
             $table->timestamps();

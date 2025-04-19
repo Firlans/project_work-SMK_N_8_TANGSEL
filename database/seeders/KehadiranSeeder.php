@@ -31,7 +31,7 @@ class KehadiranSeeder extends Seeder
             $dayOfWeek = $dayOfWeek === 0 ? 7 : 1;
 
             // Get jadwals for current day
-            $todayJadwals = $jadwalList->where('hari_id', $dayOfWeek);
+            $todayJadwals = $jadwalList->where('id_hari', $dayOfWeek);
 
             foreach ($todayJadwals as $jadwal) {
                 $classStudents = $siswaList->where('id_kelas', $jadwal->id_kelas);

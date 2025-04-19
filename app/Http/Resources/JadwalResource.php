@@ -12,7 +12,7 @@ class JadwalResource extends JsonResource
         return [
             'id' => $this->id,
             'id_kelas' => $this->id_kelas,
-            'hari_id' => $this->hari_id,
+            'id_hari' => $this->id_hari,
             'jam_mulai' => $this->jam_mulai,
             'jam_selesai' => $this->jam_selesai,
             'created_at' => $this->created_at,
