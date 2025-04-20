@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('no_telp');
             $table->string('nisn', 20)->unique();
             $table->string('nis', 20)->unique();
-            $table->unsignedBigInteger('id_semester')->nullable();
+            $table->integer('semester');
             $table->unsignedBigInteger('id_kelas');
             $table->timestamps();
         });

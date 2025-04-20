@@ -25,7 +25,7 @@ class SiswaSeeder extends Seeder
                 'no_telp' => '081234567890',
                 'nisn' => '1234567890',
                 'nis' => '202300001',
-                'id_semester' => 1,
+                'semester' => 1,
                 'id_kelas' => 1
             ]);
         }
@@ -43,7 +43,7 @@ class SiswaSeeder extends Seeder
                 'no_telp' => $faker->phoneNumber,
                 'nisn' => '10' . str_pad($user->id, 8, '0', STR_PAD_LEFT),
                 'nis' => '2023' . str_pad($user->id, 4, '0', STR_PAD_LEFT),
-                'id_semester' => rand(1, 6),  // Assuming 6 semesters
+                'semester' => rand(1, 6),  // Assuming 6 semesters
                 'id_kelas' => rand(1, 3)  // Assuming you have classes with IDs 1-3
             ]);
         }

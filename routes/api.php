@@ -5,7 +5,9 @@ use App\Http\Controllers\AbsenController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MataPelajaranController;
+use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WaliMuridController;
 use App\Http\Middleware\JwtMiddleware;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\SiswaMiddleware;
@@ -60,3 +62,17 @@ Route::get('user/{id}', [UserController::class, 'getUserById']);
 Route::post('user', [UserController::class, 'createUser']);
 Route::put('user/{id}', [UserController::class, 'updateUser']);
 Route::delete('user/{id}', [UserController::class, 'deleteUser']);
+
+// route siswa
+Route::get('/siswa', [SiswaController::class, 'getAllSiswa']);
+Route::get('/siswa/{id}', [SiswaController::class, 'getSiswaById']);
+Route::put('/siswa/{id}', [SiswaController::class, 'updateSiswa']);
+Route::delete('/siswa/{id}', [SiswaController::class, 'deleteSiswa']);
+
+// route orang tua
+Route::get('/wali-murid', [WaliMuridController::class, 'getAllWaliMurid']);
+Route::get('/wali-murid/{id}', [WaliMuridController::class, 'getWaliMuridById']);
+Route::get('/wali-murid/siswa/{id_siswa}', [WaliMuridController::class, 'getWaliMuridBySiswaId']); // Changed route and method name
+Route::post('/wali-murid', [WaliMuridController::class, 'createWaliMurid']);
+Route::put('/wali-murid/{id}', [WaliMuridController::class, 'updateWaliMurid']);
+Route::delete('/wali-murid/{id}', [WaliMuridController::class, 'deleteWaliMurid']);

@@ -24,10 +24,6 @@ return new class extends Migration {
                 ->references('id')
                 ->on('kelas')
                 ->onDelete('cascade');
-            $table->foreign('id_semester')
-                ->references('id')
-                ->on('semester')
-                ->onDelete('set null');
             $table->rememberToken();
         });
 
@@ -114,7 +110,6 @@ return new class extends Migration {
 
         Schema::table('siswa', function (Blueprint $table) {
             $table->dropForeign(['id_kelas']);
-            $table->dropForeign(['id_semester']);
         });
 
         Schema::table('kelas', function (Blueprint $table) {
