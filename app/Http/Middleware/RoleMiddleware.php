@@ -6,21 +6,24 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
         try {
+            $token = $request->header('Authorization');
+
+            if (!$token) {
+                return response()->json(['status' => 'error', 'message' => 'Token not provided'], 401);
+            }
+
             $user = JWTAuth::parseToken()->authenticate();
 
             if (!$user) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+                return response()->json(['status' => 'error', 'message' => 'User not found'], 401);
             }
 
             // Cek role dan arahkan ke controller yang sesuai
@@ -33,14 +36,24 @@ class RoleMiddleware
                     return app(\App\Http\Controllers\SiswaController::class)->profile($request);
                 default:
                     return response()->json([
-                        'error' => 'error',
+                        'status' => 'error',
                         'message' => 'Invalid role'
                     ], 403);
             }
+        } catch (TokenExpiredException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Token has expired'
+            ], 401);
+        } catch (TokenInvalidException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Token is invalid'
+            ], 401);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Token invalid or expired'
+                'message' => $e->getMessage()
             ], 401);
         }
     }

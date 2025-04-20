@@ -18,7 +18,7 @@ class SiswaController extends Controller
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();
-            $siswa = Siswa::with(['user', 'waliMurid', 'kelas', 'semester'])->where('user_id', $user->id)->first();
+            $siswa = Siswa::with(['user', 'waliMurid', 'kelas'])->where('user_id', $user->id)->first();
 
             return response()->json([
                 'status' => 'success',
