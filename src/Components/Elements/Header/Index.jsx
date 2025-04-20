@@ -21,7 +21,7 @@ const Header = () => {
   };
 
   return (
-    <div className="w-full bg-white border-b p-4 flex justify-between items-center">
+    <div className="w-full bg-white border-b p-4 pl-16 lg:pl-4 flex justify-between items-center">
       <h1 className="text-xl font-bold text-gray-800">
         SMK Negeri 8 Kota Tangerang Selatan
       </h1>

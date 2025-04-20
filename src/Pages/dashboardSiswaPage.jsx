@@ -5,12 +5,16 @@ import {
   FaComments,
   FaUser,
   FaPaperPlane,
+  FaBars,
+  FaTimes,
 } from "react-icons/fa";
 import Header from "../Components/Elements/Header/Index";
 import ProfileSiswa from "../Components/Fragments/ProfileSiswa";
 import KehadiranSiswa from "../Components/Fragments/KehadiranSiswa";
+import JadwalSiswa from "../Components/Fragments/JadwalSiswa";
 
 const Sidebar = ({ setActivePage, activePage }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const menuItems = [
     { id: "profile", label: "Profile", icon: <FaUser /> },
     { id: "jadwal", label: "Jadwal Belajar", icon: <FaCalendarAlt /> },
@@ -19,75 +23,70 @@ const Sidebar = ({ setActivePage, activePage }) => {
   ];
 
   return (
-    <div className="w-64 bg-white border-r h-screen p-6 shadow-sm">
-      <div className="mb-8">
-        <h2 className="text-xl font-bold text-gray-800">Dashboard Siswa</h2>
-      </div>
-      <div className="flex flex-col gap-2">
-        {menuItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setActivePage(item.id)}
-            className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-              activePage === item.id
-                ? "bg-blue-500 text-white"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
-          >
-            {item.icon}
-            {item.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-};
+    <>
+      {/* Toggle button outside sidebar */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`
+          fixed top-4 left-4 z-30 p-2 
+          bg-blue-500 text-white rounded-lg 
+          hover:bg-blue-600 transition-colors
+          lg:hidden
+          ${isOpen ? "translate-x-64" : "translate-x-0"}
+          transition-transform duration-300
+        `}
+      >
+        {isOpen ? <FaTimes /> : <FaBars />}
+      </button>
 
-<Header />;
-
-const JadwalBelajar = () => {
-  const jadwal = [
-    { hari: "Senin", mataPelajaran: "Matematika", waktu: "08:00 - 09:30" },
-    { hari: "Selasa", mataPelajaran: "Fisika", waktu: "10:00 - 11:30" },
-  ];
-  return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Jadwal Belajar</h2>
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Hari
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Mata Pelajaran
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Waktu
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {jadwal.map((item, index) => (
-              <tr key={index} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap">{item.hari}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {item.mataPelajaran}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">{item.waktu}</td>
-              </tr>
+      <div
+        className={`
+        fixed lg:static inset-y-0 left-0 z-20
+        transform transition-all duration-300 ease-in-out
+        w-64 bg-white border-r h-screen shadow-sm
+        lg:translate-x-0 ${
+          isOpen
+            ? "translate-x-0 opacity-100"
+            : "-translate-x-full opacity-0 lg:opacity-100"
+        }
+      `}
+      >
+        <div className="p-6">
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-gray-800">Dashboard Siswa</h2>
+          </div>
+          <div className="flex flex-col gap-2">
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActivePage(item.id);
+                  if (window.innerWidth < 1024) setIsOpen(false);
+                }}
+                className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                  activePage === item.id
+                    ? "bg-blue-500 text-white"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
+              >
+                {item.icon}
+                {item.label}
+              </button>
             ))}
-          </tbody>
-        </table>
+          </div>
+        </div>
       </div>
-    </div>
+
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden transition-opacity duration-300"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+    </>
   );
 };
 
-<KehadiranSiswa />;
-
-<ProfileSiswa />;
 const KonselingBK = () => {
   const [messages, setMessages] = useState([
     {
@@ -209,13 +208,13 @@ const DashboardSiswaPage = () => {
   const [activePage, setActivePage] = useState("profile");
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 relative">
       <Sidebar setActivePage={setActivePage} activePage={activePage} />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col w-full lg:ml-0">
         <Header />
         <div className="p-6 flex-1 overflow-auto">
           {activePage === "profile" && <ProfileSiswa />}
-          {activePage === "jadwal" && <JadwalBelajar />}
+          {activePage === "jadwal" && <JadwalSiswa />}
           {activePage === "kehadiran" && <KehadiranSiswa />}
           {activePage === "bk" && <KonselingBK />}
         </div>
