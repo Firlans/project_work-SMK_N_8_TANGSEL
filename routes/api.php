@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AbsenController;
 use App\Http\Controllers\JadwalController;
+use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Middleware\JwtMiddleware;
 use App\Http\Middleware\RoleMiddleware;
@@ -15,9 +16,9 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     Route::get('user', [AuthController::class, 'getUser']);
     Route::post('logout', [AuthController::class, 'logout']);
     Route::middleware([RoleMiddleware::class])->group(function () {
-        Route::get('/profile', function(){});
+        Route::get('/profile', function () { });
     });
-    Route::middleware([SiswaMiddleware::class])->group(function(){
+    Route::middleware([SiswaMiddleware::class])->group(function () {
 
 
     });
@@ -34,7 +35,7 @@ Route::delete('/absen/{id_kelas}', [AbsenController::class, 'deleteKehadiran']);
 // route mata_pelajaran
 Route::get('/mata-pelajaran', [MataPelajaranController::class, 'getAllMataPelajaran']);
 Route::post('/mata-pelajaran', [MataPelajaranController::class, 'createMataPelajaran']);
-Route::put("/mata-pelajaran/{id_mata_pelajaran}", [MataPelajaranController::class, 'updateMataPelajaran']); // Changed from POST to PUT
+Route::put("/mata-pelajaran/{id_mata_pelajaran}", [MataPelajaranController::class, 'updateMataPelajaran']);
 Route::delete("/mata-pelajaran/{id_mata_pelajaran}", [MataPelajaranController::class, 'deleteMataPelajaran']);
 
 // route jadwal
@@ -45,3 +46,9 @@ Route::get('/jadwal/hari', [JadwalController::class, 'getJadwalBySiswaHari']);
 Route::post('/jadwal', [JadwalController::class, 'createJadwal']);
 Route::put('/jadwal/{id_jadwal}', [JadwalController::class, 'updateJadwal']);
 Route::delete('/jadwal/{id_jadwal}', [JadwalController::class, 'deleteJadwal']);
+
+// route kelas
+Route::get('/kelas', [KelasController::class, 'getAllKelas']);
+Route::post('/kelas', [KelasController::class, 'createKelas']);
+Route::put('/kelas/{id_kelas}', [KelasController::class, 'updateKelas']);
+Route::delete('/kelas/{id_kelas}', [KelasController::class, 'deleteKelas']);
