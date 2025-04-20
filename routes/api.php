@@ -5,15 +5,15 @@ use App\Http\Controllers\AbsenController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MataPelajaranController;
+use App\Http\Controllers\UserController;
 use App\Http\Middleware\JwtMiddleware;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\SiswaMiddleware;
 
+
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-
 Route::middleware([JwtMiddleware::class])->group(function () {
-    Route::get('user', [AuthController::class, 'getUser']);
     Route::post('logout', [AuthController::class, 'logout']);
     Route::middleware([RoleMiddleware::class])->group(function () {
         Route::get('/profile', function () { });
@@ -49,6 +49,14 @@ Route::delete('/jadwal/{id_jadwal}', [JadwalController::class, 'deleteJadwal']);
 
 // route kelas
 Route::get('/kelas', [KelasController::class, 'getAllKelas']);
+Route::get('/kelas/{id_kelas}', [KelasController::class, 'getKelasById']); // Add this new route
 Route::post('/kelas', [KelasController::class, 'createKelas']);
 Route::put('/kelas/{id_kelas}', [KelasController::class, 'updateKelas']);
 Route::delete('/kelas/{id_kelas}', [KelasController::class, 'deleteKelas']);
+
+// route user
+Route::get('user', [UserController::class, 'getAllUser']);
+Route::get('user/{id}', [UserController::class, 'getUserById']);
+Route::post('user', [UserController::class, 'createUser']);
+Route::put('user/{id}', [UserController::class, 'updateUser']);
+Route::delete('user/{id}', [UserController::class, 'deleteUser']);

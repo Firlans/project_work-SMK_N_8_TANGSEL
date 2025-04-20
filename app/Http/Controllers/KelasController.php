@@ -27,6 +27,29 @@ class KelasController extends Controller
             return $this->handleError($e, 'getAllKelas');
         }
     }
+
+    public function getKelasById($id_kelas)
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            $kelas = Kelas::where('id', $id_kelas)->first();
+
+            if (!$kelas) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Class not found',
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Class found',
+                'data' => $kelas,
+            ], 200);
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'getKelasById');
+        }
+    }
     public function createKelas(Request $request)
     {
         $data = $request->all();
