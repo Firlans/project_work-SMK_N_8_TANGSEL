@@ -1,19 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axiosClient from "../../axiosClient.js";
-
-// Format tanggal ke bahasa Indonesia
-const formatTanggal = (tanggal) => {
-  const d = new Date(tanggal);
-  return d.toLocaleDateString("id-ID", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
-
-// Potong waktu hanya ambil jam:menit
-const formatWaktu = (waktu) => waktu.slice(0, 5);
+import { formatTanggal, formatWaktu } from "../../utils/dateFormatter.js";
 
 const KehadiranSiswa = () => {
   const [schedulesData, setSchedulesData] = useState([]);
@@ -24,38 +11,26 @@ const KehadiranSiswa = () => {
   const [idSiswa, setIdSiswa] = useState(null);
 
   useEffect(() => {
-    const fetchKehadiran = async () => {
+    const fetchKehadiranByIdSiswa = async () => {
       try {
         const profileRes = await axiosClient.get("/profile");
         const id = profileRes.data.data.id;
+        console.log("Profile ID:", id);
+        setIdSiswa(id);
 
-        setIdSiswa(id); // Simpan ID siswa ke state
-
-        // Validasi ID siswa
         if (!id) {
           throw new Error("ID siswa tidak tersedia");
         }
 
-        // Ambil data kehadiran berdasarkan id_siswa
         const response = await axiosClient.get(`/absen/siswa?id_siswa=${id}`);
-        const rawData = response.data.data;
-        console.log("Data Kehadiran:", response.data); // Debugging
+        console.log("Raw Kehadiran Data:", response.data);
+        const kehadiranData = response.data.data;
 
-        // Filter data jadwal yang valid - Dibutuhkan untuk menampilkan semua data ketika tidak ada filter
-        const validData = rawData.filter(
-          (schedule) =>
-            schedule.jadwal &&
-            schedule.jadwal.mata_pelajaran &&
-            schedule.absensi &&
-            schedule.absensi.length > 0
-        );
-
-        setSchedulesData(validData);
-
-        // Ambil daftar mata pelajaran unik - Dibutuhkan untuk mengisi opsi dropdown
-        const uniqueMapel = validData.reduce((acc, schedule) => {
-          const mapel = schedule.jadwal.mata_pelajaran;
-          if (!acc.some((item) => item.id === mapel.id)) {
+        // Fix unique mata pelajaran collection
+        const uniqueMapel = kehadiranData.reduce((acc, item) => {
+          const mapel = item.jadwal?.mata_pelajaran;
+          // console.log("Processing Mapel:", mapel);
+          if (mapel && !acc.some((m) => m.id === mapel.id)) {
             acc.push({
               id: mapel.id,
               nama: mapel.nama_pelajaran,
@@ -63,10 +38,17 @@ const KehadiranSiswa = () => {
           }
           return acc;
         }, []);
+        console.log("Unique Mapel List:", uniqueMapel);
 
+        setSchedulesData(kehadiranData);
         setMataPelajaran(uniqueMapel);
         setLoading(false);
       } catch (error) {
+        console.error("Fetch Error Details:", {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        });
         console.error(
           "Gagal mengambil data kehadiran:",
           error.response?.data || error.message
@@ -75,23 +57,56 @@ const KehadiranSiswa = () => {
       }
     };
 
-    fetchKehadiran();
+    fetchKehadiranByIdSiswa();
   }, []);
 
   const fetchKehadiranByMapel = async (idMapel) => {
     try {
       setLoading(true);
-      const response = await axiosClient.get(
-        `/absen/mata_pelajaran?id_mata_pelajaran=${idMapel}&id_siswa=${idSiswa}`
+
+      // Get jadwal data
+      const jadwalResponse = await axiosClient.get(
+        `/jadwal/mata-pelajaran?id_siswa=${idSiswa}&id_mata_pelajaran=${idMapel}`
+      );
+      console.log("Jadwal Response:", jadwalResponse.data);
+
+      // Get kehadiran data
+      const kehadiranResponse = await axiosClient.get(
+        `/absen/mata-pelajaran?id_siswa=${idSiswa}&id_mata_pelajaran=${idMapel}`
+      );
+      console.log("Kehadiran Response:", kehadiranResponse.data);
+
+      // Get selected mata pelajaran details
+      const selectedMapelDetails = mataPelajaran.find(
+        (m) => m.id === parseInt(idMapel)
       );
 
-      const mapelName =
-        response.data.data[0]?.kelas?.mata_pelajaran?.nama_pelajaran ||
-        "Unknown";
-      console.log(`Data Kehadiran by Mapel: ${mapelName}`, response.data);
-      setKehadiranByMapel(response.data.data);
+      // Transform data to include jadwal information
+      const transformedData = kehadiranResponse.data.data.map((item) => {
+        const matchingJadwal = jadwalResponse.data.data.find(
+          (j) => j.id_mata_pelajaran === parseInt(idMapel)
+        );
+
+        return {
+          ...item,
+          jadwal: matchingJadwal
+            ? {
+                id: matchingJadwal.id,
+                jam_mulai: matchingJadwal.jam_mulai,
+                jam_selesai: matchingJadwal.jam_selesai,
+                mata_pelajaran: {
+                  id: parseInt(idMapel),
+                  nama_pelajaran: selectedMapelDetails?.nama,
+                },
+              }
+            : null,
+        };
+      });
+
+      console.log("Final Transformed Data:", transformedData);
+      setKehadiranByMapel(transformedData);
     } catch (error) {
-      console.error("Gagal mengambil data kehadiran mata pelajaran:", error);
+      console.error("Fetch By Mapel Error:", error);
     } finally {
       setLoading(false);
     }
@@ -100,29 +115,23 @@ const KehadiranSiswa = () => {
   // Handle perubahan mata pelajaran
   const handleMapelChange = (e) => {
     const value = e.target.value;
+    console.log("Selected Mapel Value:", value);
     setSelectedMapel(value);
     if (value) {
       fetchKehadiranByMapel(value);
     } else {
+      console.log("Clearing Kehadiran By Mapel");
       setKehadiranByMapel(null);
     }
   };
 
   // Filter data berdasarkan mapel yang dipilih
   const filteredData = selectedMapel
-    ? schedulesData.filter(
-        (schedule) =>
-          schedule.jadwal.mata_pelajaran.id === parseInt(selectedMapel)
-      )
+    ? schedulesData.filter((item) => {
+        // console.log("Filtering item:", item);
+        return item.jadwal?.mata_pelajaran?.id === parseInt(selectedMapel);
+      })
     : schedulesData;
-
-  // Flatten attendance data untuk ditampilkan
-  const flattenedAttendanceData = filteredData.flatMap((schedule) =>
-    schedule.absensi.map((attendance) => ({
-      ...attendance,
-      jadwal: schedule.jadwal,
-    }))
-  );
 
   if (loading) {
     return (
@@ -132,136 +141,132 @@ const KehadiranSiswa = () => {
     );
   }
 
+  // The data is already in the correct format from the API
+
+  const renderDefaultContent = () => (
+    <div className="overflow-x-auto">
+      <table className="min-w-full bg-white border border-gray-300">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="py-2 px-4 border-b">Tanggal</th>
+            <th className="py-2 px-4 border-b">Mata Pelajaran</th>
+            <th className="py-2 px-4 border-b">Jam</th>
+            <th className="py-2 px-4 border-b">Status</th>
+            <th className="py-2 px-4 border-b">Keterangan</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredData.length > 0 ? (
+            filteredData.map((item, index) => (
+              <tr key={`${item.id}-${index}`} className="hover:bg-gray-50">
+                <td className="py-2 px-4 border-b">
+                  {formatTanggal(item.tanggal)}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  {item.jadwal?.mata_pelajaran?.nama_pelajaran || "-"}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  {item.jadwal
+                    ? `${formatWaktu(item.jadwal.jam_mulai)} - ${formatWaktu(
+                        item.jadwal.jam_selesai
+                      )}`
+                    : "-"}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  <span
+                    className={`px-2 py-1 rounded-full text-sm ${
+                      item.status === "Hadir"
+                        ? "bg-green-100 text-green-800"
+                        : item.status === "Sakit"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : item.status === "Izin"
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </td>
+                <td className="py-2 px-4 border-b">{item.keterangan || "-"}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5" className="py-4 text-center text-gray-500">
+                Tidak ada data kehadiran.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+
   const renderKehadiranContent = () => {
     if (kehadiranByMapel) {
-      if (Array.isArray(kehadiranByMapel)) {
-        return kehadiranByMapel
-          .map((kelasData) => {
-            // Filter hanya kehadiran siswa yang sedang login
-            const kehadiranSiswa = kelasData.kehadiran.filter(
-              (item) => item.siswa.id === idSiswa
-            );
-
-            if (kehadiranSiswa.length === 0) return null;
-
-            return (
-              <div key={`kelas-${kelasData.kelas.id}`} className="mb-6">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full bg-white border border-gray-300">
-                    <thead>
-                      <tr className="bg-gray-100">
-                        <th className="py-2 px-4 border-b">Tanggal</th>
-                        <th className="py-2 px-4 border-b">Mata Pelajaran</th>
-                        <th className="py-2 px-4 border-b">Jam</th>
-                        <th className="py-2 px-4 border-b">Status</th>
-                        <th className="py-2 px-4 border-b">Keterangan</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {kehadiranSiswa.map((item, index) => (
-                        <tr
-                          key={`${item.id || index}`}
-                          className="hover:bg-gray-50"
-                        >
-                          <td className="py-2 px-4 border-b">
-                            {formatTanggal(item.tanggal)}
-                          </td>
-                          <td className="py-2 px-4 border-b">
-                            {kelasData.kelas.mata_pelajaran.nama_pelajaran}
-                          </td>
-                          <td className="py-2 px-4 border-b">
-                            {formatWaktu(kelasData.jadwal.jam_mulai)} -{" "}
-                            {formatWaktu(kelasData.jadwal.jam_selesai)}
-                          </td>
-                          <td className="py-2 px-4 border-b">
-                            <span
-                              className={`px-2 py-1 rounded-full text-sm ${
-                                item.status === "Hadir"
-                                  ? "bg-green-100 text-green-800"
-                                  : item.status === "Sakit"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : item.status === "Izin"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : "bg-red-100 text-red-800"
-                              }`}
-                            >
-                              {item.status}
-                            </span>
-                          </td>
-                          <td className="py-2 px-4 border-b">
-                            {item.keterangan || "-"}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            );
-          })
-          .filter(Boolean);
-      }
-      console.error("Data kehadiran bukan array:", kehadiranByMapel);
-      return <div>Format data tidak sesuai</div>;
-    }
-
-    return (
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="py-2 px-4 border-b">Tanggal</th>
-              <th className="py-2 px-4 border-b">Mata Pelajaran</th>
-              <th className="py-2 px-4 border-b">Jam</th>
-              <th className="py-2 px-4 border-b">Status</th>
-              <th className="py-2 px-4 border-b">Keterangan</th>
-            </tr>
-          </thead>
-          <tbody>
-            {flattenedAttendanceData.length > 0 ? (
-              flattenedAttendanceData.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="py-2 px-4 border-b">
-                    {formatTanggal(item.tanggal)}
-                  </td>
-                  <td className="py-2 px-4 border-b">
-                    {item.jadwal.mata_pelajaran.nama_pelajaran}
-                  </td>
-                  <td className="py-2 px-4 border-b">
-                    {formatWaktu(item.jadwal.jam_mulai)} -{" "}
-                    {formatWaktu(item.jadwal.jam_selesai)}
-                  </td>
-                  <td className="py-2 px-4 border-b">
-                    <span
-                      className={`px-2 py-1 rounded-full text-sm ${
-                        item.status === "Hadir"
-                          ? "bg-green-100 text-green-800"
-                          : item.status === "Sakit"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : item.status === "Izin"
-                          ? "bg-blue-100 text-blue-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  </td>
-                  <td className="py-2 px-4 border-b">
-                    {item.keterangan || "-"}
+      return (
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="py-2 px-4 border-b">Tanggal</th>
+                <th className="py-2 px-4 border-b">Mata Pelajaran</th>
+                <th className="py-2 px-4 border-b">Jam</th>
+                <th className="py-2 px-4 border-b">Status</th>
+                <th className="py-2 px-4 border-b">Keterangan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {kehadiranByMapel.length > 0 ? (
+                kehadiranByMapel.map((item, index) => (
+                  <tr key={`${item.id}-${index}`} className="hover:bg-gray-50">
+                    <td className="py-2 px-4 border-b">
+                      {formatTanggal(item.tanggal)}
+                    </td>
+                    <td className="py-2 px-4 border-b">
+                      {item.jadwal?.mata_pelajaran?.nama_pelajaran || "-"}
+                    </td>
+                    <td className="py-2 px-4 border-b">
+                      {item.jadwal
+                        ? `${formatWaktu(
+                            item.jadwal.jam_mulai
+                          )} - ${formatWaktu(item.jadwal.jam_selesai)}`
+                        : "-"}
+                    </td>
+                    <td className="py-2 px-4 border-b">
+                      <span
+                        className={`px-2 py-1 rounded-full text-sm ${
+                          item.status === "Hadir"
+                            ? "bg-green-100 text-green-800"
+                            : item.status === "Sakit"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : item.status === "Izin"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="py-2 px-4 border-b">
+                      {item.keterangan || "-"}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="py-4 text-center text-gray-500">
+                    Tidak ada data kehadiran.
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="py-4 text-center text-gray-500">
-                  Tidak ada data kehadiran.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    );
+              )}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+
+    return renderDefaultContent();
   };
 
   return (
