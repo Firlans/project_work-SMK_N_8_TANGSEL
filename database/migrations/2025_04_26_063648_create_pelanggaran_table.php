@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('foto_path')->nullable();
             $table->string('deskripsi');
             $table->enum('status', ['pengajuan', 'ditolak', 'penindakan']);
-            $table->foreignId('pelapor')->constrained('siswa')->onDelete('cascade');
+            $table->foreignId('pelapor')->constrained('users')->onDelete('cascade');
             $table->foreignId('terlapor')->constrained('siswa')->onDelete('cascade');
             $table->timestamps();
         });

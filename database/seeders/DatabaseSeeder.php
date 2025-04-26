@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             WaliMuridSeeder::class,
             JadwalSeeder::class,
             KehadiranSeeder::class,
+            PrestasiSeeder::class,
+            PelanggaranSeeder::class,
         ]);
     }
 }
