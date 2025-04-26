@@ -53,7 +53,7 @@ class GuruSeeder extends Seeder
 
         foreach ($staticProfiles as $profile) {
             $user = User::where('email', $profile['email'])->first();
-            if ($user) {
+            if ($user && !Guru::where('user_id', $user->id)->exists()) {
                 Guru::create([
                     'user_id' => $user->id,
                     'mata_pelajaran_id' => $profile['mata_pelajaran_id'],
@@ -68,7 +68,9 @@ class GuruSeeder extends Seeder
         }
 
         // Seed Admin users
-        $admins = User::where('role', 'admin')->get();
+        $admins = User::where('role', 'admin')
+            ->whereNotIn('id', Guru::pluck('user_id'))
+            ->get();
         foreach ($admins as $admin) {
             Guru::create([
                 'user_id' => $admin->id,
@@ -83,7 +85,9 @@ class GuruSeeder extends Seeder
         }
 
         // Seed Counselor users
-        $conselors = User::where('role', 'konselor')->get();
+        $conselors = User::where('role', 'konselor')
+            ->whereNotIn('id', Guru::pluck('user_id'))
+            ->get();
         foreach ($conselors as $conselor) {
             Guru::create([
                 'user_id' => $conselor->id,
@@ -98,7 +102,9 @@ class GuruSeeder extends Seeder
         }
 
         // Seed Teacher users
-        $teachers = User::where('role', 'guru')->get();
+        $teachers = User::where('role', 'guru')
+            ->whereNotIn('id', Guru::pluck('user_id'))
+            ->get();
         foreach ($teachers as $teacher) {
             Guru::create([
                 'user_id' => $teacher->id,

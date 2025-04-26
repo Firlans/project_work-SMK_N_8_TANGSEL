@@ -15,7 +15,7 @@ class SiswaSeeder extends Seeder
 
         // Create static test profile
         $testUser = User::where('email', 'siswa@test.com')->first();
-        if ($testUser) {
+        if ($testUser && !Siswa::where('user_id', $testUser->id)->exists()) {
             Siswa::create([
                 'user_id' => $testUser->id,
                 'nama_lengkap' => 'Siswa Test',
@@ -30,8 +30,12 @@ class SiswaSeeder extends Seeder
             ]);
         }
 
-        // Get all users with siswa role
-        $siswaUsers = User::where('role', 'siswa')->get();
+        // Get all users with siswa role that don't have a student record yet
+        $siswaUsers = User::where('role', 'siswa')
+            ->whereNotIn('id', function($query) {
+                $query->select('user_id')->from('siswa');
+            })
+            ->get();
 
         foreach ($siswaUsers as $user) {
             Siswa::create([
