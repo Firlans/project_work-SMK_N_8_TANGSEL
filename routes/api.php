@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AbsenController;
+use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MataPelajaranController;
@@ -68,6 +69,13 @@ Route::get('/siswa', [SiswaController::class, 'getAllSiswa']);
 Route::get('/siswa/{id}', [SiswaController::class, 'getSiswaById']);
 Route::put('/siswa/{id}', [SiswaController::class, 'updateSiswa']);
 Route::delete('/siswa/{id}', [SiswaController::class, 'deleteSiswa']);
+
+// route guru
+Route::get('/guru', [GuruController::class, 'getAllGuru']);
+Route::get('/guru/{id}', [GuruController::class, 'getGuruById']);
+Route::get('/guru/mata-pelajaran/{id}', [GuruController::class, 'getGuruByMataPelajaranId']);
+Route::put('/guru/{id}', [GuruController::class, 'updateGuru']);
+Route::delete('/guru/{id}', [GuruController::class, 'deleteGuru']);
 
 // route orang tua
 Route::get('/wali-murid', [WaliMuridController::class, 'getAllWaliMurid']);

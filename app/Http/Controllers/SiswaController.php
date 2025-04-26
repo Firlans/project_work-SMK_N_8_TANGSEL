@@ -70,34 +70,6 @@ class SiswaController extends Controller
             return $this->handleError($e, 'getSiswaById');
         }
     }
-    public function createSiswa(Request $request)
-    {
-        try {
-            $data = $request->all();
-            $validationResult = $this->validation($data);
-            if ($validationResult !== true) {
-                return $validationResult;
-            }
-
-            $isExistingUserId = Siswa::where('user_id', $data['user_id'])->exists();
-            if($isExistingUserId) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'User ID already exists'
-                ], 422);
-            }
-
-            $siswa = Siswa::create($data);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Siswa created successfully',
-                'data' => $siswa
-            ], 201);
-        } catch (\Exception $e) {
-            return $this->handleError($e, 'createSiswa');
-        }
-    }
     public function updateSiswa(Request $request, $id)
     {
         try {
@@ -137,32 +109,10 @@ class SiswaController extends Controller
             return $this->handleError($e, 'updateSiswa');
         }
     }
-    public function deleteSiswa($id)
-    {
-        try {
-            $siswa = Siswa::find($id);
 
-            if (!$siswa) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Siswa not found'
-                ], 404);
-            }
-
-            $siswa->delete();
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Siswa deleted successfully'
-            ], 200);
-        } catch (\Exception $e) {
-            return $this->handleError($e, 'deleteSiswa');
-        }
-    }
     public function validation($data, $id = null)
     {
         $validator = Validator::make($data, [
-            'user_id' => 'required|exists:users,id',
             'nama_lengkap' => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:L,P',
             'tanggal_lahir' => 'required|date',
