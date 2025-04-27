@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Guru;
+use App\Models\User;
 use App\Traits\ApiResponseHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class GuruController extends Controller
+class ConselorController extends Controller
 {
     use ApiResponseHandler;
 
@@ -17,121 +18,104 @@ class GuruController extends Controller
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();
-            $guru = Guru::with('user')->where('user_id', $user->id)->first();
+            $conselor = User::with(['siswa', 'guru'])->where('id', $user->id)->first();
 
-            if (!$guru) {
+            if (!$conselor) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Guru not found'
+                    'message' => 'Conselor not found'
                 ], 404);
             }
 
             return response()->json([
                 'status' => 'success',
                 'message' => "Profile retrieved successfully",
-                'data' => $guru
+                'data' => $conselor
             ], 200);
         } catch (\Exception $e) {
             return $this->handleError($e, 'profile');
         }
     }
 
-    public function getAllGuru()
+    public function getAllConselor()
     {
         try {
-            $guru = Guru::select('guru.*')
+            $conselors = Guru::select('guru.*')
                 ->join('users', 'users.id', '=', 'guru.user_id')
-                ->where('users.role', '=', 'guru')
+                ->where('role', '=', 'konselor')
                 ->get();
 
             return response()->json([
                 'status' => 'success',
-                'message' => $guru->isEmpty() ? 'No guru found' : 'Guru retrieved successfully',
-                'data' => $guru
+                'message' => $conselors->isEmpty() ? 'No conselor found' : 'Conselors retrieved successfully',
+                'data' => $conselors
             ], 200);
         } catch (\Exception $e) {
-            return $this->handleError($e, 'getAllGuru');
+            return $this->handleError($e, 'getAllConselor');
         }
     }
 
-    public function getGuruByMataPelajaranId($id)
+    public function getConselorById($id)
     {
         try {
-            $guru = Guru::select('guru.*')
+            $conselor = Guru::select('guru.*')
                 ->join('users', 'users.id', '=', 'guru.user_id')
-                ->where('users.role', '=', 'guru')
-                ->where('mata_pelajaran_id', $id)
-                ->get();
+                ->where('users.role', '=', 'konselor')
+                ->where('guru.id', $id)
+                ->first();
 
-            if ($guru->isEmpty()) {
+            if (!$conselor) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Guru not found'
+                    'message' => 'Conselor not found'
                 ], 404);
             }
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Guru retrieved successfully',
-                'data' => $guru
+                'message' => 'Conselor retrieved successfully',
+                'data' => $conselor
             ], 200);
         } catch (\Exception $e) {
-            return $this->handleError($e, 'getGuruByMataPelajaranId');
+            return $this->handleError($e, 'getConselorById');
         }
     }
 
-    public function getGuruById($id)
+    public function updateConselor(Request $request, $id)
     {
         try {
-            $guru = Guru::select('guru.*')
+            $conselor =Guru::select('guru.*')
                 ->join('users', 'users.id', '=', 'guru.user_id')
-                ->where('users.role', '=', 'guru')
-                ->where('guru.id', $id)->first();
+                ->where('users.role', '=', 'konselor')
+                ->where('guru.id', $id)
+                ->first();
 
-            if (!$guru) {
+            if (!$conselor) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Guru not found'
+                    'message' => 'Conselor not found'
                 ], 404);
             }
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Guru retrieved successfully',
-                'data' => $guru
-            ], 200);
-        } catch (\Exception $e) {
-            return $this->handleError($e, 'getGuruById');
-        }
-    }
-
-    public function updateGuru(Request $request, $id)
-    {
-        try {
-            $guru = Guru::find($id);
-
-            if (!$guru) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Guru not found'
-                ], 404);
-            }
-
-            $data = $request->except('user_id');
+            $data = $request->except('role');
             $validationResult = $this->validation($data, $id);
             if ($validationResult !== true) {
                 return $validationResult;
             }
 
-            $guru->update($data);
+            if (isset($data['password'])) {
+                $data['password'] = bcrypt($data['password']);
+            }
+
+            $conselor->update($data);
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Guru updated successfully',
-                'data' => $guru
+                'message' => 'Conselor updated successfully',
+                'data' => $conselor
             ], 200);
         } catch (\Exception $e) {
-            return $this->handleError($e, 'updateGuru');
+            return $this->handleError($e, 'updateConselor');
         }
     }
 
@@ -141,6 +125,7 @@ class GuruController extends Controller
             'nip' => 'required|string|max:20|unique:guru,nip' . ($id ? ',' . $id : ''),
             'nama' => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:L,P',
+            'tanggal_lahir' => 'required|date|before:today',
             'alamat' => 'required|string',
             'no_telp' => 'required|string|max:15',
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id'

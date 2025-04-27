@@ -2,10 +2,13 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AbsenController;
+use App\Http\Controllers\ConselorController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MataPelajaranController;
+use App\Http\Controllers\PelanggaranController;
+use App\Http\Controllers\PrestasiController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WaliMuridController;
@@ -77,6 +80,11 @@ Route::get('/guru/mata-pelajaran/{id}', [GuruController::class, 'getGuruByMataPe
 Route::put('/guru/{id}', [GuruController::class, 'updateGuru']);
 Route::delete('/guru/{id}', [GuruController::class, 'deleteGuru']);
 
+// route konselor
+Route::get('/konselor', [ConselorController::class, 'getAllConselor']);
+Route::get('/konselor/{id}', [ConselorController::class, 'getConselorById']);
+Route::put('/konselor/{id}', [ConselorController::class, 'updateConselor']);
+
 // route orang tua
 Route::get('/wali-murid', [WaliMuridController::class, 'getAllWaliMurid']);
 Route::get('/wali-murid/{id}', [WaliMuridController::class, 'getWaliMuridById']);
@@ -84,3 +92,15 @@ Route::get('/wali-murid/siswa/{id_siswa}', [WaliMuridController::class, 'getWali
 Route::post('/wali-murid', [WaliMuridController::class, 'createWaliMurid']);
 Route::put('/wali-murid/{id}', [WaliMuridController::class, 'updateWaliMurid']);
 Route::delete('/wali-murid/{id}', [WaliMuridController::class, 'deleteWaliMurid']);
+
+
+
+
+// // route pelanggaran
+// Route::get('/pelanggaran', [PelanggaranController::class, 'getAllPelanggaran']);
+// Route::get('/pelanggaran/{id}', [PelanggaranController::class, 'getPelanggaranById']);
+// Route::get('/pelanggaran/pelapor/{user_id}', [PelanggaranController::class, 'getPelanggaranByUserId']);
+// Route::get('/pelanggaran/terlapor/{id_siswa}', [PelanggaranController::class, 'getPelanggaranBySiswaId']);
+
+// // route prestasi
+// Route::get('/prestasi', [PrestasiController::class, 'getAllPrestasi']);

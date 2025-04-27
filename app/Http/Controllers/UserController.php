@@ -217,8 +217,6 @@ class UserController extends Controller
             'password' => $id ? 'nullable|string|min:8' : 'required|string|min:8',
             'role' => 'required|in:admin,konselor,guru,siswa',
             'is_active' => 'boolean',
-
-            // Profile attributes
             'profile.jenis_kelamin' => 'nullable|in:L,P',
             'profile.tanggal_lahir' => 'nullable|date',
             'profile.alamat' => 'nullable|string',
