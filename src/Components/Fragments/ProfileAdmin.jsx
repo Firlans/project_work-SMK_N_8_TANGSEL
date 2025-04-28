@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../../axiosClient";
 import Button from "../Elements/Button";
+import { formatTanggal } from "../../utils/dateFormatter";
 
 const ProfileAdmin = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -97,15 +98,15 @@ const ProfileAdmin = () => {
                 : "Perempuan"}
             </span>
           </div>
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Tempat, Tanggal Lahir</span>
-            <span className="font-medium">
-              {profileData.data.tanggal_lahir}
-            </span>
-          </div>
         </div>
         <div className="space-y-4">
           {/* Editable fields */}
+          <div className="flex flex-col">
+            <span className="text-sm text-gray-500">Tempat, Tanggal Lahir</span>
+            <span className="font-medium">
+              {formatTanggal(profileData.data.tanggal_lahir)}
+            </span>
+          </div>
           <div className="flex flex-col">
             <span className="text-sm text-gray-500">Alamat</span>
             {isEditing ? (
@@ -119,21 +120,6 @@ const ProfileAdmin = () => {
               />
             ) : (
               <span className="font-medium">{profileData.data.alamat}</span>
-            )}
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-500">Nomor Telepon</span>
-            {isEditing ? (
-              <input
-                type="tel"
-                value={editedData.no_telp}
-                onChange={(e) =>
-                  setEditedData({ ...editedData, no_telp: e.target.value })
-                }
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            ) : (
-              <span className="font-medium">{profileData.data.no_telp}</span>
             )}
           </div>
           <div className="flex flex-col">
