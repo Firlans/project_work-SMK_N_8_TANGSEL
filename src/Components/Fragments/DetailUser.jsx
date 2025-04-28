@@ -1,0 +1,78 @@
+import React, { useState, useEffect } from "react";
+import axiosClient from "../../axiosClient";
+
+const DetailUser = ({ user, onClose }) => {
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await axiosClient.get(`/user/${user.id}`);
+        setUserData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserDetails();
+  }, [user.id]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white p-6 rounded-lg w-full max-w-md">
+        <h2 className="text-xl font-bold mb-4">User Details</h2>
+        <div className="space-y-4">
+          <div>
+            <label className="font-bold">Name:</label>
+            <p>{userData.user.name}</p>
+          </div>
+          <div>
+            <label className="font-bold">Email:</label>
+            <p>{userData.user.email}</p>
+          </div>
+          <div>
+            <label className="font-bold">Role:</label>
+            <p className="capitalize">{userData.user.role}</p>
+          </div>
+          {userData.profile && (
+            <>
+              <div>
+                <label className="font-bold">Gender:</label>
+                <p>
+                  {userData.profile.jenis_kelamin === "L"
+                    ? "Laki-laki"
+                    : "Perempuan"}
+                </p>
+              </div>
+              <div>
+                <label className="font-bold">Phone:</label>
+                <p>{userData.profile.no_telp}</p>
+              </div>
+              <div>
+                <label className="font-bold">Address:</label>
+                <p>{userData.profile.alamat}</p>
+              </div>
+            </>
+          )}
+        </div>
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-500 text-white rounded"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DetailUser;
