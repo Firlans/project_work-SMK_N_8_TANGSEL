@@ -17,28 +17,40 @@ if (token) {
 
 // Interceptor untuk menangani token expired
 axiosClient.interceptors.response.use(
-  (response) => response, // Jika sukses, langsung kembalikan response
+  (response) => response,
   (error) => {
     if (error.response) {
-      const errorMessage = error.response.data.status;
+      const errorStatus = error.response.data.status;
 
-      // Jika token expired, hapus token dan logout otomatis
-      if (error.response.status === 401 && errorMessage === "Token is Expired") {
-        console.error("Token expired, logging out...");
+      // Handle all token-related errors
+      if (
+        error.response.status === 401 &&
+        (errorStatus === "Token is Invalid" ||
+          errorStatus === "Token is Expired" ||
+          errorStatus === "Authorization Token not found")
+      ) {
+        console.error("Token error:", errorStatus);
 
+        // Clear authentication
         Cookies.remove("token");
-        window.location.href = "/login"; // Redirect hanya jika token expired
+        delete axiosClient.defaults.headers.common["Authorization"];
+
+        // Redirect to login
+        window.location.href = "/";
+        return Promise.reject(error);
       }
 
-      // Jika hanya login gagal, JANGAN hapus token & redirect
-      if (error.response.status === 401 && errorMessage === "Invalid credentials") {
+      // Handle invalid credentials separately
+      if (
+        error.response.status === 401 &&
+        errorStatus === "Invalid credentials"
+      ) {
         console.warn("Login gagal: Email atau password salah.");
-        return Promise.reject(error); // Teruskan error ke catch() di handleLogin
+        return Promise.reject(error);
       }
     }
-    return Promise.reject(error); // Tetap teruskan error lainnya
+    return Promise.reject(error);
   }
 );
-
 
 export default axiosClient;
