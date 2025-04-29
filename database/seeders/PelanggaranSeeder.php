@@ -27,7 +27,7 @@ class PelanggaranSeeder extends Seeder
             [
                 'nama_pelanggaran' => 'Membolos',
                 'deskripsi' => 'Tidak mengikuti pelajaran jam ke 3-4',
-                'status' => 'penindakan',
+                'status' => 'proses',
                 'pelapor' => 1,
                 'terlapor' => 3,
             ],

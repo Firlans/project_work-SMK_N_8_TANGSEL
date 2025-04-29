@@ -96,11 +96,14 @@ Route::delete('/wali-murid/{id}', [WaliMuridController::class, 'deleteWaliMurid'
 
 
 
-// // route pelanggaran
-// Route::get('/pelanggaran', [PelanggaranController::class, 'getAllPelanggaran']);
-// Route::get('/pelanggaran/{id}', [PelanggaranController::class, 'getPelanggaranById']);
-// Route::get('/pelanggaran/pelapor/{user_id}', [PelanggaranController::class, 'getPelanggaranByUserId']);
-// Route::get('/pelanggaran/terlapor/{id_siswa}', [PelanggaranController::class, 'getPelanggaranBySiswaId']);
+// route pelanggaran
+Route::get('/pelanggaran', [PelanggaranController::class, 'getAllPelanggaran']);
+Route::get('/pelanggaran/{id}', [PelanggaranController::class, 'getPelanggaranById']);
+Route::get('/pelanggaran/pelapor/{user_id}', [PelanggaranController::class, 'getPelanggaranByUserId']);
+Route::get('/pelanggaran/terlapor/{id_siswa}', [PelanggaranController::class, 'getPelanggaranBySiswaId']);
+Route::post('/pelanggaran', [PelanggaranController::class, 'createPelanggaran']);
+Route::put('/pelanggaran/{id}', [PelanggaranController::class, 'updatePelanggaran']);
+Route::delete('/pelanggaran/{id}', [PelanggaranController::class, 'deletePelanggaran']);
 
 // // route prestasi
 // Route::get('/prestasi', [PrestasiController::class, 'getAllPrestasi']);

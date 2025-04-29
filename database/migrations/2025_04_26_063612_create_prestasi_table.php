@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('prestasi', function (Blueprint $table) {
             $table->id();
             $table->string('nama_prestasi');
-            $table->string('foto_path')->nullable();
+            $table->string('nama_foto')->nullable();
             $table->string('deskripsi');
             $table->enum('status', ['pengajuan', 'ditolak', 'disetujui']);
             $table->foreignId('siswa_id')->constrained('siswa')->onDelete('cascade');

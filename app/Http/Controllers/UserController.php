@@ -34,7 +34,7 @@ class UserController extends Controller
     public function getUserById($id)
     {
         try {
-            $user = User::with(['siswa', 'guru'])->where('id', $id)->first();
+            $user = User::where('id', $id)->first();
 
             if (!$user) {
                 return response()->json([
@@ -46,10 +46,7 @@ class UserController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'User retrieved successfully',
-                'data' => [
-                    'user' => $user,
-                    'profile' => $user->siswa ?? $user->guru ?? null
-                ]
+                'data' => $user
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

@@ -141,6 +141,7 @@ class GuruController extends Controller
             'nip' => 'required|string|max:20|unique:guru,nip' . ($id ? ',' . $id : ''),
             'nama' => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:L,P',
+            'tanggal_lahir' => 'required|date|before:today',
             'alamat' => 'required|string',
             'no_telp' => 'required|string|max:15',
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id'

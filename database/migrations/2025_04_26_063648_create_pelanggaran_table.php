@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('pelanggaran', function (Blueprint $table) {
             $table->id();
             $table->string('nama_pelanggaran');
-            $table->string('foto_path')->nullable();
+            $table->string('nama_foto')->nullable();
             $table->string('deskripsi');
-            $table->enum('status', ['pengajuan', 'ditolak', 'penindakan']);
+            $table->enum('status', ['pengajuan', 'ditolak', 'proses', 'selesai']);
             $table->foreignId('pelapor')->constrained('users')->onDelete('cascade');
             $table->foreignId('terlapor')->constrained('siswa')->onDelete('cascade');
             $table->timestamps();
