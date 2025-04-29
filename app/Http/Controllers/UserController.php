@@ -72,7 +72,7 @@ class UserController extends Controller
             $userData = $validation['data'];
             $profileData = $validation['profile'];
             $userData['password'] = bcrypt($userData['password']);
-
+            var_dump($userData);
             $user = User::create($userData);
             $profile = null;
 
@@ -236,6 +236,7 @@ class UserController extends Controller
         }
 
         $validated = $validator->validated();
+
 
         // Separate user and profile data
         $profileData = isset($validated['profile']) ? $validated['profile'] : [];

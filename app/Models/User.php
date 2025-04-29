@@ -22,6 +22,8 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'role',
+        'is_active'
     ];
 
     /**
@@ -45,6 +47,25 @@ class User extends Authenticatable implements JWTSubject
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Listen to Siswa model updates
+        Siswa::updated(function ($siswa) {
+            if ($siswa->isDirty('nama')) {
+                $siswa->user()->update(['name' => $siswa->nama]);
+            }
+        });
+
+        // Listen to Guru model updates
+        Guru::updated(function ($guru) {
+            if ($guru->isDirty('nama')) {
+                $guru->user()->update(['name' => $guru->nama]);
+            }
+        });
     }
 
     public function siswa()

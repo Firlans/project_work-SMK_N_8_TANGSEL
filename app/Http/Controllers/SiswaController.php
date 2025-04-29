@@ -98,7 +98,15 @@ class SiswaController extends Controller
                 ], 422);
             }
 
+            // Update siswa data
             $siswa->update($data);
+
+            // Update related user's name
+            if (isset($data['nama_lengkap'])) {
+                $siswa->user()->update([
+                    'name' => $data['nama_lengkap']
+                ]);
+            }
 
             return response()->json([
                 'status' => 'success',
