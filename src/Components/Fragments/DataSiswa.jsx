@@ -3,8 +3,10 @@ import { FaEdit, FaTrash, FaEye, FaPlus } from "react-icons/fa";
 import axiosClient from "../../axiosClient";
 import EditSiswa from "./EditSiswa";
 import DetailSiswa from "../Layouts/DetailSiswaLayouts";
+import LoadingSpinner from "../Elements/Loading/LoadingSpinner";
 
 const DataSiswa = () => {
+  const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState([]);
   const [kelas, setKelas] = useState({});
   const [selectedKelas, setSelectedKelas] = useState("all");
@@ -16,6 +18,7 @@ const DataSiswa = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         // Fetch students
         const studentsResponse = await axiosClient.get("/siswa");
         setStudents(studentsResponse.data.data);
@@ -31,11 +34,17 @@ const DataSiswa = () => {
         console.log("[FetchData] Kelas Map:", kelasMap);
       } catch (error) {
         console.error("[FetchData] Error:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   // Sort students by name with nama_lengkap
   const sortedStudents = [...students].sort((a, b) => {
@@ -151,7 +160,7 @@ const DataSiswa = () => {
                     {kelas[student.id_kelas]?.nama_kelas || "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                  <button
+                    <button
                       onClick={() => handleDetail(student)}
                       className="text-blue-500 hover:text-blue-700"
                     >

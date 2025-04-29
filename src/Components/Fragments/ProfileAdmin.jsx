@@ -53,7 +53,7 @@ const ProfileAdmin = () => {
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Profile Guru</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Profile Admin</h2>
         {!isEditing ? (
           <Button
             onClick={handleEdit}

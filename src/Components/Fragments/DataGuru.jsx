@@ -3,6 +3,7 @@ import { FaEdit, FaTrash, FaEye, FaPlus } from "react-icons/fa";
 import axiosClient from "../../axiosClient";
 import EditGuru from "./EditGuru";
 import DetailGuru from "../Layouts/DetailGuruLayouts";
+import LoadingSpinner from "../Elements/Loading/LoadingSpinner";
 
 const DataGuru = () => {
   const [teachers, setTeachers] = useState([]);
@@ -12,9 +13,11 @@ const DataGuru = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedGuru, setSelectedGuru] = useState(null);
   const [message, setMessage] = useState({ text: "", type: "" });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         // Fetch teachers
         const teachersResponse = await axiosClient.get("/guru");
@@ -34,6 +37,8 @@ const DataGuru = () => {
         setSubjects(subjectsMap);
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -121,64 +126,71 @@ const DataGuru = () => {
         </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Nama Guru
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Mata Pelajaran
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Aksi
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredTeachers.length > 0 ? (
-              filteredTeachers.map((teacher) => (
-                <tr
-                  key={teacher.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {teacher.nama}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {subjects[teacher.mata_pelajaran_id] || "Loading..."}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                    <button
-                      onClick={() => handleDetail(teacher)}
-                      className="text-blue-500 hover:text-blue-700"
-                    >
-                      <FaEye />
-                    </button>
-                    <button
-                      onClick={() => handleEdit(teacher)}
-                      className="text-yellow-500 hover:text-yellow-700"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(teacher.id)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <FaTrash />
-                    </button>
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <table className="w-full">
+            <thead>
+              <tr className="bg-gray-50">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Nama Guru
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Mata Pelajaran
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Aksi
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {filteredTeachers.length > 0 ? (
+                filteredTeachers.map((teacher) => (
+                  <tr
+                    key={teacher.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {teacher.nama}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {subjects[teacher.mata_pelajaran_id] || "Loading..."}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap space-x-2">
+                      <button
+                        onClick={() => handleDetail(teacher)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <FaEye />
+                      </button>
+                      <button
+                        onClick={() => handleEdit(teacher)}
+                        className="text-yellow-500 hover:text-yellow-700"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(teacher.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <FaTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="3"
+                    className="px-6 py-4 text-center text-gray-500"
+                  >
+                    Tidak ada Data Guru
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
-                  Tidak ada Data Guru
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
       {/* Add Modal Component */}
       <EditGuru
