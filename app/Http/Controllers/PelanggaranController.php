@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Pelanggaran;
 use App\Traits\ApiResponseHandler;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -87,8 +86,7 @@ class PelanggaranController extends Controller
     {
         try {
             $data = $request->except('bukti_gambar');
-
-            $validationResult = $this->validation($request);
+            $validationResult = $this->validation($data);
             if (!$validationResult) {
                 return $validationResult;
             }
@@ -113,11 +111,11 @@ class PelanggaranController extends Controller
     public function updatePelanggaran(Request $request, $id)
     {
         try {
-            $data = $request->except('bukti_gambar');
-            $validationResult = $this->validation($data, $id);
-            if (!$validationResult) {
-                return $validationResult;
-            }
+            // Log raw content
+            \Log::info('Request content:', [
+                'content' => $request->getContent(),
+                'contentType' => $request->header('Content-Type')
+            ]);
 
             $pelanggaran = Pelanggaran::find($id);
             if (!$pelanggaran) {
@@ -127,18 +125,33 @@ class PelanggaranController extends Controller
                 ], 404);
             }
 
+            // Handle both form-data and raw JSON
+            $data = $request->isJson() ? $request->json()->all() : $request->all();
+            $data = array_filter($data, function($key) {
+                return !in_array($key, ['bukti_gambar', '_method']);
+            }, ARRAY_FILTER_USE_KEY);
+
+            // Debug collected data
+            \Log::info('Collected data:', $data);
+
+            // Validate the data
+            $validationResult = $this->validation($data, $id);
+            if ($validationResult !== true) {
+                return $validationResult;
+            }
+
+            // Handle image upload if exists
             if ($request->hasFile('bukti_gambar')) {
-                // Delete old image if exists
                 if ($pelanggaran->nama_foto) {
                     Storage::delete('public/pelanggaran/' . $pelanggaran->nama_foto);
                 }
-
                 $image = $request->file('bukti_gambar');
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $image->storeAs('public/pelanggaran', $imageName);
                 $data['nama_foto'] = $imageName;
             }
 
+            // Update pelanggaran
             $pelanggaran->update($data);
 
             return response()->json([
@@ -147,6 +160,7 @@ class PelanggaranController extends Controller
                 'data' => $pelanggaran
             ], 200);
         } catch (\Exception $e) {
+            \Log::error('Update Pelanggaran Error: ' . $e->getMessage());
             return $this->handleError($e, 'updatePelanggaran');
         }
     }
@@ -160,27 +174,39 @@ class PelanggaranController extends Controller
                     'message' => 'Pelanggaran not found'
                 ], 404);
             }
+
+            // Delete associated image if exists
+            if ($pelanggaran->nama_foto) {
+                Storage::delete('public/pelanggaran/' . $pelanggaran->nama_foto);
+            }
+
             $pelanggaran->delete();
             return response()->json([
                 'status' => 'success',
-                'message' => 'Successfully deleted schedule'
+                'message' => 'Successfully deleted pelanggaran'
             ], 200);
         } catch (\Exception $e) {
-            return $this->handleError($e, 'getAllPelanggaran');
+            return $this->handleError($e, 'deletePelanggaran');
         }
     }
 
-    private function validation($request, $id = null)
+    private function validation($data, $id = null)
     {
-        $validator = Validator::make($request, [
+        // Debug validation input
+        \Log::info('Validation input:', $data);
+
+        $rules = [
             'nama_pelanggaran' => 'required|string|max:255',
             'deskripsi' => 'required|string|max:255',
             'status' => 'required|in:pengajuan,ditolak,proses,selesai',
             'pelapor' => 'required|integer|exists:users,id',
-            'terlapor' => 'required|integer|exists:siswa,id',
-            'bukti_gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-        ]);
+            'terlapor' => 'required|integer|exists:siswa,id'
+        ];
+
+        $validator = Validator::make($data, $rules);
+
         if ($validator->fails()) {
+            \Log::error('Validation errors:', $validator->errors()->toArray());
             return response()->json([
                 'status' => 'error',
                 'message' => $validator->errors(),
