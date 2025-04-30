@@ -9,6 +9,7 @@ const DetailUser = ({ user, onClose }) => {
     const fetchUserDetails = async () => {
       try {
         const response = await axiosClient.get(`/user/${user.id}`);
+        console.log("Response data:", response.data); // Add this log
         setUserData(response.data.data);
       } catch (error) {
         console.error("Error fetching user details:", error);
@@ -20,7 +21,7 @@ const DetailUser = ({ user, onClose }) => {
     fetchUserDetails();
   }, [user.id]);
 
-  if (loading) {
+  if (loading || !userData) {
     return <div>Loading...</div>;
   }
 
@@ -31,15 +32,15 @@ const DetailUser = ({ user, onClose }) => {
         <div className="space-y-4">
           <div>
             <label className="font-bold">Name:</label>
-            <p>{userData.user.name}</p>
+            <p>{userData.name}</p>
           </div>
           <div>
             <label className="font-bold">Email:</label>
-            <p>{userData.user.email}</p>
+            <p>{userData.email}</p>
           </div>
           <div>
             <label className="font-bold">Role:</label>
-            <p className="capitalize">{userData.user.role}</p>
+            <p className="capitalize">{userData.role}</p>
           </div>
           {userData.profile && (
             <>

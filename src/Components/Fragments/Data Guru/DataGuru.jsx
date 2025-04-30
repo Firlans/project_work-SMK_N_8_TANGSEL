@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaEye, FaPlus } from "react-icons/fa";
-import axiosClient from "../../axiosClient";
+import axiosClient from "../../../axiosClient";
 import EditGuru from "./EditGuru";
-import DetailGuru from "../Layouts/DetailGuruLayouts";
-import LoadingSpinner from "../Elements/Loading/LoadingSpinner";
+import DetailGuru from "../../Layouts/DetailGuruLayouts";
+import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 
 const DataGuru = () => {
   const [teachers, setTeachers] = useState([]);
