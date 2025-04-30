@@ -8,10 +8,11 @@ import {
 } from "react-icons/fa";
 import Header from "../Components/Elements/Header/Index";
 import ProfileAdmin from "../Components/Fragments/ProfileAdmin";
-import DataGuru from "../Components/Fragments/DataGuru";
-import DataSiswa from "../Components/Fragments/DataSiswa";
+import DataGuru from "../Components/Fragments/Data Guru/DataGuru";
+import DataSiswa from "../Components/Fragments/Data Siswa/DataSiswa";
 import JadwalMapel from "../Components/Fragments/JadwalMapel";
 import DataUser from "../Components/Fragments/DataUser";
+import DataKehadiranSiswa from "../Components/Fragments/Presensi/DataKehadiranSiswa";
 
 const Sidebar = ({ setActivePage, activePage }) => {
   const menuItems = [
@@ -19,6 +20,7 @@ const Sidebar = ({ setActivePage, activePage }) => {
     { id: "users", label: "Data User", icon: <FaUsers /> },
     { id: "teachers", label: "Data Guru", icon: <FaChalkboardTeacher /> },
     { id: "students", label: "Data Siswa", icon: <FaUserGraduate /> },
+    { id: "presence", label: "Data Kehadiran Siswa", icon: <FaCalendarAlt /> },
     { id: "schedule", label: "Jadwal Pelajaran", icon: <FaCalendarAlt /> },
   ];
 
@@ -60,6 +62,7 @@ export default function AdminDashboard() {
           {activePage === "users" && <DataUser />}
           {activePage === "teachers" && <DataGuru />}
           {activePage === "students" && <DataSiswa />}
+          {activePage === "presence" && <DataKehadiranSiswa />}
           {activePage === "schedule" && <JadwalMapel />}
         </div>
       </div>
