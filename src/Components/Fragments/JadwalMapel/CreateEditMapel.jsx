@@ -16,7 +16,6 @@ const JadwalModal = ({
     jam_mulai: jadwalData?.jam_mulai || "",
     jam_selesai: jadwalData?.jam_selesai || "",
   });
-  const [kelas, setKelas] = useState([]);
 
   useEffect(() => {
     if (jadwalData && mode === "edit") {

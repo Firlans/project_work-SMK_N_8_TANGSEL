@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import axiosClient from "../../axiosClient";
-import LoadingSpinner from "../Elements/Loading/LoadingSpinner";
-import JadwalModal from "./JadwalMapel/CreateEditMapel";
+import axiosClient from "../../../axiosClient";
+import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import JadwalModal from "./CreateEditMapel";
 
 const JadwalMapel = () => {
   // State untuk data
