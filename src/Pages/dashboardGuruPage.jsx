@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaUser, FaUserCheck, FaCalendarAlt } from "react-icons/fa";
 import Header from "../Components/Elements/Header/Index";
 import ProfileGuru from "../Components/Fragments/ProfileGuru";
+import Sidebar from "../Components/Elements/Sidebar/Sidebar";
 
 const dummyData = {
   profile: {
@@ -47,42 +48,6 @@ const dummyData = {
     },
   ],
 };
-
-const Sidebar = ({ setActivePage, activePage }) => {
-  const menuItems = [
-    { id: "profile", label: "Profile", icon: <FaUser /> },
-    { id: "attendance", label: "Kehadiran Siswa", icon: <FaUserCheck /> },
-    { id: "schedule", label: "Jadwal Mengajar", icon: <FaCalendarAlt /> },
-  ];
-
-  return (
-    <div className="w-64 bg-white border-r h-screen p-6 shadow-sm">
-      <div className="mb-8">
-        <h2 className="text-xl font-bold text-gray-800">Dashboard Guru</h2>
-      </div>
-      <div className="flex flex-col gap-2">
-        {menuItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setActivePage(item.id)}
-            className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-              activePage === item.id
-                ? "bg-blue-500 text-white"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
-          >
-            {item.icon}
-            {item.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-<Header />;
-
-<ProfileGuru />;
 
 const AttendanceList = () => {
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -245,9 +210,20 @@ const Schedule = () => {
 const DashboardGuruPage = () => {
   const [activePage, setActivePage] = useState("profile");
 
+  const menuItems = [
+    { id: "profile", label: "Profile", icon: <FaUser /> },
+    { id: "attendance", label: "Kehadiran Siswa", icon: <FaUserCheck /> },
+    { id: "schedule", label: "Jadwal Mengajar", icon: <FaCalendarAlt /> },
+  ];
+
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <Sidebar setActivePage={setActivePage} activePage={activePage} />
+      <Sidebar
+        title="Dashboard Guru"
+        menuItems={menuItems}
+        setActivePage={setActivePage}
+        activePage={activePage}
+      />
       <div className="flex-1 flex flex-col">
         <Header />
         <div className="p-8">

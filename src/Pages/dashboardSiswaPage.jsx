@@ -12,80 +12,8 @@ import Header from "../Components/Elements/Header/Index";
 import ProfileSiswa from "../Components/Fragments/ProfileSiswa";
 import KehadiranSiswa from "../Components/Fragments/KehadiranSiswa";
 import JadwalSiswa from "../Components/Fragments/JadwalSiswa";
+import Sidebar from "../Components/Elements/Sidebar/Sidebar";
 
-const Sidebar = ({ setActivePage, activePage }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuItems = [
-    { id: "profile", label: "Profile", icon: <FaUser /> },
-    { id: "jadwal", label: "Jadwal Belajar", icon: <FaCalendarAlt /> },
-    { id: "kehadiran", label: "Kehadiran Siswa", icon: <FaUserCheck /> },
-    { id: "bk", label: "Konsultasi BK", icon: <FaComments /> },
-  ];
-
-  return (
-    <>
-      {/* Toggle button outside sidebar */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`
-          fixed top-4 left-4 z-30 p-2 
-          bg-blue-500 text-white rounded-lg 
-          hover:bg-blue-600 transition-colors
-          lg:hidden
-          ${isOpen ? "translate-x-64" : "translate-x-0"}
-          transition-transform duration-300
-        `}
-      >
-        {isOpen ? <FaTimes /> : <FaBars />}
-      </button>
-
-      <div
-        className={`
-        fixed lg:static inset-y-0 left-0 z-20
-        transform transition-all duration-300 ease-in-out
-        w-64 bg-white border-r h-screen shadow-sm
-        lg:translate-x-0 ${
-          isOpen
-            ? "translate-x-0 opacity-100"
-            : "-translate-x-full opacity-0 lg:opacity-100"
-        }
-      `}
-      >
-        <div className="p-6">
-          <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-800">Dashboard Siswa</h2>
-          </div>
-          <div className="flex flex-col gap-2">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  setActivePage(item.id);
-                  if (window.innerWidth < 1024) setIsOpen(false);
-                }}
-                className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                  activePage === item.id
-                    ? "bg-blue-500 text-white"
-                    : "text-gray-600 hover:bg-gray-100"
-                }`}
-              >
-                {item.icon}
-                {item.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden transition-opacity duration-300"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-    </>
-  );
-};
 
 const KonselingBK = () => {
   const [messages, setMessages] = useState([
@@ -207,9 +135,21 @@ const KonselingBK = () => {
 const DashboardSiswaPage = () => {
   const [activePage, setActivePage] = useState("profile");
 
+  const menuItems = [
+    { id: "profile", label: "Profile", icon: <FaUser /> },
+    { id: "jadwal", label: "Jadwal Belajar", icon: <FaCalendarAlt /> },
+    { id: "kehadiran", label: "Kehadiran Siswa", icon: <FaUserCheck /> },
+    { id: "bk", label: "Konsultasi BK", icon: <FaComments /> },
+  ];
+
   return (
     <div className="flex min-h-screen bg-gray-50 relative">
-      <Sidebar setActivePage={setActivePage} activePage={activePage} />
+     <Sidebar
+        title="Dashboard Guru"
+        menuItems={menuItems}
+        setActivePage={setActivePage}
+        activePage={activePage}
+      />
       <div className="flex-1 flex flex-col w-full lg:ml-0">
         <Header />
         <div className="p-6 flex-1 overflow-auto">
