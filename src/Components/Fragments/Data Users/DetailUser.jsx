@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axiosClient from "../../axiosClient";
+import axiosClient from "../../../axiosClient";
 
 const DetailUser = ({ user, onClose }) => {
   const [userData, setUserData] = useState(null);

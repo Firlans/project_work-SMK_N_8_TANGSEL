@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from "react";
-import axiosClient from "../../axiosClient";
+import axiosClient from "../../../axiosClient";
 
 const CreateEditUser = ({ mode, user, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    role: "siswa",
+    role: "admin",
     is_active: true,
     profile: {
       jenis_kelamin: "L",
-      tanggal_lahir: "",
-      alamat: "",
-      no_telp: "",
-      nip: "",
-      nisn: "",
-      nis: "",
-      id_kelas: "",
-      semester: "",
-      mata_pelajaran_id: "",
     },
   });
 
@@ -32,15 +23,6 @@ const CreateEditUser = ({ mode, user, onClose, onSuccess }) => {
         password: "",
         profile: {
           jenis_kelamin: "L",
-          tanggal_lahir: "",
-          alamat: "",
-          no_telp: "",
-          nip: "",
-          nisn: "",
-          nis: "",
-          id_kelas: "",
-          semester: "",
-          mata_pelajaran_id: "",
           ...user.profile, // Merge existing profile data if any
         },
       };
@@ -167,100 +149,6 @@ const CreateEditUser = ({ mode, user, onClose, onSuccess }) => {
               <option value="P">Perempuan</option>
             </select>
           </div>
-
-          <div>
-            <label className="block">Tanggal Lahir</label>
-            <input
-              type="date"
-              value={formData.profile.tanggal_lahir}
-              onChange={(e) =>
-                handleProfileChange("tanggal_lahir", e.target.value)
-              }
-              className="w-full border rounded p-2"
-            />
-          </div>
-
-          <div>
-            <label className="block">Alamat</label>
-            <textarea
-              value={formData.profile.alamat}
-              onChange={(e) => handleProfileChange("alamat", e.target.value)}
-              className="w-full border rounded p-2"
-              rows="3"
-            />
-          </div>
-
-          <div>
-            <label className="block">No. Telepon</label>
-            <input
-              type="tel"
-              value={formData.profile.no_telp}
-              onChange={(e) => handleProfileChange("no_telp", e.target.value)}
-              className="w-full border rounded p-2"
-            />
-          </div>
-
-          {formData.role === "guru" && (
-            <div>
-              <label className="block">NIP</label>
-              <input
-                type="text"
-                value={formData.profile.nip}
-                onChange={(e) => handleProfileChange("nip", e.target.value)}
-                className="w-full border rounded p-2"
-              />
-            </div>
-          )}
-
-          {formData.role === "siswa" && (
-            <>
-              <div>
-                <label className="block">NISN</label>
-                <input
-                  type="text"
-                  value={formData.profile.nisn}
-                  onChange={(e) => handleProfileChange("nisn", e.target.value)}
-                  className="w-full border rounded p-2"
-                />
-              </div>
-
-              <div>
-                <label className="block">NIS</label>
-                <input
-                  type="text"
-                  value={formData.profile.nis}
-                  onChange={(e) => handleProfileChange("nis", e.target.value)}
-                  className="w-full border rounded p-2"
-                />
-              </div>
-
-              <div>
-                <label className="block">Kelas</label>
-                <input
-                  type="text"
-                  value={formData.profile.id_kelas}
-                  onChange={(e) =>
-                    handleProfileChange("id_kelas", e.target.value)
-                  }
-                  className="w-full border rounded p-2"
-                />
-              </div>
-
-              <div>
-                <label className="block">Semester</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="6"
-                  value={formData.profile.semester}
-                  onChange={(e) =>
-                    handleProfileChange("semester", e.target.value)
-                  }
-                  className="w-full border rounded p-2"
-                />
-              </div>
-            </>
-          )}
 
           <div className="mt-6 flex justify-end gap-2">
             <button

@@ -11,7 +11,7 @@ import ProfileAdmin from "../Components/Fragments/ProfileAdmin";
 import DataGuru from "../Components/Fragments/Data Guru/DataGuru";
 import DataSiswa from "../Components/Fragments/Data Siswa/DataSiswa";
 import JadwalMapel from "../Components/Fragments/JadwalMapel";
-import DataUser from "../Components/Fragments/DataUser";
+import DataUser from "../Components/Fragments/Data Users/DataUser";
 import DataKehadiranSiswa from "../Components/Fragments/Presensi/DataKehadiranSiswa";
 
 const Sidebar = ({ setActivePage, activePage }) => {

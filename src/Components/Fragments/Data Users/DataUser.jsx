@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaEye, FaPlus } from "react-icons/fa";
-import axiosClient from "../../axiosClient";
+import axiosClient from "../../../axiosClient";
 import CreateEditUser from "./CreateEditUser";
 import DetailUser from "./DetailUser";
-import LoadingSpinner from "../Elements/Loading/LoadingSpinner";
+import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 
 const DataUser = () => {
   const [users, setUsers] = useState([]);
