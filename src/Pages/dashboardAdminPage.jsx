@@ -5,6 +5,7 @@ import {
   FaUserGraduate,
   FaCalendarAlt,
   FaUsers,
+  FaClipboardCheck,
 } from "react-icons/fa";
 import Header from "../Components/Elements/Header/Index";
 import ProfileAdmin from "../Components/Fragments/ProfileAdmin";
@@ -20,7 +21,11 @@ const Sidebar = ({ setActivePage, activePage }) => {
     { id: "users", label: "Data User", icon: <FaUsers /> },
     { id: "teachers", label: "Data Guru", icon: <FaChalkboardTeacher /> },
     { id: "students", label: "Data Siswa", icon: <FaUserGraduate /> },
-    { id: "presence", label: "Data Kehadiran Siswa", icon: <FaCalendarAlt /> },
+    {
+      id: "presence",
+      label: "Data Kehadiran Siswa",
+      icon: <FaClipboardCheck />,
+    },
     { id: "schedule", label: "Jadwal Pelajaran", icon: <FaCalendarAlt /> },
   ];
 
