@@ -218,8 +218,7 @@ class JadwalController extends Controller
             'id_kelas' => 'required|exists:kelas,id',
             'id_mata_pelajaran' => 'required|exists:mata_pelajaran,id',
             'id_hari' => 'required|exists:hari,id',
-            'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai'
+            'id_waktu' => 'required|exists:waktu, id',
         ]);
 
         if ($validator->fails()) {

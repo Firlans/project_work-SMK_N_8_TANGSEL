@@ -16,19 +16,25 @@ class Jadwal extends Model
 
     protected $fillable = [
         'id_kelas',
-        'id_mata_pelajaran',
+        'id_guru',
         'id_hari',
-        'jam_mulai',
-        'jam_selesai'
+        'id_waktu'
     ];
 
-    public function mataPelajaran()
+    public function guru()
     {
-        return $this->belongsTo(MataPelajaran::class, 'id_mata_pelajaran', 'id');
+        return $this->belongsTo(Guru::class, 'id_guru', 'id');
     }
 
     public function pertemuan()
     {
         return $this->hasMany(Pertemuan::class, 'id_jadwal', 'id');
+    }
+    public function hari(){
+        return $this->belongsTo(Hari::class, 'id_hari', 'id');
+    }
+    public function waktu()
+    {
+        return $this->belongsTo(Waktu::class, 'id_waktu', 'id');
     }
 }

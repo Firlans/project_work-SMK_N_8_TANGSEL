@@ -34,6 +34,12 @@ class Guru extends Model
         return $this->belongsTo(MataPelajaran::class);
     }
 
+    public function jadwal()
+    {
+        // Fix: Change foreign key to match database column
+        return $this->hasMany(Jadwal::class, 'id_mata_pelajaran', 'id');
+    }
+
     public function sentMessages()
     {
         return $this->morphMany(ChatDetail::class, 'sender');

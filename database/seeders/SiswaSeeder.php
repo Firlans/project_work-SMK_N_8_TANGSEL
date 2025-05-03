@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Kelas;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Siswa;
@@ -12,6 +13,7 @@ class SiswaSeeder extends Seeder
     public function run(): void
     {
         $faker = Faker::create('id_ID');
+        $kelasIds = Kelas::pluck('id')->toArray();
 
         // Create static test profile
         $testUser = User::where('email', 'siswa@test.com')->first();
@@ -48,7 +50,7 @@ class SiswaSeeder extends Seeder
                 'nisn' => '10' . str_pad($user->id, 8, '0', STR_PAD_LEFT),
                 'nis' => '2023' . str_pad($user->id, 4, '0', STR_PAD_LEFT),
                 'semester' => rand(1, 6),  // Assuming 6 semesters
-                'id_kelas' => rand(1, 3)  // Assuming you have classes with IDs 1-3
+                'id_kelas' => $kelasIds[array_rand($kelasIds)] ?? null  // Assuming you have classes with IDs 1-3
             ]);
         }
     }
