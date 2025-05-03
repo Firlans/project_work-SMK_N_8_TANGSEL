@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Kehadiran;
 use App\Models\Siswa;
-use App\Models\Jadwal;
+use App\Models\Pertemuan;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
@@ -13,7 +13,7 @@ class KehadiranSeeder extends Seeder
     public function run(): void
     {
         $siswaList = Siswa::all();
-        $jadwalList = Jadwal::all();
+        $pertemuanList = Pertemuan::all();
         $statusKehadiran = ['Hadir', 'Izin', 'Sakit', 'Alfa'];
 
         $today = Carbon::now();
@@ -31,15 +31,15 @@ class KehadiranSeeder extends Seeder
             $dayOfWeek = $dayOfWeek === 0 ? 7 : 1;
 
             // Get jadwals for current day
-            $todayJadwals = $jadwalList->where('id_hari', $dayOfWeek);
+            $todayJadwals = $pertemuanList->where('id_hari', $dayOfWeek);
 
-            foreach ($todayJadwals as $jadwal) {
-                $classStudents = $siswaList->where('id_kelas', $jadwal->id_kelas);
+            foreach ($todayJadwals as $pertemuan) {
+                $classStudents = $siswaList->where('id_kelas', $pertemuan->id_kelas);
 
                 foreach ($classStudents as $siswa) {
                     Kehadiran::create([
                         'id_siswa' => $siswa->id,
-                        'id_jadwal' => $jadwal->id,
+                        'id_pertemuan' => $pertemuan->id,
                         'tanggal' => $date->format('Y-m-d'),
                         'status' => $statusKehadiran[array_rand($statusKehadiran)],
                         'keterangan' => fake()->optional(0.3)->sentence(),

@@ -19,7 +19,7 @@ class Kehadiran extends Model
         'id_siswa',
         'tanggal',
         'status',
-        'id_jadwal',
+        'id_pertemuan',
         'keterangan'
     ];
 
@@ -28,8 +28,8 @@ class Kehadiran extends Model
         return $this->belongsTo(Siswa::class, 'id_siswa', 'id');
     }
 
-    public function jadwal(): BelongsTo
+    public function pertemuan(): BelongsTo
     {
-        return $this->belongsTo(Jadwal::class, 'id_jadwal');
+        return $this->belongsTo(Pertemuan::class, 'id_pertemuan', 'id');
     }
 }

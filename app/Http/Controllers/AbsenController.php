@@ -149,7 +149,7 @@ class AbsenController extends Controller
                 'id_siswa' => $request->id_siswa,
                 'tanggal' => date('Y-m-d', strtotime($request->tanggal)),
                 'status' => $request->status,
-                'id_jadwal' => $request->id_jadwal,
+                'id_pertemuan' => $request->id_pertemuan,
                 'keterangan' => $request->keterangan,
             ]);
 
@@ -230,7 +230,7 @@ class AbsenController extends Controller
             'id_siswa' => 'required|exists:siswa,id',
             'tanggal' => 'required|date',
             'status' => 'nullable|in:hadir,izin,sakit,alpha',
-            'id_jadwal' => 'required|exists:jadwal,id',
+            'id_pertemuan' => 'required|exists:pertemuan,id',
             'keterangan' => 'nullable|string',
         ]);
 
