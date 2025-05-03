@@ -5,48 +5,32 @@ namespace Database\Seeders;
 use App\Models\Kehadiran;
 use App\Models\Siswa;
 use App\Models\Pertemuan;
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class KehadiranSeeder extends Seeder
 {
     public function run(): void
     {
-        $siswaList = Siswa::all();
-        $pertemuanList = Pertemuan::all();
+        $pertemuans = Pertemuan::with('jadwal')->get();
         $statusKehadiran = ['Hadir', 'Izin', 'Sakit', 'Alfa'];
 
-        $today = Carbon::now();
-        $startDate = $today->copy()->startOfMonth();
-        $endDate = $today->copy()->endOfMonth();
+        foreach ($pertemuans as $pertemuan) {
+            // Get the class ID from the related schedule
+            $kelasId = $pertemuan->jadwal->id_kelas;
 
-        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
-            // Skip weekends
-            if ($date->isWeekend()) {
-                continue;
-            }
+            // Get all students in this class
+            $siswaList = Siswa::where('id_kelas', $kelasId)->get();
 
-            $dayOfWeek = $date->dayOfWeek;
-            // Convert Sunday (0) to 7, Monday (1) stays 1, etc.
-            $dayOfWeek = $dayOfWeek === 0 ? 7 : 1;
-
-            // Get jadwals for current day
-            $todayJadwals = $pertemuanList->where('id_hari', $dayOfWeek);
-
-            foreach ($todayJadwals as $pertemuan) {
-                $classStudents = $siswaList->where('id_kelas', $pertemuan->id_kelas);
-
-                foreach ($classStudents as $siswa) {
-                    Kehadiran::create([
-                        'id_siswa' => $siswa->id,
-                        'id_pertemuan' => $pertemuan->id,
-                        'tanggal' => $date->format('Y-m-d'),
-                        'status' => $statusKehadiran[array_rand($statusKehadiran)],
-                        'keterangan' => fake()->optional(0.3)->sentence(),
-                        'created_at' => $date,
-                        'updated_at' => $date
-                    ]);
-                }
+            foreach ($siswaList as $siswa) {
+                // Create attendance record for each student
+                Kehadiran::create([
+                    'id_siswa' => $siswa->id,
+                    'id_pertemuan' => $pertemuan->id,
+                    'status' => $statusKehadiran[array_rand($statusKehadiran)],
+                    'keterangan' => fake()->optional(0.3)->sentence(),
+                    'created_at' => $pertemuan->tanggal,
+                    'updated_at' => $pertemuan->tanggal,
+                ]);
             }
         }
     }

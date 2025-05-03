@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             SiswaSeeder::class,
             WaliMuridSeeder::class,
             JadwalSeeder::class,
+            PertemuanSeeder::class,
             KehadiranSeeder::class,
             PrestasiSeeder::class,
             PelanggaranSeeder::class,

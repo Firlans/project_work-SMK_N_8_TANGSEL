@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('kehadiran', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_siswa');
-            $table->date('tanggal');
             $table->string('status')->nullable();
             $table->unsignedBigInteger('id_pertemuan');
             $table->text('keterangan')->nullable();

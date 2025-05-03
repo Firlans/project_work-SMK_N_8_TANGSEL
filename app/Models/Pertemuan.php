@@ -9,11 +9,18 @@ class Pertemuan extends Model
 {
     protected $table = 'pertemuan';
     protected $fillable = [
+        "nama_pertemuann",
         "id_jadwal",
         "tanggal"
     ];
 
-    public function kehadiran(){
+    public function kehadiran()
+    {
         return $this->hasMany(Kehadiran::class, 'id_pertemuan', 'id');
+    }
+
+    public function jadwal()
+    {
+        return $this->belongsTo(Jadwal::class, 'id_jadwal', 'id');
     }
 }
