@@ -15,6 +15,7 @@ import JadwalMapel from "../Components/Fragments/JadwalMapel/JadwalMapel";
 import DataUser from "../Components/Fragments/Data Users/DataUser";
 import DataKehadiranSiswa from "../Components/Fragments/Presensi/DataKehadiranSiswa";
 import Sidebar from "../Components/Elements/Sidebar/Sidebar";
+import Pelanggaran from "../Components/Fragments/Pelanggaran/Pelanggaran";
 
 export default function AdminDashboard() {
   const [activePage, setActivePage] = useState("profile");
@@ -30,6 +31,7 @@ export default function AdminDashboard() {
       icon: <FaClipboardCheck />,
     },
     { id: "schedule", label: "Jadwal Pelajaran", icon: <FaCalendarAlt /> },
+    { id: "violation", label: "Pelanggaran", icon: <FaCalendarAlt /> },
   ];
 
   return (
@@ -49,6 +51,7 @@ export default function AdminDashboard() {
           {activePage === "students" && <DataSiswa />}
           {activePage === "presence" && <DataKehadiranSiswa />}
           {activePage === "schedule" && <JadwalMapel />}
+          {activePage === "violation" && <Pelanggaran />}
         </div>
       </div>
     </div>
