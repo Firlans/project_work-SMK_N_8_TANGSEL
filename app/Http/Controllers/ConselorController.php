@@ -109,6 +109,12 @@ class ConselorController extends Controller
 
             $conselor->update($data);
 
+            if (isset($data['nama'])) {
+                $conselor->user()->update([
+                    'name' => $data['nama']
+                ]);
+            }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Conselor updated successfully',

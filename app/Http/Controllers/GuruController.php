@@ -125,6 +125,12 @@ class GuruController extends Controller
 
             $guru->update($data);
 
+            if (isset($data['nama'])) {
+                $guru->user()->update([
+                    'name' => $data['nama']
+                ]);
+            }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Guru updated successfully',
