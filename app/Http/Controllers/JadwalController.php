@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Jadwal;
 use App\Traits\ApiResponseHandler;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -131,7 +132,7 @@ class JadwalController extends Controller
             }
 
             $validationResult = $this->validation($data);
-            if (!$validationResult) {
+            if ($validationResult !== true) {
                 return $validationResult;
             }
 
@@ -216,15 +217,32 @@ class JadwalController extends Controller
     {
         $validator = Validator::make($data, [
             'id_kelas' => 'required|exists:kelas,id',
-            'id_mata_pelajaran' => 'required|exists:mata_pelajaran,id',
+            'id_guru' => 'required|exists:guru,id',
             'id_hari' => 'required|exists:hari,id',
-            'id_waktu' => 'required|exists:waktu, id',
+            'id_waktu' => 'required|exists:waktu,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
                 'message' => $validator->errors()
+            ], 422);
+        }
+
+        // Check if teacher is already scheduled at the same time
+        $existingSchedule = Jadwal::where('id_guru', '=', $data['id_guru'])
+            ->where('id_hari', '=', $data['id_hari'])
+            ->where('id_waktu', '=', $data['id_waktu']);
+
+        // For update operations, exclude the current schedule
+        if (isset($data['id'])) {
+            $existingSchedule->where('id', '!=', $data['id']);
+        }
+
+        if ($existingSchedule->exists()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Teacher is already scheduled for this day and time'
             ], 422);
         }
 
