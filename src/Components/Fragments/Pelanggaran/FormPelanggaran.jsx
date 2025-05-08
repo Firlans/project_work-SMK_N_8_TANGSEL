@@ -94,9 +94,10 @@ const ModalPelanggaran = ({ onClose, onSuccess, initialData }) => {
     try {
       // Persiapkan FormData untuk pengiriman
       const form = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        form.append(key, value);
-        console.log(`📎 Appending ${key}:`, value, typeof value);
+      Object.keys(formData).forEach((key) => {
+        if (formData[key] !== null) {
+          form.append(key, formData[key]);
+        }
       });
 
       // Append foto jika ada
