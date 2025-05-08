@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaEye, FaPlus } from "react-icons/fa";
 import axiosClient from "../../../axiosClient";
 import EditKonselor from "./EditKonselor";
-import DetailKonselor from "../../Layouts/DetailKonselor";
+import DetailKonselor from "../../Layouts/DetailKonselorLayouts";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 
 const DataKonselor = () => {
