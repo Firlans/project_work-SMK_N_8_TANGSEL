@@ -74,18 +74,18 @@ const DataUser = () => {
   console.log("Sorted and filtered users:", sortedUsers);
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="bg-white p-6 rounded-xl shadow-sm">
       {loading ? (
         <LoadingSpinner />
       ) : (
         <>
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-800">Data Guru</h2>
             <button
               onClick={handleCreate}
               className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
             >
-              <FaPlus /> Add New User
+              <FaPlus /> Tambah User
             </button>
             <select
               value={selectedRole}
@@ -101,22 +101,22 @@ const DataUser = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300">
-              <thead className="bg-gray-100">
+            <table className="w-full">
+              <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 border-b">Nama Lengkap</th>
-                  <th className="px-6 py-3 border-b">Role</th>
-                  <th className="px-6 py-3 border-b">Aksi</th>
+                  <th className="px-6 py-3">Nama Lengkap</th>
+                  <th className="px-6 py-3">Role</th>
+                  <th className="px-6 py-3">Aksi</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-200">
                 {sortedUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 border-b">{user.name}</td>
-                    <td className="px-6 py-4 border-b capitalize">
+                  <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 border-b whitespace-nowrap">{user.name}</td>
+                    <td className="px-6 py-4 border-b capitalize whitespace-nowrap">
                       {user.role}
                     </td>
-                    <td className="px-6 py-4 border-b">
+                    <td className="px-6 py-4 whitespace-nowrap space-x-2">
                       <div className="flex gap-2 justify-center">
                         <button
                           onClick={() => handleDetail(user)}
