@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axiosClient from "../../axiosClient.js";
-import { formatTanggal, formatWaktu } from "../../utils/dateFormatter.js";
+import axiosClient from "../../../axiosClient.js";
+import { formatTanggal, formatWaktu } from "../../../utils/dateFormatter.js";
 
 const KehadiranSiswa = () => {
   const [schedulesData, setSchedulesData] = useState([]);

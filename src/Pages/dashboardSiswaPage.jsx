@@ -10,8 +10,8 @@ import {
 } from "react-icons/fa";
 import Header from "../Components/Elements/Header/Index";
 import ProfileSiswa from "../Components/Fragments/ProfileSiswa";
-import KehadiranSiswa from "../Components/Fragments/KehadiranSiswa";
-import JadwalSiswa from "../Components/Fragments/JadwalSiswa";
+import KehadiranSiswa from "../Components/Fragments/Siswa/KehadiranSiswa";
+import JadwalSiswa from "../Components/Fragments/Siswa/JadwalSiswa";
 import Sidebar from "../Components/Elements/Sidebar/Sidebar";
 
 

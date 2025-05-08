@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axiosClient from "../../axiosClient.js";
-import { formatWaktu } from "../../utils/dateFormatter.js";
+import axiosClient from "../../../axiosClient.js";
+import { formatWaktu } from "../../../utils/dateFormatter.js";
 
 const JadwalSiswa = () => {
   const [jadwalData, setJadwalData] = useState([]);
@@ -24,19 +24,36 @@ const JadwalSiswa = () => {
       try {
         const profileRes = await axiosClient.get("/profile");
         const id = profileRes.data.data.id;
+        console.log("🏫 ID Siswa:", id);
 
         const response = await axiosClient.get(`/jadwal/siswa?id_siswa=${id}`);
+        console.log("📅 Raw Jadwal Data:", response.data);
+        
+        // Debug setiap item jadwal
+        response.data.data.forEach((item, index) => {
+          console.log(`📝 Jadwal ${index + 1}:`, {
+            hari: hariMap[item.id_hari],
+            waktu: item.id_waktu,
+            kelas: item.id_kelas,
+            guru: item.id_guru,
+            mataPelajaran: mataPelajaranMap[item.id_mata_pelajaran]
+          });
+        });
+
         setJadwalData(response.data.data);
         setLoading(false);
-        console.log("Jadwal:", response.data.data);
       } catch (error) {
-        console.error("Gagal mengambil jadwal:", error);
+        console.error("❌ Gagal mengambil jadwal:", {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status
+        });
         setLoading(false);
       }
     };
 
     fetchJadwal();
-  }, []);
+}, [mataPelajaranMap]); // Tambahkan dependency mataPelajaranMap
 
   useEffect(() => {
     const fetchMataPelajaran = async () => {
