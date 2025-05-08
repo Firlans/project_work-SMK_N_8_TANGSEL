@@ -16,6 +16,9 @@ import DataUser from "../Components/Fragments/Data Users/DataUser";
 import DataKehadiranSiswa from "../Components/Fragments/Presensi/DataKehadiranSiswa";
 import Sidebar from "../Components/Elements/Sidebar/Sidebar";
 import Pelanggaran from "../Components/Fragments/Pelanggaran/Pelanggaran";
+import DataKonselor from "../Components/Fragments/Data Konselor/DataKonselor";
+import DataAdmin from "../Components/Fragments/Data Admin/DataAdmin";
+import DataMapel from "../Components/Fragments/Mapel/Data Mapel";
 
 export default function AdminDashboard() {
   const [activePage, setActivePage] = useState("profile");
@@ -23,13 +26,16 @@ export default function AdminDashboard() {
   const menuItems = [
     { id: "profile", label: "Profile", icon: <FaUser /> },
     { id: "users", label: "Data User", icon: <FaUsers /> },
+    { id: "admin", label: "Data Admin", icon: <FaUsers /> },
     { id: "teachers", label: "Data Guru", icon: <FaChalkboardTeacher /> },
+    { id: "counselor", label: "Data Konselor", icon: <FaChalkboardTeacher /> },
     { id: "students", label: "Data Siswa", icon: <FaUserGraduate /> },
     {
       id: "presence",
       label: "Data Kehadiran Siswa",
       icon: <FaClipboardCheck />,
     },
+    { id: "subjects", label: "Mata Pelajaran", icon: <FaCalendarAlt /> },
     { id: "schedule", label: "Jadwal Pelajaran", icon: <FaCalendarAlt /> },
     { id: "violation", label: "Pelanggaran", icon: <FaCalendarAlt /> },
   ];
@@ -47,9 +53,12 @@ export default function AdminDashboard() {
         <div className="p-6 flex-1 overflow-auto">
           {activePage === "profile" && <ProfileAdmin />}
           {activePage === "users" && <DataUser />}
+          {activePage === "admin" && <DataAdmin />}
           {activePage === "teachers" && <DataGuru />}
+          {activePage === "counselor" && <DataKonselor />}
           {activePage === "students" && <DataSiswa />}
           {activePage === "presence" && <DataKehadiranSiswa />}
+          {activePage === "subjects" && <DataMapel />}
           {activePage === "schedule" && <JadwalMapel />}
           {activePage === "violation" && <Pelanggaran />}
         </div>
