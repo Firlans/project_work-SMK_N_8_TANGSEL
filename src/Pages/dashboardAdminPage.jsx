@@ -3,10 +3,14 @@ import {
   FaUser,
   FaChalkboardTeacher,
   FaUserGraduate,
-  FaCalendarAlt,
   FaUsers,
   FaClipboardCheck,
+  FaBookOpen
 } from "react-icons/fa";
+import { SiGoogleclassroom } from "react-icons/si";
+import { GrSchedules } from "react-icons/gr";
+import { MdOutlineReport } from "react-icons/md";
+import { FiAward } from "react-icons/fi";
 import Header from "../Components/Elements/Header/Index";
 import ProfileAdmin from "../Components/Fragments/ProfileAdmin";
 import DataGuru from "../Components/Fragments/Data Guru/DataGuru";
@@ -19,6 +23,7 @@ import Pelanggaran from "../Components/Fragments/Pelanggaran/Pelanggaran";
 import DataKonselor from "../Components/Fragments/Data Konselor/DataKonselor";
 import DataAdmin from "../Components/Fragments/Data Admin/DataAdmin";
 import DataMapel from "../Components/Fragments/Mapel/Data Mapel";
+import DataKelas from "../Components/Fragments/Data Kelas/DataKelas";
 
 export default function AdminDashboard() {
   const [activePage, setActivePage] = useState("profile");
@@ -35,9 +40,11 @@ export default function AdminDashboard() {
       label: "Data Kehadiran Siswa",
       icon: <FaClipboardCheck />,
     },
-    { id: "subjects", label: "Mata Pelajaran", icon: <FaCalendarAlt /> },
-    { id: "schedule", label: "Jadwal Pelajaran", icon: <FaCalendarAlt /> },
-    { id: "violation", label: "Pelanggaran", icon: <FaCalendarAlt /> },
+    { id: "classes", label: "Data Kelas", icon: <SiGoogleclassroom /> },
+    { id: "subjects", label: "Mata Pelajaran", icon: <FaBookOpen /> },
+    { id: "schedule", label: "Jadwal Pelajaran", icon: <GrSchedules /> },
+    { id: "achievement", label: "Prestasi", icon: <FiAward /> },
+    { id: "violation", label: "Pelanggaran", icon: <MdOutlineReport /> },
   ];
 
   return (
@@ -58,8 +65,10 @@ export default function AdminDashboard() {
           {activePage === "counselor" && <DataKonselor />}
           {activePage === "students" && <DataSiswa />}
           {activePage === "presence" && <DataKehadiranSiswa />}
+          {activePage === "classes" && <DataKelas />}
           {activePage === "subjects" && <DataMapel />}
           {activePage === "schedule" && <JadwalMapel />}
+          {activePage === "achievement" && <Pelanggaran />}
           {activePage === "violation" && <Pelanggaran />}
         </div>
       </div>
