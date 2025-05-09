@@ -1,8 +1,11 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import dotenv from "dotenv";
+
+const port = process.env.DOMAIN;
 
 const axiosClient = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: `${port}/api`,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
