@@ -120,10 +120,11 @@ class AbsenController extends Controller
                 );
             }
 
-            $kehadiran = Kehadiran::where('id_siswa', $id_siswa)
-                ->whereHas('jadwal', function ($query) use ($id_kelas) {
-                    $query->where('id_kelas', $id_kelas);
-                })
+            $kehadiran = Kehadiran::select()
+                ->join('pertemuan', 'pertemuan.id', '=', 'kehadiran.id_pertemuan')
+                ->join('jadwal', 'jadwal.id', '=', 'pertemuan.id_jadwal')
+                ->where('jadwal.id_kelas', '=', $id_kelas)
+                ->where('kehadiran.id_siswa', '=', $id_siswa)
                 ->get();
 
             return response()->json(

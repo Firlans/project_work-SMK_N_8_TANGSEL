@@ -51,6 +51,11 @@ class Siswa extends Model
         return $this->hasOne(WaliMurid::class, 'id_siswa');
     }
 
+    public function prestasi()
+    {
+        return $this->hasMany(Prestasi::class, 'siswa_id', 'id');
+    }
+
     public function sentMessages()
     {
         return $this->morphMany(ChatDetail::class, 'sender');

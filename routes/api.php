@@ -106,4 +106,6 @@ Route::put('/pelanggaran/{id}', [PelanggaranController::class, 'updatePelanggara
 Route::delete('/pelanggaran/{id}', [PelanggaranController::class, 'deletePelanggaran']);
 
 // // route prestasi
-// Route::get('/prestasi', [PrestasiController::class, 'getAllPrestasi']);
+Route::get('/prestasi', [PrestasiController::class, 'getAllPrestasi']);
+Route::get('/prestasi/{id}', [PrestasiController::class, 'getPrestasiById']);
+Route::post('/prestasi', [PrestasiController::class, 'createPrestasi']);

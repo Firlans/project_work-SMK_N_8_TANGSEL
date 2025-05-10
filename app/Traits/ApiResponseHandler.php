@@ -24,4 +24,45 @@ trait ApiResponseHandler
 
         return response()->json($response, 500);
     }
+    protected function handleReturnData($data)
+    {
+        if (env('APP_DEBUG') === 'true') {
+            \Log::info("data = $data");
+        }
+
+        $isEmpty = false;
+        if ($data instanceof \Illuminate\Support\Collection) {
+            $isEmpty = $data->isEmpty();
+        } elseif (is_null($data)) {
+            $isEmpty = true;
+        }
+
+        return response()->json([
+            "status" => "success",
+            "message" => $isEmpty ? "No attendance records found" : "Successfully retrieved attendance records",
+            "data" => $data
+        ], 200);
+    }
+
+    protected function handleNotFoundData($message)
+    {
+        return response()->json(
+            [
+                'status' => 'error',
+                'message' => $message,
+            ],
+            404
+        );
+    }
+
+    protected function invalidParameter($parameter)
+    {
+        return response()->json(
+            [
+                'status' => 'error',
+                'message' => "invalid parameter $parameter",
+            ],
+            400
+        );
+    }
 }
