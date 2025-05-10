@@ -190,7 +190,7 @@ class AbsenController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Attendance successfully updated',
-                'data' => new KehadiranResource($kehadiran),
+                'data' => $kehadiran,
             ], 200);
         } catch (\Exception $e) {
             return $this->handleError($e, 'updateKehadiran');

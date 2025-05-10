@@ -6,6 +6,7 @@ use App\Models\Prestasi;
 use App\Models\Siswa;
 use App\Traits\ApiResponseHandler;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use function PHPUnit\Framework\isNumeric;
 
@@ -17,7 +18,7 @@ class PrestasiController extends Controller
         try {
             $prestasi = Prestasi::all();
 
-            return $this->handleReturnData($prestasi);
+            return $this->handleReturnData($prestasi, 200);
         } catch (\Exception $e) {
             return $this->handleError($e, 'getAllPrestasi');
         }
@@ -41,7 +42,7 @@ class PrestasiController extends Controller
                 return $this->handleNotFoundData("Prestasi with ID $id not found");
             }
 
-            return $this->handleReturnData($prestasi);
+            return $this->handleReturnData($prestasi, 200);
         } catch (\Exception $e) {
             return $this->handleError($e, 'getPrestasiById');
         }
@@ -49,10 +50,11 @@ class PrestasiController extends Controller
 
     public function createPrestasi(Request $request)
     {
-        try{
+        try {
             $data = $request->except('bukti_gambar');
+
             $validationResult = $this->validation($data);
-            if (!$validationResult) {
+            if ($validationResult !== true) {
                 return $validationResult;
             }
 
@@ -63,22 +65,91 @@ class PrestasiController extends Controller
                 $data['nama_foto'] = $imageName;
             }
 
-            // $isExistSiswa = Siswa::find($data['siswa_id']);
-            // if(!$isExistSiswa){
-            //     return $this->handleNotFoundData("Student with id {$data['siswa_id']} not found");
-            // }
 
             $prestasi = Prestasi::create($data);
-            return $this->handleReturnData($prestasi);
-        }catch(\Exception $e){
-            return $this->handleError($e, 'createPrestasi');;
+            return $this->handlCreated($prestasi,'Prestasi');
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'createPrestasi');
         }
-
-
     }
 
-    private function validation($data)
+    public function updatePrestasi(Request $request, $id)
     {
+        try {
+            $data = $request->except('bukti_gambar');
+
+            $validationResult = $this->validation($data, $id);
+            if ($validationResult !== true) {
+                return $validationResult;
+            }
+
+            $prestasi = Prestasi::find($id);
+            if (!$prestasi) {
+                return $this->handleNotFoundData("Prestasi with ID $id not found");
+            }
+
+            if ($request->hasFile('bukti_gambar')) {
+                if ($prestasi->nama_foto) {
+                    Storage::delete('public/prestasi/' . $prestasi->nama_foto);
+                }
+                $image = $request->file('bukti_gambar');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->storeAs('public/prestasi', $imageName);
+                $data['nama_foto'] = $imageName;
+            }
+
+            $prestasi->update($data);
+
+            return $this->handleUpdated($prestasi, 'Prestasi');
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'updatePrestasi');
+        }
+    }
+
+    public function deletePrestasi($id){
+        try{
+            $prestasi = Prestasi::find($id);
+            if (!$prestasi) {
+                return $this->handleNotFoundData("Prestasi with ID $id not found");
+            }
+
+            if ($prestasi->nama_foto) {
+                Storage::delete('public/prestasi/' . $prestasi->nama_foto);
+            }
+
+            $prestasi->delete();
+
+            return $this->handleDeleted('Prestasi');
+        }catch(\Exception $e){
+            return $this->handleError($e, 'deletePrestasi');
+        }
+    }
+
+    private function validation($data, $id = null)
+    {
+        if (
+            isset($id) &&
+            (
+                empty($id) ||
+                $id === null ||
+                $id === "null" ||
+                $id === "undefined" ||
+                !is_numeric($id)
+            )
+        ) {
+            return $this->invalidParameter("id = {$id}");
+        }
+
+        if (
+            empty($data['siswa_id']) ||
+            $data['siswa_id'] === null ||
+            $data['siswa_id'] === "null" ||
+            $data['siswa_id'] === "undefined" ||
+            !is_numeric($data['siswa_id'])
+        ) {
+            return $this->invalidParameter("siswa id = {$data['siswa_id']}");
+        }
+
         $validator = Validator::make($data, [
             'nama_prestasi' => 'required|string',
             'deskripsi' => 'required|string',
@@ -88,7 +159,7 @@ class PrestasiController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'status' => false,
+                'status' => 'error',
                 'message' => 'Validation Error',
                 'errors' => $validator->errors(),
             ], 422);

@@ -24,7 +24,7 @@ trait ApiResponseHandler
 
         return response()->json($response, 500);
     }
-    protected function handleReturnData($data)
+    protected function handleReturnData($data, $statusCode)
     {
         if (env('APP_DEBUG') === 'true') {
             \Log::info("data = $data");
@@ -41,8 +41,34 @@ trait ApiResponseHandler
             "status" => "success",
             "message" => $isEmpty ? "No attendance records found" : "Successfully retrieved attendance records",
             "data" => $data
+        ], $statusCode);
+    }
+
+    protected function handleUpdated($data, $object)
+    {
+        return response()->json([
+            'status' => 'success',
+            'message' => "$object created successfully",
+            'data' => $data
+        ], 201);
+    }
+
+    protected function handleDeleted($object)
+    {
+        return response()->json([
+            'status' => 'success',
+            'message' => "$object deleted successfully"
         ], 200);
     }
+    protected function handlCreated($data, $object)
+    {
+        return response()->json([
+            'status' => 'success',
+            'message' => "$object created successfully",
+            'data' => $data
+        ], 201);
+    }
+
 
     protected function handleNotFoundData($message)
     {
