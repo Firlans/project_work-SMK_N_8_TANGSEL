@@ -111,12 +111,6 @@ class PelanggaranController extends Controller
     public function updatePelanggaran(Request $request, $id)
     {
         try {
-            // Log raw content
-            \Log::info('Request content:', [
-                'content' => $request->getContent(),
-                'contentType' => $request->header('Content-Type')
-            ]);
-
             $pelanggaran = Pelanggaran::find($id);
             if (!$pelanggaran) {
                 return response()->json([
@@ -130,9 +124,6 @@ class PelanggaranController extends Controller
             $data = array_filter($data, function($key) {
                 return !in_array($key, ['bukti_gambar', '_method']);
             }, ARRAY_FILTER_USE_KEY);
-
-            // Debug collected data
-            \Log::info('Collected data:', $data);
 
             // Validate the data
             $validationResult = $this->validation($data, $id);
@@ -160,7 +151,6 @@ class PelanggaranController extends Controller
                 'data' => $pelanggaran
             ], 200);
         } catch (\Exception $e) {
-            \Log::error('Update Pelanggaran Error: ' . $e->getMessage());
             return $this->handleError($e, 'updatePelanggaran');
         }
     }
@@ -192,9 +182,6 @@ class PelanggaranController extends Controller
 
     private function validation($data, $id = null)
     {
-        // Debug validation input
-        \Log::info('Validation input:', $data);
-
         $rules = [
             'nama_pelanggaran' => 'required|string|max:255',
             'deskripsi' => 'required|string|max:255',
@@ -206,7 +193,6 @@ class PelanggaranController extends Controller
         $validator = Validator::make($data, $rules);
 
         if ($validator->fails()) {
-            \Log::error('Validation errors:', $validator->errors()->toArray());
             return response()->json([
                 'status' => 'error',
                 'message' => $validator->errors(),

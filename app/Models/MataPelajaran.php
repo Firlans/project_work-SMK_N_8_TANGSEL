@@ -22,9 +22,4 @@ class MataPelajaran extends Model
     {
         return $this->hasMany(Guru::class);
     }
-
-    public function kehadiran()
-    {
-        return $this->hasMany(Kehadiran::class, 'mata_pelajaran_id', 'id');
-    }
 }

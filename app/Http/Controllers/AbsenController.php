@@ -49,10 +49,10 @@ class AbsenController extends Controller
                 );
             }
 
-            $kehadiran = Kehadiran::with(['jadwal.mataPelajaran', 'siswa'])
-                ->where('id_siswa', $id_siswa)
+            $kehadiran = Kehadiran::select(['kehadiran.*', 'pertemuan.*'])
+                ->join('pertemuan', 'pertemuan.id', '=', 'kehadiran.id_pertemuan')
+                ->where('kehadiran.id_siswa', '=', $id_siswa)
                 ->get();
-
             return response()->json(
                 [
                     'status' => 'success',
@@ -83,10 +83,12 @@ class AbsenController extends Controller
                 );
             }
 
-            $kehadiran = Kehadiran::where('id_siswa', $id_siswa)
-                ->whereHas('jadwal', function ($query) use ($id_mata_pelajaran) {
-                    $query->where('id_mata_pelajaran', $id_mata_pelajaran);
-                })
+            $kehadiran = Kehadiran::select(['kehadiran.*', 'pertemuan.*'])
+                ->join('pertemuan', 'pertemuan.id', '=', 'kehadiran.id_pertemuan')
+                ->join('jadwal', 'jadwal.id', '=', 'pertemuan.id_jadwal')
+                ->join('guru', 'guru.id', '=', 'jadwal.id_guru')
+                ->where('kehadiran.id_siswa', '=', $id_siswa)
+                ->where('guru.mata_pelajaran_id', '=', $id_mata_pelajaran)
                 ->get();
 
             return response()->json(
