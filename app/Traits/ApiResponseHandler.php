@@ -48,9 +48,9 @@ trait ApiResponseHandler
     {
         return response()->json([
             'status' => 'success',
-            'message' => "$objectName created successfully",
+            'message' => "$objectName updated successfully",
             'data' => $data
-        ], 201);
+        ], 200);
     }
 
     protected function handleDeleted($objectName)
