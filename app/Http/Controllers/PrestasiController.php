@@ -18,7 +18,7 @@ class PrestasiController extends Controller
         try {
             $prestasi = Prestasi::all();
 
-            return $this->handleReturnData($prestasi, 200);
+            return $this->handleReturnData($prestasi, 'Prestasi');
         } catch (\Exception $e) {
             return $this->handleError($e, 'getAllPrestasi');
         }
@@ -39,10 +39,10 @@ class PrestasiController extends Controller
 
             $prestasi = Prestasi::find($id);
             if (!$prestasi) {
-                return $this->handleNotFoundData("Prestasi with ID $id not found");
+                return $this->handleNotFoundData($id, 'Prestasi', 'ID');
             }
 
-            return $this->handleReturnData($prestasi, 200);
+            return $this->handleReturnData($prestasi, 'Prestasi');
         } catch (\Exception $e) {
             return $this->handleError($e, 'getPrestasiById');
         }
@@ -67,7 +67,7 @@ class PrestasiController extends Controller
 
 
             $prestasi = Prestasi::create($data);
-            return $this->handlCreated($prestasi,'Prestasi');
+            return $this->handleCreated($prestasi,'Prestasi');
         } catch (\Exception $e) {
             return $this->handleError($e, 'createPrestasi');
         }
@@ -85,7 +85,7 @@ class PrestasiController extends Controller
 
             $prestasi = Prestasi::find($id);
             if (!$prestasi) {
-                return $this->handleNotFoundData("Prestasi with ID $id not found");
+                return $this->handleNotFoundData($id, 'Prestasi', 'ID');
             }
 
             if ($request->hasFile('bukti_gambar')) {
@@ -110,7 +110,7 @@ class PrestasiController extends Controller
         try{
             $prestasi = Prestasi::find($id);
             if (!$prestasi) {
-                return $this->handleNotFoundData("Prestasi with ID $id not found");
+                return $this->handleNotFoundData($id, 'Prestasi', 'ID');
             }
 
             if ($prestasi->nama_foto) {

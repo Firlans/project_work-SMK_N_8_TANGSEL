@@ -8,6 +8,7 @@ use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\PelanggaranController;
+use App\Http\Controllers\PertemuanController;
 use App\Http\Controllers\PrestasiController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\UserController;
@@ -53,6 +54,14 @@ Route::post('/jadwal', [JadwalController::class, 'createJadwal']);
 Route::put('/jadwal/{id_jadwal}', [JadwalController::class, 'updateJadwal']);
 Route::delete('/jadwal/{id_jadwal}', [JadwalController::class, 'deleteJadwal']);
 
+// route pertemuan
+Route::get('/pertemuan',[PertemuanController::class, 'getAllPertemuan']);
+Route::get('/pertemuan/{id}',[PertemuanController::class, 'getPertemuanById']);
+Route::get('/pertemuan/jadwal/{idJadwal}',[PertemuanController::class, 'getPertemuanByJadwalId']);
+Route::post('/pertemuan',[PertemuanController::class, 'createPertemuan']);
+Route::put('/pertemuan/{id}',[PertemuanController::class, 'updatePertemuan']);
+Route::delete('/pertemuan/{id}',[PertemuanController::class, 'deletePertemuan']);
+
 // route kelas
 Route::get('/kelas', [KelasController::class, 'getAllKelas']);
 Route::get('/kelas/{id_kelas}', [KelasController::class, 'getKelasById']); // Add this new route
@@ -92,9 +101,6 @@ Route::get('/wali-murid/siswa/{id_siswa}', [WaliMuridController::class, 'getWali
 Route::post('/wali-murid', [WaliMuridController::class, 'createWaliMurid']);
 Route::put('/wali-murid/{id}', [WaliMuridController::class, 'updateWaliMurid']);
 Route::delete('/wali-murid/{id}', [WaliMuridController::class, 'deleteWaliMurid']);
-
-
-
 
 // route pelanggaran
 Route::get('/pelanggaran', [PelanggaranController::class, 'getAllPelanggaran']);

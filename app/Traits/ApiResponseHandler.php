@@ -24,7 +24,7 @@ trait ApiResponseHandler
 
         return response()->json($response, 500);
     }
-    protected function handleReturnData($data, $statusCode)
+    protected function handleReturnData($data, $objectName)
     {
         if (env('APP_DEBUG') === 'true') {
             \Log::info("data = $data");
@@ -39,43 +39,43 @@ trait ApiResponseHandler
 
         return response()->json([
             "status" => "success",
-            "message" => $isEmpty ? "No attendance records found" : "Successfully retrieved attendance records",
+            "message" => $isEmpty ? "No $objectName records found" : "Successfully retrieved $objectName records",
             "data" => $data
-        ], $statusCode);
-    }
-
-    protected function handleUpdated($data, $object)
-    {
-        return response()->json([
-            'status' => 'success',
-            'message' => "$object created successfully",
-            'data' => $data
-        ], 201);
-    }
-
-    protected function handleDeleted($object)
-    {
-        return response()->json([
-            'status' => 'success',
-            'message' => "$object deleted successfully"
         ], 200);
     }
-    protected function handlCreated($data, $object)
+
+    protected function handleUpdated($data, $objectName)
     {
         return response()->json([
             'status' => 'success',
-            'message' => "$object created successfully",
+            'message' => "$objectName created successfully",
+            'data' => $data
+        ], 201);
+    }
+
+    protected function handleDeleted($objectName)
+    {
+        return response()->json([
+            'status' => 'success',
+            'message' => "$objectName deleted successfully"
+        ], 200);
+    }
+    protected function handleCreated($data, $objectName)
+    {
+        return response()->json([
+            'status' => 'success',
+            'message' => "$objectName created successfully",
             'data' => $data
         ], 201);
     }
 
 
-    protected function handleNotFoundData($message)
+    protected function handleNotFoundData($data, $objectName, $objectSearch = null)
     {
         return response()->json(
             [
                 'status' => 'error',
-                'message' => $message,
+                'message' => "$objectName with " . ($objectSearch ?? 'ID') ." $data not found",
             ],
             404
         );
@@ -85,7 +85,7 @@ trait ApiResponseHandler
     {
         return response()->json(
             [
-                'status' => 'error',
+                'status' => 'fail',
                 'message' => "invalid parameter $parameter",
             ],
             400

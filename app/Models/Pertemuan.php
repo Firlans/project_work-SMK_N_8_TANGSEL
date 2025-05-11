@@ -9,7 +9,7 @@ class Pertemuan extends Model
 {
     protected $table = 'pertemuan';
     protected $fillable = [
-        "nama_pertemuann",
+        "nama_pertemuan",
         "id_jadwal",
         "tanggal"
     ];
