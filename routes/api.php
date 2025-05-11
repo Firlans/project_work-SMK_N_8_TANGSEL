@@ -12,6 +12,7 @@ use App\Http\Controllers\PertemuanController;
 use App\Http\Controllers\PrestasiController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WaktuController;
 use App\Http\Controllers\WaliMuridController;
 use App\Http\Middleware\JwtMiddleware;
 use App\Http\Middleware\RoleMiddleware;
@@ -117,3 +118,9 @@ Route::get('/prestasi/{id}', [PrestasiController::class, 'getPrestasiById']);
 Route::post('/prestasi', [PrestasiController::class, 'createPrestasi']);
 Route::put('/prestasi/{id}', [PrestasiController::class, 'updatePrestasi']);
 Route::delete('/prestasi/{id}', [PrestasiController::class, 'deletePrestasi']);
+
+// route waktu
+Route::post('/waktu', [WaktuController::class, 'createWaktu']);
+Route::put('/waktu/{id}', [WaktuController::class, 'updateWaktu']);
+Route::delete('/waktu/{id}', [WaktuController::class, 'deleteWaktu']);
+Route::get('/waktu', [WaktuController::class, 'getAllWaktu']);
