@@ -1,8 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import dotenv from "dotenv";
 
-const port = process.env.DOMAIN;
+const port = import.meta.env.VITE_DOMAIN;
 
 const axiosClient = axios.create({
   baseURL: `${port}/api`,
