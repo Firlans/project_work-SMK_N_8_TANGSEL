@@ -5,15 +5,12 @@ import {
   FaComments,
   FaUser,
   FaPaperPlane,
-  FaBars,
-  FaTimes,
 } from "react-icons/fa";
 import Header from "../Components/Elements/Header/Index";
 import ProfileSiswa from "../Components/Fragments/ProfileSiswa";
-import KehadiranSiswa from "../Components/Fragments/Siswa/KehadiranSiswa";
 import JadwalSiswa from "../Components/Fragments/Siswa/JadwalSiswa";
 import Sidebar from "../Components/Elements/Sidebar/Sidebar";
-
+import PresensiSiswa from "../Components/Fragments/Siswa/KehadiranSiswa";
 
 const KonselingBK = () => {
   const [messages, setMessages] = useState([
@@ -138,13 +135,13 @@ const DashboardSiswaPage = () => {
   const menuItems = [
     { id: "profile", label: "Profile", icon: <FaUser /> },
     { id: "jadwal", label: "Jadwal Belajar", icon: <FaCalendarAlt /> },
-    { id: "kehadiran", label: "Kehadiran Siswa", icon: <FaUserCheck /> },
+    { id: "kehadiran", label: "Presensi Siswa", icon: <FaUserCheck /> },
     { id: "bk", label: "Konsultasi BK", icon: <FaComments /> },
   ];
 
   return (
     <div className="flex min-h-screen bg-gray-50 relative">
-     <Sidebar
+      <Sidebar
         title="Dashboard Guru"
         menuItems={menuItems}
         setActivePage={setActivePage}
@@ -155,7 +152,7 @@ const DashboardSiswaPage = () => {
         <div className="p-6 flex-1 overflow-auto">
           {activePage === "profile" && <ProfileSiswa />}
           {activePage === "jadwal" && <JadwalSiswa />}
-          {activePage === "kehadiran" && <KehadiranSiswa />}
+          {activePage === "kehadiran" && <PresensiSiswa />}
           {activePage === "bk" && <KonselingBK />}
         </div>
       </div>

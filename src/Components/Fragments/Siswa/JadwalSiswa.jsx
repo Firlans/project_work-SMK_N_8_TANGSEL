@@ -1,154 +1,119 @@
-import React, { useEffect, useState } from "react";
-import axiosClient from "../../../axiosClient.js";
-import { formatWaktu } from "../../../utils/dateFormatter.js";
+import { useEffect, useState } from "react";
+import axiosClient from "../../../axiosClient";
+
+const hariMap = {
+  1: "Senin",
+  2: "Selasa",
+  3: "Rabu",
+  4: "Kamis",
+  5: "Jumat",
+  6: "Sabtu",
+};
 
 const JadwalSiswa = () => {
-  const [jadwalData, setJadwalData] = useState([]);
+  const [jadwal, setJadwal] = useState([]);
+  const [waktu, setWaktu] = useState([]);
+  const [guruMap, setGuruMap] = useState({});
+  const [mapelMap, setMapelMap] = useState({});
+  const [guruMapelMap, setGuruMapelMap] = useState({});
   const [loading, setLoading] = useState(true);
 
-  // Tambahkan mapping untuk hari
-  const hariMap = {
-    1: "Senin",
-    2: "Selasa",
-    3: "Rabu",
-    4: "Kamis",
-    5: "Jumat",
-    6: "Sabtu",
-    7: "Minggu",
-  };
-
-  const [mataPelajaranMap, setMataPelajaranMap] = useState({});
-
   useEffect(() => {
-    const fetchJadwal = async () => {
+    const fetchAll = async () => {
       try {
         const profileRes = await axiosClient.get("/profile");
-        const id = profileRes.data.data.id;
-        console.log("🏫 ID Siswa:", id);
+        const idSiswa = profileRes.data.data.id;
 
-        const response = await axiosClient.get(`/jadwal/siswa?id_siswa=${id}`);
-        console.log("📅 Raw Jadwal Data:", response.data);
-        
-        // Debug setiap item jadwal
-        response.data.data.forEach((item, index) => {
-          console.log(`📝 Jadwal ${index + 1}:`, {
-            hari: hariMap[item.id_hari],
-            waktu: item.id_waktu,
-            kelas: item.id_kelas,
-            guru: item.id_guru,
-            mataPelajaran: mataPelajaranMap[item.id_mata_pelajaran]
-          });
+        const [jadwalRes, waktuRes, guruRes, mapelRes] = await Promise.all([
+          axiosClient.get(`/jadwal/siswa?id_siswa=${idSiswa}`),
+          axiosClient.get("/waktu"),
+          axiosClient.get("/guru"),
+          axiosClient.get("/mata-pelajaran"),
+        ]);
+
+        console.log("Jadwal Response:", jadwalRes.data.data);
+        console.log("Waktu Response:", waktuRes.data.data);
+        console.log("Guru Response:", guruRes.data.data);
+        console.log("Mapel Response:", mapelRes.data.data);
+
+        const waktuSorted = waktuRes.data.data.sort((a, b) => a.id - b.id);
+
+        const guruLookup = {};
+        guruRes.data.data.forEach((g) => {
+          guruLookup[g.id] = g.nama;
         });
 
-        setJadwalData(response.data.data);
+        const mapelLookup = {};
+        mapelRes.data.data.forEach((m) => {
+          mapelLookup[m.id] = m.nama_pelajaran;
+        });
+
+        const guruMapelLookup = {};
+        guruRes.data.data.forEach((g) => {
+          guruMapelLookup[g.id] = g.mata_pelajaran_id;
+        });
+
+        setWaktu(waktuSorted);
+        setJadwal(jadwalRes.data.data);
+        setGuruMap(guruLookup);
+        setMapelMap(mapelLookup);
+        setGuruMapelMap(guruMapelLookup);
         setLoading(false);
       } catch (error) {
-        console.error("❌ Gagal mengambil jadwal:", {
-          message: error.message,
-          response: error.response?.data,
-          status: error.response?.status
-        });
+        console.error("Gagal mengambil data jadwal:", error);
         setLoading(false);
       }
     };
 
-    fetchJadwal();
-}, [mataPelajaranMap]); // Tambahkan dependency mataPelajaranMap
-
-  useEffect(() => {
-    const fetchMataPelajaran = async () => {
-      try {
-        const response = await axiosClient.get("/mata-pelajaran");
-        const mapelData = {};
-        response.data.data.forEach((mapel) => {
-          mapelData[mapel.id] = mapel.nama_pelajaran;
-        });
-        setMataPelajaranMap(mapelData);
-      } catch (error) {
-        console.error("Gagal mengambil data mata pelajaran:", error);
-      }
-    };
-
-    fetchMataPelajaran();
+    fetchAll();
   }, []);
 
-  if (loading) {
-    return (
-      <div style={{ textAlign: "center", padding: "1rem" }}>
-        Memuat jadwal...
-      </div>
-    );
-  }
+  const getDataByHari = (hariId) => {
+    const filtered = jadwal.filter((j) => j.id_hari === hariId);
+    return waktu.map((w) => {
+      const found = filtered.find((j) => j.id_waktu === w.id);
+      return {
+        waktu: `${w.jam_mulai.slice(0, 5)} - ${w.jam_selesai.slice(0, 5)}`,
+        mapel: found ? mapelMap[guruMapelMap[found.id_guru]] ?? "-" : "-",
+        guru: found ? guruMap[found.id_guru] : "-",
+      };
+    });
+  };
+
+  if (loading) return <p>Memuat jadwal...</p>;
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center">
-        Jadwal Pelajaran
-      </h2>
-      <div className="overflow-x-auto rounded-lg shadow">
-        <div className="inline-block min-w-full align-middle">
-          <table className="min-w-full divide-y divide-gray-300">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  scope="col"
-                  className="py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-gray-900"
-                >
-                  Hari
-                </th>
-                <th
-                  scope="col"
-                  className="py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-gray-900"
-                >
-                  Jam Mulai
-                </th>
-                <th
-                  scope="col"
-                  className="py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-gray-900"
-                >
-                  Jam Selesai
-                </th>
-                <th
-                  scope="col"
-                  className="py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-gray-900"
-                >
-                  Mata Pelajaran
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {jadwalData.length > 0 ? (
-                jadwalData.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="whitespace-nowrap py-2 px-3 sm:px-4 text-xs sm:text-sm text-gray-900">
-                      {hariMap[item.id_hari] || item.id_hari}
-                    </td>
-                    <td className="whitespace-nowrap py-2 px-3 sm:px-4 text-xs sm:text-sm text-gray-900">
-                      {formatWaktu(item.jam_mulai)}
-                    </td>
-                    <td className="whitespace-nowrap py-2 px-3 sm:px-4 text-xs sm:text-sm text-gray-900">
-                      {formatWaktu(item.jam_selesai)}
-                    </td>
-                    <td className="whitespace-normal py-2 px-3 sm:px-4 text-xs sm:text-sm text-gray-900">
-                      {mataPelajaranMap[item.id_mata_pelajaran] ||
-                        item.id_mata_pelajaran}
-                    </td>
+    <div className="space-y-8">
+      {Object.entries(hariMap).map(([hariId, namaHari]) => {
+        const rows = getDataByHari(parseInt(hariId));
+        return (
+          <div key={hariId} className="bg-white p-4 rounded-xl shadow">
+            <h3 className="text-lg font-bold mb-4">{namaHari}</h3>
+            {rows.length === 0 || rows.every((r) => r.mapel === "-") ? (
+              <p className="text-gray-500">Belum ada jadwal.</p>
+            ) : (
+              <table className="w-full text-left border">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="p-2 border">Waktu</th>
+                    <th className="p-2 border">Mata Pelajaran</th>
+                    <th className="p-2 border">Guru</th>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan="4"
-                    className="py-4 text-center text-sm text-gray-500"
-                  >
-                    Tidak ada jadwal tersedia.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                </thead>
+                <tbody>
+                  {rows.map((row, idx) => (
+                    <tr key={idx} className="border-t hover:bg-gray-50">
+                      <td className="p-2 border">{row.waktu}</td>
+                      <td className="p-2 border">{row.mapel}</td>
+                      <td className="p-2 border">{row.guru}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };
