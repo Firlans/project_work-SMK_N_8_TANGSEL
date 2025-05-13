@@ -13,15 +13,26 @@ const EditMapel = ({ onClose, refreshData, initialData }) => {
 
     try {
       if (initialData) {
-        await axiosClient.put(`/mata-pelajaran/${initialData.id}`, form);
-        console.log("Data updated: ", form);
+        await axiosClient.put(
+          `/mata-pelajaran/${initialData.id}?nama_pelajaran=${form.nama_pelajaran}`,
+          form
+        );
+        console.log("Data mapel berhasil diperbarui:", form);
       } else {
         await axiosClient.post("/mata-pelajaran", form);
-        console.log("Data added:", form);
+        console.log("Data mapel berhasil ditambahkan:", form);
       }
       refreshData();
-      onclose();
-    } catch (err) {}
+      onClose();
+    } catch (err) {
+      const msg = err.response?.data?.message;
+      if (typeof msg === "object") {
+        const messages = Object.values(msg).flat().join(", ");
+        setError(messages);
+      } else {
+        setError(msg || "Terjadi kesalahan");
+      }
+    }
   };
 
   return (
@@ -33,9 +44,10 @@ const EditMapel = ({ onClose, refreshData, initialData }) => {
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block">Nama Mata Pelajaran</label>
+            <label className="block text-sm">Nama Mata Pelajaran</label>
             <input
               type="text"
+              name="nama_pelajaran"
               value={form.nama_pelajaran}
               onChange={(e) =>
                 setForm({ ...form, nama_pelajaran: e.target.value })
