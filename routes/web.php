@@ -16,6 +16,7 @@ Route::get('/send-message/{message}', function($message){
 
     return 'done';
 });
+
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/dashboard', [SiswaController::class, 'siswa']);
 Route::get('/admin', [GuruController::class, 'admin']);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\Kehadiran;
 use Illuminate\Support\Facades\Validator;
@@ -145,6 +146,15 @@ class AbsenController extends Controller
         try {
             $data = $request->all();
 
+            $validationResult = $this->customValidation($data, [
+                'id_siswa' => 'required|exists:siswa,id',
+                'id_pertemuan' => 'required|exists:pertemuan,id',
+            ]);
+
+            if($validationResult !== true){
+                return $validationResult;
+            }
+
             $kehadiran = Kehadiran::select()
                 ->where('id_pertemuan', '=', $data['id_pertemuan'])
                 ->where('id_siswa', '=', $data['id_siswa'])
@@ -159,6 +169,33 @@ class AbsenController extends Controller
             return $this->handleError($e, 'getKehadiranByIdSiswaAndIdPertemuan');
         }
     }
+
+    public function getKehadiranByIdPertemuan($id_pertemuan){
+        try{
+            $validationResult = $this->customValidation(
+                ["id_pertemuan" => $id_pertemuan],
+                [ 'id_pertemuan' => "required|exists:pertemuan,id"]
+            );
+
+            if($validationResult !== true){
+                return $validationResult;
+            }
+
+            $kehadiran = Kehadiran::select()
+                ->where('id_pertemuan', '=', $id_pertemuan)
+                ->get();
+
+            if(!$kehadiran){
+                return $this->handleNotFoundData("$id_pertemuan",'Kehadiran','id pertemuan' );
+            }
+
+            return $this->handleReturnData($kehadiran, 'Kehadiran');
+
+        }catch(\Exception $e){
+            return $this->handleError($e, 'getKehadiranByIdSiswaAndIdPertemuan');
+        }
+    }
+
     public function createKehadiran(Request $request)
     {
         $validationResult = $this->validation($request->all());
@@ -255,6 +292,20 @@ class AbsenController extends Controller
             'id_pertemuan' => 'required|exists:pertemuan,id',
             'keterangan' => 'nullable|string',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation Error',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        return true;
+    }
+
+    private function customValidation($data, $rules){
+        $validator = Validator::make($data, $rules);
 
         if ($validator->fails()) {
             return response()->json([

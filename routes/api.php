@@ -36,6 +36,7 @@ Route::get('/absen', [AbsenController::class, 'getAllKehadiran']);
 Route::get('/absen/siswa', [AbsenController::class, 'getKehadiranBySiswaId']);
 Route::get('/absen/mata-pelajaran', [AbsenController::class, 'getKehadiranByIdSiswaAndMataPelajaran']);
 Route::get('/absen/kelas', [AbsenController::class, 'getKehadiranByIdSiswaAndKelasId']);
+Route::get('/absen/pertemuan/{id_pertemuan}', [AbsenController::class, 'getKehadiranByIdPertemuan']);
 Route::get('/absen/pertemuan', [AbsenController::class, 'getKehadiranByIdSiswaAndIdPertemuan']);
 Route::post('/absen', [AbsenController::class, 'createKehadiran']);
 Route::put('/absen/{id_kelas}', [AbsenController::class, 'updateKehadiran']);
