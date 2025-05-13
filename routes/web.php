@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\TestingEvent;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\SiswaController;
@@ -7,10 +8,13 @@ use App\Http\Controllers\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function(){
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Server Sedang Berjalan',
-        ], 200);
+    return view('BroadcastTesting');
+});
+Route::get('/send-message/{message}', function($message){
+
+    event(new TestingEvent($message));
+
+    return 'done';
 });
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/dashboard', [SiswaController::class, 'siswa']);

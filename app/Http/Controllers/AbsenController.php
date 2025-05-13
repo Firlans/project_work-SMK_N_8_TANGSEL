@@ -140,6 +140,25 @@ class AbsenController extends Controller
         }
     }
 
+    public function getKehadiranByIdSiswaAndIdPertemuan(Request $request)
+    {
+        try {
+            $data = $request->all();
+
+            $kehadiran = Kehadiran::select()
+                ->where('id_pertemuan', '=', $data['id_pertemuan'])
+                ->where('id_siswa', '=', $data['id_siswa'])
+                ->get();
+
+            if(!$kehadiran){
+                return $this->handleNotFoundData("{$data['id_siswa']} and {$data['id_pertemuan']}",'Kehadiran','id pertemuan and id siswa' );
+            }
+
+            return $this->handleReturnData($kehadiran, 'Kehadiran');
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'getKehadiranByIdSiswaAndIdPertemuan');
+        }
+    }
     public function createKehadiran(Request $request)
     {
         $validationResult = $this->validation($request->all());
