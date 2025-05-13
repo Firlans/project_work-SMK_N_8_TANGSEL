@@ -21,7 +21,10 @@ const ModalPelanggaran = ({ onClose, onSuccess, initialData }) => {
       try {
         const res = await axiosClient.get("/siswa");
         console.log("✅ Data siswa berhasil dimuat:", res.data);
-        setSiswaOptions(res.data.data);
+        const sortedSiswa = res.data.data.sort((a, b) =>
+          a.nama_lengkap.localeCompare(b.nama_lengkap)
+        );
+        setSiswaOptions(sortedSiswa);
       } catch (err) {
         console.error("❌ Gagal mengambil data siswa:", err);
       }

@@ -22,8 +22,9 @@ import Sidebar from "../Components/Elements/Sidebar/Sidebar";
 import Pelanggaran from "../Components/Fragments/Pelanggaran/Pelanggaran";
 import DataKonselor from "../Components/Fragments/Data Konselor/DataKonselor";
 import DataAdmin from "../Components/Fragments/Data Admin/DataAdmin";
-import DataMapel from "../Components/Fragments/Mapel/Data Mapel";
+import DataMapel from "../Components/Fragments/Mapel/DataMapel";
 import DataKelas from "../Components/Fragments/Data Kelas/DataKelas";
+import Prestasi from "../Components/Fragments/Prestasi/Prestasi";
 
 export default function AdminDashboard() {
   const [activePage, setActivePage] = useState("profile");
@@ -68,7 +69,7 @@ export default function AdminDashboard() {
           {activePage === "classes" && <DataKelas />}
           {activePage === "subjects" && <DataMapel />}
           {activePage === "schedule" && <JadwalMapel />}
-          {activePage === "achievement" && <Pelanggaran />}
+          {activePage === "achievement" && <Prestasi />}
           {activePage === "violation" && <Pelanggaran />}
         </div>
       </div>

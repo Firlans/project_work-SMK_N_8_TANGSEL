@@ -20,6 +20,12 @@ const ProfileAdmin = () => {
         console.log("Data Profile:", response.data);
         setProfileData(response.data); // Simpan data dari backend
       } catch (error) {
+        if (
+          error.response?.data?.status === "Token is Expired" ||
+          error.response?.status === 401
+        ) {
+          return;
+        }
         console.error("Gagal mengambil data profil:", error);
       }
     };
@@ -84,16 +90,16 @@ const ProfileAdmin = () => {
           {/* Non-editable fields */}
           <div className="flex flex-col">
             <span className="text-sm text-gray-500">Nama Lengkap</span>
-            <span className="font-medium">{profileData.data.nama}</span>
+            <span className="font-medium">{profileData?.data?.nama}</span>
           </div>
           <div className="flex flex-col">
             <span className="text-sm text-gray-500">NIP</span>
-            <span className="font-medium">{profileData.data.nip}</span>
+            <span className="font-medium">{profileData?.data?.nip}</span>
           </div>
           <div className="flex flex-col">
             <span className="text-sm text-gray-500">Jenis Kelamin</span>
             <span className="font-medium">
-              {profileData.data.jenis_kelamin === "L"
+              {profileData?.data?.jenis_kelamin === "L"
                 ? "Laki-laki"
                 : "Perempuan"}
             </span>
@@ -104,7 +110,7 @@ const ProfileAdmin = () => {
           <div className="flex flex-col">
             <span className="text-sm text-gray-500">Tempat, Tanggal Lahir</span>
             <span className="font-medium">
-              {formatTanggal(profileData.data.tanggal_lahir)}
+              {formatTanggal(profileData?.data?.tanggal_lahir)}
             </span>
           </div>
           <div className="flex flex-col">
@@ -119,7 +125,7 @@ const ProfileAdmin = () => {
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             ) : (
-              <span className="font-medium">{profileData.data.alamat}</span>
+              <span className="font-medium">{profileData?.data?.alamat}</span>
             )}
           </div>
           <div className="flex flex-col">
@@ -134,7 +140,9 @@ const ProfileAdmin = () => {
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             ) : (
-              <span className="font-medium">{profileData.data.user.email}</span>
+              <span className="font-medium">
+                {profileData?.data?.user.email}
+              </span>
             )}
           </div>
         </div>
