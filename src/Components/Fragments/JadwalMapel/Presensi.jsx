@@ -45,6 +45,7 @@ const PresensiList = ({ idPertemuan }) => {
 
     fetchData();
   }, [idPertemuan]);
+
   const getNamaSiswaFromList = (list, id) => {
     const siswa = list.find((s) => s.id === id);
     return siswa ? siswa.nama_lengkap : "";
@@ -133,110 +134,120 @@ const PresensiList = ({ idPertemuan }) => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow mt-4">
-      <h3 className="text-lg font-semibold mb-4">Daftar Presensi</h3>
-      <table className="w-full border text-sm">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-2 border">No.</th>
-            <th className="p-2 border">Nama Siswa</th>
-            <th className="p-2 border">Status</th>
-            <th className="p-2 border">Keterangan</th>
-            <th className="p-2 border">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {presensi.map((item, index) => (
-            <tr key={item.id} className="hover:bg-gray-50">
-              <td className="border p-2 text-center">{index + 1}</td>
-              <td className="border p-2">{getNamaSiswa(item.id_siswa)}</td>
-
-              <td className="border p-2 text-center">
-                {editingId === item.id ? (
-                  <select
-                    className="border rounded px-2 py-1"
-                    value={editedData.status}
-                    onChange={(e) =>
-                      setEditedData((prev) => ({
-                        ...prev,
-                        status: e.target.value,
-                      }))
-                    }
-                  >
-                    {statusOptions.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  item.status.charAt(0).toUpperCase() + item.status.slice(1)
-                )}
-              </td>
-
-              <td className="border p-2 text-center">
-                {editingId === item.id ? (
-                  <input
-                    type="text"
-                    className="border px-2 py-1 rounded w-full"
-                    value={editedData.keterangan}
-                    onChange={(e) =>
-                      setEditedData((prev) => ({
-                        ...prev,
-                        keterangan: e.target.value,
-                      }))
-                    }
-                  />
-                ) : (
-                  item.keterangan || "-"
-                )}
-              </td>
-
-              <td className="border p-2 text-center">
-                {editingId === item.id ? (
-                  <>
-                    <button
-                      className="text-green-600 hover:underline mr-2"
-                      onClick={() => handleSave(item)}
-                    >
-                      Simpan
-                    </button>
-                    <button
-                      className="text-red-600 hover:underline"
-                      onClick={handleCancel}
-                    >
-                      Batal
-                    </button>
-                  </>
-                ) : (
-                  <div className="flex justify-center space-x-2">
-                    <button
-                      className="text-blue-600 hover:underline"
-                      onClick={() => handleEditClick(item)}
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      className="text-red-600 hover:underline"
-                      onClick={() => handleDelete(item)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
-                )}
-              </td>
-            </tr>
-          ))}
-
-          {presensi.length === 0 && (
+    <div className="bg-white p-6 rounded-xl shadow-sm">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-2xl font-bold text-gray-800">Daftar Presensi</h3>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-50">
             <tr>
-              <td colSpan="5" className="text-center text-gray-500 p-4">
-                Tidak ada data presensi.
-              </td>
+              <th className="px-6 py-3">No.</th>
+              <th className="px-6 py-3">Nama Siswa</th>
+              <th className="px-6 py-3">Status</th>
+              <th className="px-6 py-3">Keterangan</th>
+              <th className="px-6 py-3">Aksi</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {presensi.map((item, index) => (
+              <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                <td className="px-6 py-4 whitespace-nowrap text-center">
+                  {index + 1}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">
+                  {getNamaSiswa(item.id_siswa)}
+                </td>
+
+                <td className="px-6 py-4 whitespace-nowrap text-center">
+                  {editingId === item.id ? (
+                    <select
+                      className="rounded px-2 py-1"
+                      value={editedData.status || ""}
+                      onChange={(e) =>
+                        setEditedData((prev) => ({
+                          ...prev,
+                          status: e.target.value || null,
+                        }))
+                      }
+                    >
+                      {statusOptions.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  ) : item.status ? (
+                    item.status.charAt(0).toUpperCase() + item.status.slice(1)
+                  ) : (
+                    "-"
+                  )}
+                </td>
+
+                <td className="px-6 py-4 whitespace-nowrap text-center">
+                  {editingId === item.id ? (
+                    <input
+                      type="text"
+                      className="px-2 py-1 rounded w-full"
+                      value={editedData.keterangan || ""}
+                      onChange={(e) =>
+                        setEditedData((prev) => ({
+                          ...prev,
+                          keterangan: e.target.value || null,
+                        }))
+                      }
+                    />
+                  ) : (
+                    item.keterangan || "-"
+                  )}
+                </td>
+
+                <td className="px-6 py-4 whitespace-nowrap space-x-2">
+                  {editingId === item.id ? (
+                    <>
+                      <button
+                        className="text-green-600 hover:underline mr-2"
+                        onClick={() => handleSave(item)}
+                      >
+                        Simpan
+                      </button>
+                      <button
+                        className="text-red-600 hover:underline"
+                        onClick={handleCancel}
+                      >
+                        Batal
+                      </button>
+                    </>
+                  ) : (
+                    <div className="flex gap-2 justify-center">
+                      <button
+                        className="text-yellow-500 hover:text-yellow-700"
+                        onClick={() => handleEditClick(item)}
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        className="text-red-500 hover:text-red-700"
+                        onClick={() => handleDelete(item)}
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+
+            {presensi.length === 0 && (
+              <tr>
+                <td colSpan="5" className="text-center text-gray-500 p-4">
+                  Tidak ada data presensi.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

@@ -95,8 +95,10 @@ const JadwalMapel = () => {
       setPertemuan(res.data.data);
       setSelectedJadwalId(jadwalId);
       console.log("Pertemuan:", res.data.data);
+      setLoading(false);
     } catch (err) {
       console.error("Gagal mengambil pertemuan:", err);
+      setLoading(false);
     }
   };
 
@@ -136,7 +138,6 @@ const JadwalMapel = () => {
             )}
           </div>
 
-          {/* ======================== JADWAL TABEL ======================== */}
           {!selectedJadwalId && !selectedPertemuanId && (
             <div className="overflow-x-auto">
               <table className="w-full">
