@@ -17,6 +17,7 @@ import LoginGuru from "./Pages/loginGuru";
 import LoginSiswa from "./Pages/loginSiswa";
 import LoginAdmin from "./Pages/loginAdmin";
 import LoginKonselor from "./Pages/loginKonselor";
+import EventTesting from "./Pages/eventTesting";
 
 const router = createBrowserRouter([
   {
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
   {
     path: "/login-konselor",
     element: <LoginKonselor />,
+  },
+  {
+    path: '/testing-event',
+    element: <EventTesting />
   },
   // Proteksi Dashboard Guru
   {

@@ -21,8 +21,8 @@ import DataKehadiranSiswa from "../Components/Fragments/Presensi/DataKehadiranSi
 import Sidebar from "../Components/Elements/Sidebar/Sidebar";
 import Pelanggaran from "../Components/Fragments/Pelanggaran/Pelanggaran";
 import DataKonselor from "../Components/Fragments/Data Konselor/DataKonselor";
-import DataAdmin from "../Components/Fragments/Data Admin/DataAdmin";
-import DataMapel from "../Components/Fragments/Mapel/Data Mapel";
+// import DataAdmin from "../Components/Fragments/Data Admin/DataAdmin";
+// import DataMapel from "../Components/Fragments/Mapel/Data Mapel";
 import DataKelas from "../Components/Fragments/Data Kelas/DataKelas";
 
 export default function AdminDashboard() {

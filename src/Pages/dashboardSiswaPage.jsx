@@ -13,7 +13,7 @@ import ProfileSiswa from "../Components/Fragments/ProfileSiswa";
 import KehadiranSiswa from "../Components/Fragments/Siswa/KehadiranSiswa";
 import JadwalSiswa from "../Components/Fragments/Siswa/JadwalSiswa";
 import Sidebar from "../Components/Elements/Sidebar/Sidebar";
-
+import echo from "../echo"
 
 const KonselingBK = () => {
   const [messages, setMessages] = useState([
@@ -50,6 +50,30 @@ const KonselingBK = () => {
     }
   }, [messages]);
 
+  useEffect(() => {
+    const channel = echo.channel("testing-channel");
+
+    channel.listen("TestingEvent", (e) => {
+      console.log("Pesan dari konselor diterima:", e);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: prev.length + 1,
+          sender: "konselor",
+          name: "Bpk. Dedi Sukamto",
+          message: e.message,
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        },
+      ]);
+    });
+
+    return () => {
+      echo.leave("testing-channel");
+    };
+  }, []);
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (newMessage.trim() === "") return;
@@ -144,7 +168,7 @@ const DashboardSiswaPage = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50 relative">
-     <Sidebar
+      <Sidebar
         title="Dashboard Guru"
         menuItems={menuItems}
         setActivePage={setActivePage}
