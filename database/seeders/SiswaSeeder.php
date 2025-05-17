@@ -15,7 +15,8 @@ class SiswaSeeder extends Seeder
         $faker = Faker::create('id_ID');
         $kelasIds = Kelas::pluck('id')->toArray();
 
-        // Create static test profile
+        // Static test profile
+        $testUser = User::where('email', 'siswa@test.com')->first();
         $testUser = User::where('email', 'siswa@test.com')->first();
         if ($testUser && !Siswa::where('user_id', $testUser->id)->exists()) {
             Siswa::create([
@@ -28,15 +29,13 @@ class SiswaSeeder extends Seeder
                 'nisn' => '1234567890',
                 'nis' => '202300001',
                 'semester' => 1,
-                'id_kelas' => 1
+                'id_kelas' => $kelasIds[0] ?? null
             ]);
         }
 
-        // Get all users with siswa role that don't have a student record yet
-        $siswaUsers = User::where('role', 'siswa')
-            ->whereNotIn('id', function($query) {
-                $query->select('user_id')->from('siswa');
-            })
+        // Ambil user yang memiliki privilege isSiswa = true dan belum memiliki data di tabel siswa
+        $siswaUsers = User::where('profile', 'siswa')
+            ->whereNotIn('id', Siswa::pluck('user_id'))
             ->get();
 
         foreach ($siswaUsers as $user) {
@@ -49,8 +48,8 @@ class SiswaSeeder extends Seeder
                 'no_telp' => $faker->phoneNumber,
                 'nisn' => '10' . str_pad($user->id, 8, '0', STR_PAD_LEFT),
                 'nis' => '2023' . str_pad($user->id, 4, '0', STR_PAD_LEFT),
-                'semester' => rand(1, 6),  // Assuming 6 semesters
-                'id_kelas' => $kelasIds[array_rand($kelasIds)] ?? null  // Assuming you have classes with IDs 1-3
+                'semester' => rand(1, 6),
+                'id_kelas' => $faker->randomElement($kelasIds) ?? null
             ]);
         }
     }

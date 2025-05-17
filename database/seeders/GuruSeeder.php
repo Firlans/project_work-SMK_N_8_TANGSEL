@@ -17,7 +17,7 @@ class GuruSeeder extends Seeder
         // Get all mata pelajaran IDs
         $mataPelajaranIds = MataPelajaran::pluck('id')->toArray();
 
-        // Create static test profiles
+        // Static test profiles (sesuaikan email dengan UserSeeder jika perlu)
         $staticProfiles = [
             [
                 'email' => 'admin@test.com',
@@ -27,17 +27,17 @@ class GuruSeeder extends Seeder
                 'tanggal_lahir' => '1990-01-01',
                 'alamat' => 'Jl. Admin No. 1',
                 'no_telp' => '081234567890',
-                'mata_pelajaran_id' => $mataPelajaranIds[0] // Assign first subject
+                'mata_pelajaran_id' => $mataPelajaranIds[0] ?? null,
             ],
             [
-                'email' => 'counselor@test.com',
+                'email' => 'konselor@test.com',
                 'nama' => 'Counselor Test',
                 'jenis_kelamin' => 'P',
                 'nip' => '199101012020011002',
                 'tanggal_lahir' => '1991-01-01',
                 'alamat' => 'Jl. Konselor No. 2',
                 'no_telp' => '081234567891',
-                'mata_pelajaran_id' => $mataPelajaranIds[1] // Assign second subject
+                'mata_pelajaran_id' => $mataPelajaranIds[1] ?? null,
             ],
             [
                 'email' => 'guru@test.com',
@@ -47,12 +47,14 @@ class GuruSeeder extends Seeder
                 'tanggal_lahir' => '1992-01-01',
                 'alamat' => 'Jl. Guru No. 3',
                 'no_telp' => '081234567892',
-                'mata_pelajaran_id' => $mataPelajaranIds[2] // Assign third subject
+                'mata_pelajaran_id' => $mataPelajaranIds[2] ?? null,
             ],
         ];
 
+        // Static profiles
         foreach ($staticProfiles as $profile) {
             $user = User::where('email', $profile['email'])->first();
+
             if ($user && !Guru::where('user_id', $user->id)->exists()) {
                 Guru::create([
                     'user_id' => $user->id,
@@ -67,51 +69,18 @@ class GuruSeeder extends Seeder
             }
         }
 
-        // Seed Admin users
-        $admins = User::where('role', 'admin')
+        // Ambil semua user yang memiliki privileges isGuru = true dan belum punya entry di tabel guru
+        $guruUsers = User::where('profile', 'guru')
             ->whereNotIn('id', Guru::pluck('user_id'))
             ->get();
-        foreach ($admins as $admin) {
-            Guru::create([
-                'user_id' => $admin->id,
-                'mata_pelajaran_id' => $faker->randomElement($mataPelajaranIds),
-                'nama' => $admin->name,
-                'jenis_kelamin' => $faker->randomElement(['L', 'P']),
-                'nip' => '1990' . str_pad($admin->id, 8, '0', STR_PAD_LEFT),
-                'tanggal_lahir' => $faker->date('Y-m-d', '2000-12-31'),
-                'alamat' => $faker->address,
-                'no_telp' => $faker->phoneNumber
-            ]);
-        }
 
-        // Seed Counselor users
-        $conselors = User::where('role', 'konselor')
-            ->whereNotIn('id', Guru::pluck('user_id'))
-            ->get();
-        foreach ($conselors as $conselor) {
+        foreach ($guruUsers as $user) {
             Guru::create([
-                'user_id' => $conselor->id,
+                'user_id' => $user->id,
                 'mata_pelajaran_id' => $faker->randomElement($mataPelajaranIds),
-                'nama' => $conselor->name,
+                'nama' => $user->name,
                 'jenis_kelamin' => $faker->randomElement(['L', 'P']),
-                'nip' => '1991' . str_pad($conselor->id, 8, '0', STR_PAD_LEFT),
-                'tanggal_lahir' => $faker->date('Y-m-d', '2000-12-31'),
-                'alamat' => $faker->address,
-                'no_telp' => $faker->phoneNumber
-            ]);
-        }
-
-        // Seed Teacher users
-        $teachers = User::where('role', 'guru')
-            ->whereNotIn('id', Guru::pluck('user_id'))
-            ->get();
-        foreach ($teachers as $teacher) {
-            Guru::create([
-                'user_id' => $teacher->id,
-                'mata_pelajaran_id' => $faker->randomElement($mataPelajaranIds),
-                'nama' => $teacher->name,
-                'jenis_kelamin' => $faker->randomElement(['L', 'P']),
-                'nip' => '1992' . str_pad($teacher->id, 8, '0', STR_PAD_LEFT),
+                'nip' => '1990' . str_pad($user->id, 8, '0', STR_PAD_LEFT),
                 'tanggal_lahir' => $faker->date('Y-m-d', '2000-12-31'),
                 'alamat' => $faker->address,
                 'no_telp' => $faker->phoneNumber
