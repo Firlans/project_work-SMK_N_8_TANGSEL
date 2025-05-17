@@ -58,9 +58,8 @@ class GuruController extends Controller
     {
         try {
             $guru = Guru::select('guru.*')
-                ->join('users', 'users.id', '=', 'guru.user_id')
-                ->where('users.role', '=', 'guru')
-                ->where('mata_pelajaran_id', $id)
+                ->join('jadwal', 'jadwal.id_guru', '=', 'guru.id')
+                ->where('jadwal.id_mata_pelajaran', '=', $id)
                 ->get();
 
             if ($guru->isEmpty()) {

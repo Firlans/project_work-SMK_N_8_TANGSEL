@@ -13,7 +13,6 @@ return new class extends Migration {
         Schema::create('guru', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->unique()->constrained('users')->onDelete('cascade');
-            $table->unsignedBigInteger('mata_pelajaran_id');
             $table->string('nama');
             $table->string('tanggal_lahir');
             $table->string('alamat');

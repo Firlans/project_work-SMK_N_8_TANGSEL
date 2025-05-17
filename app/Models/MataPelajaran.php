@@ -17,9 +17,4 @@ class MataPelajaran extends Model
     protected $fillable = [
         'nama_pelajaran'
     ];
-
-    public function guru()
-    {
-        return $this->hasMany(Guru::class);
-    }
 }

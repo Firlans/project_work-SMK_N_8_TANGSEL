@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_kelas');
             $table->unsignedBigInteger('id_guru');
             $table->unsignedBigInteger('id_hari');
+            $table->foreignId('id_mata_pelajaran')->constrained('mata_pelajaran')->onDelete('cascade');
             $table->foreignId('id_waktu')->constrained('waktu')->onDelete('cascade');
             $table->timestamps();
         });
