@@ -119,6 +119,26 @@ class JadwalController extends Controller
         }
     }
 
+    public function getJadwalByGuruId($id_guru){
+        try{
+            if (
+                empty($id_guru) ||
+                $id_guru === null ||
+                $id_guru === "null" ||
+                $id_guru === "undefined" ||
+                !is_numeric($id_guru)
+            ) {
+                return $this->invalidParameter("guru id = {$id_guru}");
+            }
+
+            $jadwal = Jadwal::where('id_guru', '=', $id_guru)->get();
+
+            return $this->handleReturnData($jadwal, 'Jadwal');
+        }catch(\Exception $e){
+            return $this->handleError($e, 'getJadwalByGuruId');
+        }
+    }
+
     public function createJadwal()
     {
         try {

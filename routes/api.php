@@ -53,6 +53,7 @@ Route::get('/jadwal', [JadwalController::class, 'getAllJadwal']);
 Route::get('/jadwal/siswa', [JadwalController::class, 'getJadwalBySiswa']);
 Route::get('/jadwal/mata-pelajaran', [JadwalController::class, 'getJadwalBySiswaMapel']);
 Route::get('/jadwal/hari', [JadwalController::class, 'getJadwalBySiswaHari']);
+Route::get('/jadwal/guru/{id_guru}', [JadwalController::class, 'getJadwalByGuruId']);
 Route::post('/jadwal', [JadwalController::class, 'createJadwal']);
 Route::put('/jadwal/{id_jadwal}', [JadwalController::class, 'updateJadwal']);
 Route::delete('/jadwal/{id_jadwal}', [JadwalController::class, 'deleteJadwal']);
