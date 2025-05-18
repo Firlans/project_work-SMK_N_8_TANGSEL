@@ -12,10 +12,10 @@ class Privilege extends Model
 
     protected $fillable = [
         'id_user',
-        'isSuperAdmin',
-        'isAdmin',
-        'isGuru',
-        'isKonselor',
-        'isSiswa',
+        'is_superadmin',
+        'is_admin',
+        'is_guru',
+        'is_Conselor',
+        'is_siswa',
     ];
 }

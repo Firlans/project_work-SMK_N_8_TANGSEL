@@ -14,25 +14,27 @@ class UserSeeder extends Seeder
     {
         $privilege = [
             'id_user' => $userId,
-            'isSuperAdmin' => false,
-            'isAdmin' => false,
-            'isGuru' => false,
-            'isSiswa' => false,
-            'isConselor' => false,
+            'is_superadmin' => false,
+            'is_admin' => false,
+            'is_guru' => false,
+            'is_siswa' => false,
+            'is_conselor' => false,
         ];
 
         // Set privileges based on email/profile
-        if ($email === 'admin@test.com') {
-            $privilege['isSuperAdmin'] = true;
-            $privilege['isAdmin'] = true;
-            $privilege['isGuru'] = true;
+        if($email === 'superadmin@test.com'){
+            $privilege['is_superadmin'] = true;
+            $privilege['is_guru'] = true;
+        }elseif ($email === 'admin@test.com') {
+            $privilege['is_admin'] = true;
+            $privilege['is_guru'] = true;
         } elseif ($email === 'konselor@test.com') {
-            $privilege['isConselor'] = true;
-            $privilege['isGuru'] = true;
+            $privilege['is_conselor'] = true;
+            $privilege['is_guru'] = true;
         } elseif ($profile === 'guru') {
-            $privilege['isGuru'] = true;
+            $privilege['is_guru'] = true;
         } elseif ($profile === 'siswa') {
-            $privilege['isSiswa'] = true;
+            $privilege['is_siswa'] = true;
         }
 
         Privilege::create($privilege);
@@ -44,6 +46,12 @@ class UserSeeder extends Seeder
 
         // Static test users
         $staticUsers = [
+            [
+                'name' => 'Super Admin Test',
+                'email' => 'superadmin@test.com',
+                'password' => Hash::make('password123'),
+                'profile' => 'guru'
+            ],
             [
                 'name' => 'Admin Test',
                 'email' => 'admin@test.com',

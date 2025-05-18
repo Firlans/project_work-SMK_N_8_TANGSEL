@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('privileges', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_user')->unique()->constrained('users')->onDelete('cascade');;
-            $table->boolean('isSuperAdmin');
-            $table->boolean('isAdmin');
-            $table->boolean('isGuru');
-            $table->boolean('isSiswa');
-            $table->boolean('isConselor');
+            $table->boolean('is_superadmin');
+            $table->boolean('is_admin');
+            $table->boolean('is_guru');
+            $table->boolean('is_siswa');
+            $table->boolean('is_conselor');
             $table->timestamps();
         });
     }
