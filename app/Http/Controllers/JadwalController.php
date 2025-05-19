@@ -16,30 +16,51 @@ class JadwalController extends Controller
     public function getAllJadwal()
     {
         try {
-            $user = JWTAuth::parseToken()->authenticate();
             $jadwal = Jadwal::all();
 
-            return response()->json([
-                'status' => 'success',
-                'message' => $jadwal->isEmpty() ? 'No schedule data found' : 'Successfully retrieved schedule data',
-                'data' => $jadwal
-            ], 200);
+            return $this->handleReturnData($jadwal, 'Jadwal');
         } catch (\Exception $e) {
             return $this->handleError($e, 'getAllJadwal');
+        }
+    }
+
+    public function getJadwalById($id_jadwal)
+    {
+        try {
+            if (
+                empty($id_jadwal) ||
+                $id_jadwal === null ||
+                $id_jadwal === "null" ||
+                $id_jadwal === "undefined" ||
+                !is_numeric($id_jadwal)
+            ) {
+                return $this->invalidParameter("siswa id = {$id_jadwal}");
+            }
+
+            $jadwal = Jadwal::find($id_jadwal);
+            if (!$jadwal) {
+                return $this->handleNotFoundData($id_jadwal, 'Jadwal');
+            }
+
+            return $this->handleReturnData($jadwal, 'Jadwal');
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'getJadwalById');
         }
     }
 
     public function getJadwalBySiswa(Request $request)
     {
         try {
-            $user = JWTAuth::parseToken()->authenticate();
             $id_siswa = $request->query('id_siswa');
 
-            if (!$id_siswa) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Student ID not found'
-                ], 400);
+            if (
+                empty($id_siswa) ||
+                $id_siswa === null ||
+                $id_siswa === "null" ||
+                $id_siswa === "undefined" ||
+                !is_numeric($id_siswa)
+            ) {
+                return $this->invalidParameter("siswa id = {$id_siswa}");
             }
 
             $jadwal = Jadwal::select('jadwal.*')
@@ -61,7 +82,6 @@ class JadwalController extends Controller
     public function getJadwalBySiswaMapel(Request $request)
     {
         try {
-            $user = JWTAuth::parseToken()->authenticate();
             $id_siswa = $request->query('id_siswa');
             $id_mapel = $request->query('id_mata_pelajaran');
 
@@ -76,7 +96,7 @@ class JadwalController extends Controller
                 ->leftJoin('kelas', 'kelas.id', '=', 'jadwal.id_kelas')
                 ->leftJoin('siswa', 'siswa.id_kelas', '=', 'kelas.id')
                 ->where('siswa.id', $id_siswa)
-                ->where('id_mata_pelajaran', $id_mapel)
+                ->where('jadwal.id_mata_pelajaran', $id_mapel)
                 ->get();
 
             return response()->json([
@@ -91,7 +111,6 @@ class JadwalController extends Controller
     public function getJadwalBySiswaHari(Request $request)
     {
         try {
-            $user = JWTAuth::parseToken()->authenticate();
             $id_siswa = $request->query('id_siswa');
             $id_hari = $request->query('id_hari');
 
@@ -119,6 +138,31 @@ class JadwalController extends Controller
         }
     }
 
+    public function getJadwalByGuruId($id_guru)
+    {
+        try {
+            if (
+                empty($id_guru) ||
+                $id_guru === null ||
+                $id_guru === "null" ||
+                $id_guru === "undefined" ||
+                !is_numeric($id_guru)
+            ) {
+                return $this->invalidParameter("siswa id = {$id_guru}");
+            }
+
+            $jadwal = Jadwal::where('id_guru', $id_guru)->get();
+
+            if ($jadwal->isEmpty()) {
+                return $this->handleNotFoundData($id_guru, 'Jadwal');
+            }
+
+            return $this->handleReturnData($jadwal, 'Jadwal');
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'getJadwalByGuruId');
+        }
+    }
+
     public function createJadwal()
     {
         try {
@@ -136,8 +180,6 @@ class JadwalController extends Controller
                 return $validationResult;
             }
 
-            $user = JWTAuth::parseToken()->authenticate();
-
             $jadwal = Jadwal::create($data);
 
             return response()->json([
@@ -153,6 +195,16 @@ class JadwalController extends Controller
     public function updateJadwal($id_jadwal)
     {
         try {
+            if (
+                empty($id_jadwal) ||
+                $id_jadwal === null ||
+                $id_jadwal === "null" ||
+                $id_jadwal === "undefined" ||
+                !is_numeric($id_jadwal)
+            ) {
+                return $this->invalidParameter("siswa id = {$id_jadwal}");
+            }
+
             $data = request()->all();
 
             // Add check for empty request data
@@ -168,7 +220,6 @@ class JadwalController extends Controller
                 return $validationResult;
             }
 
-            $user = JWTAuth::parseToken()->authenticate();
             $jadwal = Jadwal::find($id_jadwal);
             if (!$jadwal) {
                 return response()->json([
@@ -193,7 +244,16 @@ class JadwalController extends Controller
     public function deleteJadwal($id_jadwal)
     {
         try {
-            $user = JWTAuth::parseToken()->authenticate();
+            if (
+                empty($id_jadwal) ||
+                $id_jadwal === null ||
+                $id_jadwal === "null" ||
+                $id_jadwal === "undefined" ||
+                !is_numeric($id_jadwal)
+            ) {
+                return $this->invalidParameter("siswa id = {$id_jadwal}");
+            }
+
             $jadwal = Jadwal::find($id_jadwal);
             if (!$jadwal) {
                 return response()->json([
