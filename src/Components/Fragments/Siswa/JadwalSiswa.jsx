@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../../../axiosClient";
+import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 
 const hariMap = {
   1: "Senin",
@@ -61,6 +62,7 @@ const JadwalSiswa = () => {
         setLoading(false);
       } catch (error) {
         console.error("Gagal mengambil data jadwal:", error);
+      } finally {
         setLoading(false);
       }
     };
@@ -83,37 +85,63 @@ const JadwalSiswa = () => {
       .filter((r) => r !== null);
   };
 
-  if (loading) return <p>Memuat jadwal...</p>;
+  if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {Object.entries(hariMap).map(([hariId, namaHari]) => {
         const rows = getDataByHari(parseInt(hariId));
         if (rows.length === 0) return null;
         return (
-          <div key={hariId} className="bg-white p-4 rounded-xl shadow">
-            <h3 className="text-lg font-bold mb-4">{namaHari}</h3>
+          <div
+            key={hariId}
+            className="bg-white p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          >
+            <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-800">
+              {namaHari}
+            </h3>
             {rows.length === 0 || rows.every((r) => r.mapel === "-") ? (
-              <p className="text-gray-500">Belum ada jadwal.</p>
+              <p className="text-sm sm:text-base text-gray-500">
+                Belum ada jadwal.
+              </p>
             ) : (
-              <table className="w-full text-left border">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="p-2 border">Waktu</th>
-                    <th className="p-2 border">Mata Pelajaran</th>
-                    <th className="p-2 border">Guru</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((row, idx) => (
-                    <tr key={idx} className="border-t hover:bg-gray-50">
-                      <td className="p-2 border">{row.waktu}</td>
-                      <td className="p-2 border">{row.mapel}</td>
-                      <td className="p-2 border">{row.guru}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="overflow-x-auto -mx-4 sm:mx-0">
+                <div className="inline-block min-w-full align-middle">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
+                          Waktu
+                        </th>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
+                          Mata Pelajaran
+                        </th>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
+                          Guru
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                      {rows.map((row, idx) => (
+                        <tr
+                          key={idx}
+                          className="hover:bg-gray-50 transition-colors"
+                        >
+                          <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 whitespace-nowrap">
+                            {row.waktu}
+                          </td>
+                          <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900">
+                            {row.mapel}
+                          </td>
+                          <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900">
+                            {row.guru}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             )}
           </div>
         );
