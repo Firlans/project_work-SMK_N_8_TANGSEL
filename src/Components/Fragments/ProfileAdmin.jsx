@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axiosClient from "../../axiosClient";
 import Button from "../Elements/Button";
 import { formatTanggal } from "../../utils/dateFormatter";
+import LoadingSpinner from "../Elements/Loading/LoadingSpinner";
 
 const ProfileAdmin = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -11,6 +12,7 @@ const ProfileAdmin = () => {
     no_telp: "",
     email: "",
   });
+  const [loading, setLoading] = useState(false);
 
   // Fetch data profil dari backend saat pertama kali komponen dimuat
   useEffect(() => {
@@ -19,6 +21,7 @@ const ProfileAdmin = () => {
         const response = await axiosClient.get("/profile"); // Sesuaikan endpoint backend
         console.log("Data Profile:", response.data);
         setProfileData(response.data); // Simpan data dari backend
+        setLoading(false);
       } catch (error) {
         if (
           error.response?.data?.status === "Token is Expired" ||
@@ -27,6 +30,8 @@ const ProfileAdmin = () => {
           return;
         }
         console.error("Gagal mengambil data profil:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -54,7 +59,7 @@ const ProfileAdmin = () => {
     }
   };
 
-  if (!profileData) return <p>Loading...</p>;
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm">

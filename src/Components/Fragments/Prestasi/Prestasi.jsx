@@ -47,82 +47,109 @@ const Prestasi = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
+    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
       {loading ? (
         <LoadingSpinner />
       ) : (
         <>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">
+          {/* Header Section with Responsive Layout */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
               Daftar Prestasi
             </h2>
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+              className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors"
               onClick={() => {
                 setSelected(null);
                 setShowModal(true);
               }}
             >
-              <FaPlus /> Tambah Pelanggaran
+              <FaPlus className="w-4 h-4" /> Tambah Prestasi
             </button>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3">No</th>
-                  <th className="px-6 py-3">Nama Siswa</th>
-                  <th className="px-6 py-3">Foto</th>
-                  <th className="px-6 py-3">Deskripsi</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {data.map((item, index) => (
-                  <tr
-                    key={item.id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      {index + 1}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {item.nama_siswa_id}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <img src={item.foto} alt="" />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {item.deskripsi}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <Badge status={item.status} />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                      <div className="flex gap-2 justify-center">
-                        <button
-                          onClick={() => {
-                            setSelected(item);
-                            setShowModal(true);
-                          }}
-                          className="text-yellow-500 hover:text-yellow-700"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(item.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </td>
+
+          {/* Table Container with Horizontal Scroll */}
+          <div className="-mx-4 sm:mx-0 overflow-x-auto">
+            <div className="inline-block min-w-full align-middle">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
+                      No
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
+                      Nama Siswa
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
+                      Foto
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
+                      Deskripsi
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
+                      Status
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
+                      Aksi
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {data.map((item, index) => (
+                    <tr
+                      key={item.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
+                        {index + 1}
+                      </td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
+                        {item.nama_siswa_id}
+                      </td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4">
+                        <img
+                          // src={item.foto}
+                          // alt=""
+                          // className="h-16 w-16 object-cover rounded"
+                        />
+                      </td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
+                        <div className="max-w-xs sm:max-w-sm line-clamp-2">
+                          {item.deskripsi}
+                        </div>
+                      </td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
+                        <Badge status={item.status} />
+                      </td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() => {
+                              setSelected(item);
+                              setShowModal(true);
+                            }}
+                            className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
+                            aria-label="Edit prestasi"
+                          >
+                            <FaEdit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                            aria-label="Hapus prestasi"
+                          >
+                            <FaTrash className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
+
+          {/* Modal */}
           {showModal && (
             <ModalPrestasi
               isOpen={showModal}
@@ -136,7 +163,7 @@ const Prestasi = () => {
               }}
               initialData={selected}
             />
-          )}{" "}
+          )}
         </>
       )}
     </div>

@@ -96,7 +96,8 @@ const DataGuru = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
+    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
+      {/* Notification Message */}
       {message.text && (
         <div
           className={`mb-4 p-4 rounded ${
@@ -108,11 +109,15 @@ const DataGuru = () => {
           {message.text}
         </div>
       )}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Data Guru</h2>
-        <div className="w-64">
+
+      {/* Header Section with Responsive Layout */}
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+          Data Guru
+        </h2>
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <select
-            className="w-full p-2 border rounded-md"
+            className="w-full sm:w-64 p-2 border rounded-md text-sm sm:text-base"
             value={selectedSubject}
             onChange={(e) => setSelectedSubject(e.target.value)}
           >
@@ -125,68 +130,84 @@ const DataGuru = () => {
           </select>
         </div>
       </div>
-      <div className="overflow-x-auto">
-        {isLoading ? (
-          <LoadingSpinner />
-        ) : (
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="px-6 py-3">Nama Guru</th>
-                <th className="px-6 py-3">Mata Pelajaran</th>
-                <th className="px-6 py-3">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {filteredTeachers.length > 0 ? (
-                filteredTeachers.map((teacher) => (
-                  <tr
-                    key={teacher.id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {teacher.nama}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {subjects[teacher.mata_pelajaran_id] || "Loading..."}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                      <button
-                        onClick={() => handleDetail(teacher)}
-                        className="text-blue-500 hover:text-blue-700"
-                      >
-                        <FaEye />
-                      </button>
-                      <button
-                        onClick={() => handleEdit(teacher)}
-                        className="text-yellow-500 hover:text-yellow-700"
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(teacher.id)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <FaTrash />
-                      </button>
+
+      {/* Table Container with Horizontal Scroll */}
+      <div className="-mx-4 sm:mx-0 overflow-x-auto">
+        <div className="inline-block min-w-full align-middle">
+          {isLoading ? (
+            <LoadingSpinner />
+          ) : (
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
+                    Nama Guru
+                  </th>
+                  <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
+                    Mata Pelajaran
+                  </th>
+                  <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
+                    Aksi
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {filteredTeachers.length > 0 ? (
+                  filteredTeachers.map((teacher) => (
+                    <tr
+                      key={teacher.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
+                        {teacher.nama}
+                      </td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
+                        {subjects[teacher.mata_pelajaran_id] || "Loading..."}
+                      </td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() => handleDetail(teacher)}
+                            className="p-1 text-blue-500 hover:text-blue-700 transition-colors"
+                            aria-label="View details"
+                          >
+                            <FaEye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleEdit(teacher)}
+                            className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
+                            aria-label="Edit teacher"
+                          >
+                            <FaEdit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(teacher.id)}
+                            className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                            aria-label="Delete teacher"
+                          >
+                            <FaTrash className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan="3"
+                      className="px-3 sm:px-6 py-4 text-center text-gray-500 text-xs sm:text-sm"
+                    >
+                      Tidak ada Data Guru
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan="3"
-                    className="px-6 py-4 text-center text-gray-500"
-                  >
-                    Tidak ada Data Guru
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
-      {/* Add Modal Component */}
+
+      {/* Modals */}
       <EditGuru
         isOpen={isEditModalOpen}
         onClose={() => {

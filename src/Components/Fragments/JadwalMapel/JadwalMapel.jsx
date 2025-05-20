@@ -111,125 +111,144 @@ const JadwalMapel = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
+    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
       {loading ? (
         <LoadingSpinner />
       ) : (
         <>
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">
+          {/* Header Section */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
               Jadwal Mata Pelajaran & Presensi
             </h1>
-            {(selectedJadwalId || selectedPertemuanId) && (
-              <button
-                onClick={handleBack}
-                className="bg-gray-200 px-4 py-2 rounded"
-              >
-                Kembali
-              </button>
-            )}
-            {!selectedJadwalId && (
-              <button
-                onClick={() => setShowForm(true)}
-                className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
-              >
-                <FaPlus /> Tambah Jadwal
-              </button>
-            )}
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              {(selectedJadwalId || selectedPertemuanId) && (
+                <button
+                  onClick={handleBack}
+                  className="w-full sm:w-auto bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 transition-colors"
+                >
+                  Kembali
+                </button>
+              )}
+              {!selectedJadwalId && (
+                <button
+                  onClick={() => setShowForm(true)}
+                  className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors"
+                >
+                  <FaPlus className="w-4 h-4" /> Tambah Jadwal
+                </button>
+              )}
+            </div>
           </div>
 
+          {/* Table Section */}
           {!selectedJadwalId && !selectedPertemuanId && (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="px-6 py-3">Hari/Waktu</th>
-                    {kelas.map((k) => (
-                      <th key={k.id} className="px-6 py-3">
-                        {k.nama_kelas}
+            <div className="-mx-4 sm:mx-0 overflow-x-auto">
+              <div className="inline-block min-w-full align-middle">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500">
+                        Hari/Waktu
                       </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {Object.entries(hariMap).map(([idHari, namaHari]) =>
-                    waktu.map((w) => (
-                      <tr key={`${idHari}-${w.id}`}>
-                        <td className="px-6 py-4 text-center">
-                          {namaHari}
-                          <br />
-                          <span className="text-sm text-gray-500">
-                            {w.jam_mulai.slice(0, 5)} -{" "}
-                            {w.jam_selesai.slice(0, 5)}
-                          </span>
-                        </td>
-                        {kelas.map((k) => {
-                          const slot = jadwal.find(
-                            (j) =>
-                              j.id_hari === Number(idHari) &&
-                              j.id_waktu === w.id &&
-                              j.id_kelas === k.id
-                          );
+                      {kelas.map((k) => (
+                        <th
+                          key={k.id}
+                          className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500"
+                        >
+                          {k.nama_kelas}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {Object.entries(hariMap).map(([idHari, namaHari]) =>
+                      waktu.map((w) => (
+                        <tr key={`${idHari}-${w.id}`}>
+                          <td className="px-3 sm:px-6 py-2 sm:py-4 text-center whitespace-nowrap">
+                            <span className="font-medium text-xs sm:text-sm">
+                              {namaHari}
+                            </span>
+                            <br />
+                            <span className="text-xs text-gray-500">
+                              {w.jam_mulai.slice(0, 5)} -{" "}
+                              {w.jam_selesai.slice(0, 5)}
+                            </span>
+                          </td>
+                          {kelas.map((k) => {
+                            const slot = jadwal.find(
+                              (j) =>
+                                j.id_hari === Number(idHari) &&
+                                j.id_waktu === w.id &&
+                                j.id_kelas === k.id
+                            );
 
-                          return (
-                            <td
-                              key={k.id}
-                              className="px-6 py-4 text-center relative group"
-                            >
-                              {slot ? (
-                                <>
-                                  {getKodeGuruMapel(slot.id_guru)}
-                                  <div className="hidden group-hover:flex gap-2 justify-center mt-1">
-                                    <button
-                                      className="text-blue-500 hover:text-blue-700"
-                                      onClick={() =>
-                                        handleFetchPertemuan(slot.id)
-                                      }
-                                    >
-                                      <FaEye />
-                                    </button>
-                                    <button
-                                      onClick={() => handleEdit(slot)}
-                                      className="text-yellow-500 hover:text-yellow-700"
-                                    >
-                                      <FaEdit />
-                                    </button>
-                                    <button
-                                      onClick={() => handleDelete(slot.id)}
-                                      className="text-red-500 hover:text-red-700"
-                                    >
-                                      <FaTrash />
-                                    </button>
-                                  </div>
-                                </>
-                              ) : (
-                                "-"
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="font-semibold mb-2">Kode Guru:</h3>
-                  <div className="grid grid-cols-2 gap-2">
+                            return (
+                              <td
+                                key={k.id}
+                                className="px-3 sm:px-6 py-2 sm:py-4 text-center relative group"
+                              >
+                                <div className="text-xs sm:text-sm">
+                                  {slot ? (
+                                    <>
+                                      {getKodeGuruMapel(slot.id_guru)}
+                                      <div className="hidden group-hover:flex gap-2 justify-center mt-1">
+                                        <button
+                                          className="p-1 text-blue-500 hover:text-blue-700"
+                                          onClick={() =>
+                                            handleFetchPertemuan(slot.id)
+                                          }
+                                        >
+                                          <FaEye className="w-3 h-3 sm:w-4 sm:h-4" />
+                                        </button>
+                                        <button
+                                          onClick={() => handleEdit(slot)}
+                                          className="p-1 text-yellow-500 hover:text-yellow-700"
+                                        >
+                                          <FaEdit className="w-3 h-3 sm:w-4 sm:h-4" />
+                                        </button>
+                                        <button
+                                          onClick={() => handleDelete(slot.id)}
+                                          className="p-1 text-red-500 hover:text-red-700"
+                                        >
+                                          <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" />
+                                        </button>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    "-"
+                                  )}
+                                </div>
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              {/* Legend Section */}
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-sm sm:text-base font-semibold mb-3">
+                    Kode Guru:
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {guru.map((g, i) => (
-                      <div key={g.id} className="text-sm">
+                      <div key={g.id} className="text-xs sm:text-sm">
                         G{i + 1}: {g.nama}
                       </div>
                     ))}
                   </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Kode Mata Pelajaran:</h3>
-                  <div className="grid grid-cols-2 gap-2">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-sm sm:text-base font-semibold mb-3">
+                    Kode Mata Pelajaran:
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {mapel.map((m, i) => (
-                      <div key={m.id} className="text-sm">
+                      <div key={m.id} className="text-xs sm:text-sm">
                         M{i + 1}: {m.nama_pelajaran}
                       </div>
                     ))}
@@ -239,6 +258,7 @@ const JadwalMapel = () => {
             </div>
           )}
 
+          {/* Pertemuan and Presensi Lists */}
           {selectedJadwalId && !selectedPertemuanId && (
             <PertemuanList
               data={pertemuan}
@@ -252,6 +272,7 @@ const JadwalMapel = () => {
             <PresensiList idPertemuan={selectedPertemuanId} />
           )}
 
+          {/* Form Modal */}
           {showForm && (
             <FormJadwal
               isOpen={showForm}

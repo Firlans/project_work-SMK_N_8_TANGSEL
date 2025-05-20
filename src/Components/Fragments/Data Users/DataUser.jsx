@@ -74,76 +74,100 @@ const DataUser = () => {
   console.log("Sorted and filtered users:", sortedUsers);
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
+    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
       {loading ? (
         <LoadingSpinner />
       ) : (
         <>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Data Guru</h2>
-            <button
-              onClick={handleCreate}
-              className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
-            >
-              <FaPlus /> Tambah User
-            </button>
-            <select
-              value={selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value)}
-              className="border rounded px-4 py-2"
-            >
-              <option value="all">All Roles</option>
-              <option value="admin">Admin</option>
-              <option value="guru">Guru</option>
-              <option value="konselor">Konselor</option>
-              <option value="siswa">Siswa</option>
-            </select>
+          {/* Header Section with Responsive Layout */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+              Data Guru
+            </h2>
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <select
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value)}
+                className="border rounded px-3 py-2 text-sm sm:text-base w-full sm:w-auto"
+              >
+                <option value="all">Semua Role</option>
+                <option value="admin">Admin</option>
+                <option value="guru">Guru</option>
+                <option value="konselor">Konselor</option>
+                <option value="siswa">Siswa</option>
+              </select>
+              <button
+                onClick={handleCreate}
+                className="bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors w-full sm:w-auto"
+              >
+                <FaPlus className="w-4 h-4" />
+                <span>Tambah User</span>
+              </button>
+            </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3">Nama Lengkap</th>
-                  <th className="px-6 py-3">Role</th>
-                  <th className="px-6 py-3">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {sortedUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 border-b whitespace-nowrap">{user.name}</td>
-                    <td className="px-6 py-4 border-b capitalize whitespace-nowrap">
-                      {user.role}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                      <div className="flex gap-2 justify-center">
-                        <button
-                          onClick={() => handleDetail(user)}
-                          className="text-blue-500 hover:text-blue-700"
-                        >
-                          <FaEye />
-                        </button>
-                        <button
-                          onClick={() => handleEdit(user)}
-                          className="text-yellow-500 hover:text-yellow-700"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(user.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </td>
+          {/* Table Container with Horizontal Scroll */}
+          <div className="-mx-4 sm:mx-0 overflow-x-auto">
+            <div className="inline-block min-w-full align-middle">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
+                      Nama Lengkap
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
+                      Role
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
+                      Aksi
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {sortedUsers.map((user) => (
+                    <tr
+                      key={user.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
+                        {user.name}
+                      </td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 capitalize whitespace-nowrap text-xs sm:text-sm">
+                        {user.role}
+                      </td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() => handleDetail(user)}
+                            className="p-1 text-blue-500 hover:text-blue-700 transition-colors"
+                            aria-label="View details"
+                          >
+                            <FaEye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleEdit(user)}
+                            className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
+                            aria-label="Edit user"
+                          >
+                            <FaEdit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user.id)}
+                            className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                            aria-label="Delete user"
+                          >
+                            <FaTrash className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
+          {/* Modals remain unchanged */}
           {showModal && (
             <CreateEditUser
               mode={modalMode}
