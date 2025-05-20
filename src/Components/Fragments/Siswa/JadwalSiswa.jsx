@@ -70,14 +70,17 @@ const JadwalSiswa = () => {
 
   const getDataByHari = (hariId) => {
     const filtered = jadwal.filter((j) => j.id_hari === hariId);
-    return waktu.map((w) => {
-      const found = filtered.find((j) => j.id_waktu === w.id);
-      return {
-        waktu: `${w.jam_mulai.slice(0, 5)} - ${w.jam_selesai.slice(0, 5)}`,
-        mapel: found ? mapelMap[guruMapelMap[found.id_guru]] ?? "-" : "-",
-        guru: found ? guruMap[found.id_guru] : "-",
-      };
-    });
+    return waktu
+      .map((w) => {
+        const found = filtered.find((j) => j.id_waktu === w.id);
+        if (!found) return null;
+        return {
+          waktu: `${w.jam_mulai.slice(0, 5)} - ${w.jam_selesai.slice(0, 5)}`,
+          mapel: found ? mapelMap[guruMapelMap[found.id_guru]] ?? "-" : "-",
+          guru: found ? guruMap[found.id_guru] : "-",
+        };
+      })
+      .filter((r) => r !== null);
   };
 
   if (loading) return <p>Memuat jadwal...</p>;
@@ -86,6 +89,7 @@ const JadwalSiswa = () => {
     <div className="space-y-8">
       {Object.entries(hariMap).map(([hariId, namaHari]) => {
         const rows = getDataByHari(parseInt(hariId));
+        if (rows.length === 0) return null;
         return (
           <div key={hariId} className="bg-white p-4 rounded-xl shadow">
             <h3 className="text-lg font-bold mb-4">{namaHari}</h3>
