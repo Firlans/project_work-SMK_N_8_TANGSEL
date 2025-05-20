@@ -134,119 +134,145 @@ const PresensiList = ({ idPertemuan }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-2xl font-bold text-gray-800">Daftar Presensi</h3>
+    <div className="w-full bg-white p-4 sm:p-6 rounded-xl shadow-sm">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
+          Daftar Presensi
+        </h3>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3">No.</th>
-              <th className="px-6 py-3">Nama Siswa</th>
-              <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Keterangan</th>
-              <th className="px-6 py-3">Aksi</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {presensi.map((item, index) => (
-              <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap text-center">
-                  {index + 1}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">
-                  {getNamaSiswa(item.id_siswa)}
-                </td>
 
-                <td className="px-6 py-4 whitespace-nowrap text-center">
-                  {editingId === item.id ? (
-                    <select
-                      className="rounded px-2 py-1"
-                      value={editedData.status || ""}
-                      onChange={(e) =>
-                        setEditedData((prev) => ({
-                          ...prev,
-                          status: e.target.value || null,
-                        }))
-                      }
-                    >
-                      {statusOptions.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
-                      ))}
-                    </select>
-                  ) : item.status ? (
-                    item.status.charAt(0).toUpperCase() + item.status.slice(1)
-                  ) : (
-                    "-"
-                  )}
-                </td>
-
-                <td className="px-6 py-4 whitespace-nowrap text-center">
-                  {editingId === item.id ? (
-                    <input
-                      type="text"
-                      className="px-2 py-1 rounded w-full"
-                      value={editedData.keterangan || ""}
-                      onChange={(e) =>
-                        setEditedData((prev) => ({
-                          ...prev,
-                          keterangan: e.target.value || null,
-                        }))
-                      }
-                    />
-                  ) : (
-                    item.keterangan || "-"
-                  )}
-                </td>
-
-                <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                  {editingId === item.id ? (
-                    <>
-                      <button
-                        className="text-green-600 hover:underline mr-2"
-                        onClick={() => handleSave(item)}
-                      >
-                        Simpan
-                      </button>
-                      <button
-                        className="text-red-600 hover:underline"
-                        onClick={handleCancel}
-                      >
-                        Batal
-                      </button>
-                    </>
-                  ) : (
-                    <div className="flex gap-2 justify-center">
-                      <button
-                        className="text-yellow-500 hover:text-yellow-700"
-                        onClick={() => handleEditClick(item)}
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        className="text-red-500 hover:text-red-700"
-                        onClick={() => handleDelete(item)}
-                      >
-                        <FaTrash />
-                      </button>
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-
-            {presensi.length === 0 && (
+      {/* Table Container with horizontal scroll for small devices */}
+      <div className="-mx-4 sm:mx-0 overflow-x-auto">
+        <div className="inline-block min-w-full align-middle">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <td colSpan="5" className="text-center text-gray-500 p-4">
-                  Tidak ada data presensi.
-                </td>
+                <th className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500">
+                  No.
+                </th>
+                <th className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500">
+                  Nama Siswa
+                </th>
+                <th className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500">
+                  Status
+                </th>
+                <th className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500">
+                  Keterangan
+                </th>
+                <th className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500">
+                  Aksi
+                </th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200 bg-white">
+              {presensi.map((item, index) => (
+                <tr
+                  key={item.id}
+                  className="hover:bg-gray-50 transition-colors"
+                >
+                  <td className="px-3 sm:px-6 py-2 sm:py-4 text-center text-xs sm:text-sm">
+                    {index + 1}
+                  </td>
+                  <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
+                    {getNamaSiswa(item.id_siswa)}
+                  </td>
+                  <td className="px-3 sm:px-6 py-2 sm:py-4 text-center text-xs sm:text-sm">
+                    {editingId === item.id ? (
+                      <select
+                        className="w-full sm:w-auto rounded px-2 py-1 text-xs sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        value={editedData.status || ""}
+                        onChange={(e) =>
+                          setEditedData((prev) => ({
+                            ...prev,
+                            status: e.target.value || null,
+                          }))
+                        }
+                      >
+                        <option value="">Pilih Status</option>
+                        {statusOptions.map((opt) => (
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span className="inline-block min-w-[80px]">
+                        {item.status
+                          ? item.status.charAt(0).toUpperCase() +
+                            item.status.slice(1)
+                          : "-"}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
+                    {editingId === item.id ? (
+                      <input
+                        type="text"
+                        className="w-full rounded px-2 py-1 text-xs sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        value={editedData.keterangan || ""}
+                        onChange={(e) =>
+                          setEditedData((prev) => ({
+                            ...prev,
+                            keterangan: e.target.value || null,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <span className="line-clamp-2">
+                        {item.keterangan || "-"}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
+                    {editingId === item.id ? (
+                      <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
+                        <button
+                          className="w-full sm:w-auto px-3 py-1 text-xs sm:text-sm bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                          onClick={() => handleSave(item)}
+                        >
+                          Simpan
+                        </button>
+                        <button
+                          className="w-full sm:w-auto px-3 py-1 text-xs sm:text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                          onClick={handleCancel}
+                        >
+                          Batal
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
+                          onClick={() => handleEditClick(item)}
+                        >
+                          <FaEdit className="w-4 h-4" />
+                        </button>
+                        <button
+                          className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                          onClick={() => handleDelete(item)}
+                        >
+                          <FaTrash className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+
+              {presensi.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="px-3 sm:px-6 py-4 text-center text-gray-500 text-xs sm:text-sm"
+                  >
+                    Tidak ada data presensi.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
