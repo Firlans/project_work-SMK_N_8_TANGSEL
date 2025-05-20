@@ -48,7 +48,7 @@ export default function AdminDashboard() {
   return (
     <div className="flex min-h-screen bg-gray-50 relative">
       <Sidebar
-        title="Dashboard Siswa"
+        title="Dashboard Admin"
         menuItems={menuItems}
         setActivePage={setActivePage}
         activePage={activePage}

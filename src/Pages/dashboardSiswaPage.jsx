@@ -142,7 +142,7 @@ const DashboardSiswaPage = () => {
   return (
     <div className="flex min-h-screen bg-gray-50 relative">
       <Sidebar
-        title="Dashboard Guru"
+        title="Dashboard Siswa"
         menuItems={menuItems}
         setActivePage={setActivePage}
         activePage={activePage}

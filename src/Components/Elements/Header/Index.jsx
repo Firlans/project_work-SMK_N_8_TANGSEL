@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../Button";
 import axiosClient from "../../../axiosClient";
 import Cookies from "js-cookie";
+import Logo from "../../../assets/logo_smkn8tangsel.svg"
 
 const Header = () => {
   const navigate = useNavigate();
@@ -21,17 +22,35 @@ const Header = () => {
   };
 
   return (
-    <div className="w-full bg-white border-b p-4 pl-16 lg:pl-4 flex justify-between items-center">
-      <h1 className="text-xl font-bold text-gray-800">
-        SMK Negeri 8 Kota Tangerang Selatan
-      </h1>
-      <Button
-        onClick={handleLogout} // Gunakan handleLogout di sini
-        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
-      >
-        Logout
-      </Button>
-    </div>
+    <header className="w-full bg-white border-b shadow-sm">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex justify-between items-center h-16">
+        {/* Logo and School Name Container - Add left padding on mobile */}
+        <div className="flex items-center space-x-3 pl-12 lg:pl-0"> {/* Added pl-12 here */}
+          {/* Logo */}
+          <img
+            src={Logo}
+            alt="Logo SMK Negeri 8"
+            className="h-10 w-auto object-contain"
+          />
+          {/* School Name */}
+          <h1 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 truncate">
+            SMK Negeri 8 Kota Tangerang Selatan
+          </h1>
+        </div>
+
+          {/* Logout Button */}
+          <div className="ml-4">
+            <Button
+              onClick={handleLogout}
+              className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200 whitespace-nowrap"
+            >
+              Logout
+            </Button>
+          </div>
+        </div>
+      </div>
+    </header>
   );
 };
 
