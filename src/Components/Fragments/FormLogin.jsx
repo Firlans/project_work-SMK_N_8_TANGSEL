@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
 const FormLogin = ({ role }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -23,9 +24,11 @@ const FormLogin = ({ role }) => {
   const handleLogin = async (event) => {
     event.preventDefault();
     setError("");
+    setIsLoading(true);
 
     if (!formData.email || !formData.password) {
       setError("Email dan password harus diisi!");
+      setIsLoading(false);
       return;
     }
 
@@ -72,11 +75,21 @@ const FormLogin = ({ role }) => {
           : error.response?.data?.error || "Terjadi kesalahan, coba lagi.";
 
       setError(errorMessage);
+    } finally {
+      setIsLoading(false); // Stop loading whether success or error
     }
   };
 
   return (
     <form onSubmit={handleLogin}>
+      {isLoading && (
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-8 h-8 border-4 border-yellow-600 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-sm text-gray-600 font-medium">Logging in...</p>
+          </div>
+        </div>
+      )}
       {error && <p className="text-red-500">{error}</p>}{" "}
       {/* Tampilkan error jika ada */}
       <InputForm
@@ -95,8 +108,12 @@ const FormLogin = ({ role }) => {
         value={formData.password}
         onChange={handleChange}
       />
-      <Button type="submit" className="bg-yellow-600 text-white">
-        Login
+      <Button 
+        type="submit" 
+        className="bg-yellow-600 text-white"
+        disabled={isLoading}
+      >
+        {isLoading ? 'Logging in...' : 'Login'}
       </Button>
     </form>
   );
