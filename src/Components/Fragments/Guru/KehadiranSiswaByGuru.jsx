@@ -106,7 +106,8 @@ const PresensiGuru = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm max-w-7xl mx-auto">
+    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm max-w-7xl mx-auto min-h-screen pb-10">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
           Presensi Siswa
@@ -114,7 +115,7 @@ const PresensiGuru = () => {
         {(selectedJadwalId || selectedPertemuanId) && (
           <button
             onClick={handleBack}
-            className="w-full sm:w-auto bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 transition-colors"
+            className="w-full sm:w-auto bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 transition-colors text-sm"
           >
             Kembali
           </button>
@@ -127,10 +128,10 @@ const PresensiGuru = () => {
           {jadwalList.map((jadwal) => (
             <div
               key={jadwal.id}
-              className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors gap-4"
+              className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border rounded-lg hover:bg-gray-50 transition-all duration-300 gap-4 flex-wrap"
             >
               <div className="w-full sm:w-auto">
-                <h3 className="font-medium text-base sm:text-lg mb-1">
+                <h3 className="font-medium text-base sm:text-lg mb-1 break-words">
                   {mapelMap[jadwal.id_mapel] || "Mapel tidak ditemukan"}
                 </h3>
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-sm text-gray-600">
@@ -210,14 +211,14 @@ const PresensiGuru = () => {
 
       {/* Tahap 2: List Pertemuan */}
       {selectedJadwalId && !selectedPertemuanId && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6">
           {pertemuanList.map((pertemuan) => (
             <div
               key={pertemuan.id}
-              className="flex flex-col p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex flex-col p-4 border rounded-lg hover:bg-gray-50 transition-all duration-300"
             >
               <div className="flex-1 mb-4">
-                <h3 className="font-medium text-lg mb-2">
+                <h3 className="font-medium text-lg mb-2 break-words">
                   {pertemuan.nama_pertemuan}
                 </h3>
                 <p className="text-sm text-gray-600 flex items-center">
