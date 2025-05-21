@@ -3,18 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guru;
+use App\Models\Privilege;
 use App\Models\Siswa;
 use App\Models\User;
+use App\Traits\ApiResponseHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
+    use ApiResponseHandler;
     public function getAllUser()
     {
         try {
-            $user = JWTAuth::parseToken()->authenticate();
             $users = User::with(['siswa', 'guru'])->get();
 
             return response()->json([
@@ -60,64 +62,69 @@ class UserController extends Controller
     public function createUser(Request $request)
     {
         try {
-            $validation = $this->validation($request->all());
-            if (!$validation['status']) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Validation failed',
-                    'errors' => $validation['errors']
-                ], 422);
+            $validationResult = $this->validation($request->all());
+
+            if ($validationResult !== true) {
+                return $validationResult;
             }
 
-            $userData = $validation['data'];
-            $profileData = $validation['profile'];
-            $userData['password'] = bcrypt($userData['password']);
-            var_dump($userData);
-            $user = User::create($userData);
-            $profile = null;
+            // Create User
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+                'profile' => $request->profile,
+                'is_active' => $request->is_active ?? true
+            ]);
 
-            // Create associated model based on role
-            if ($userData['role'] === 'siswa') {
+            // Create Profile
+            if ($request->profile === 'siswa') {
                 $profile = Siswa::create([
                     'user_id' => $user->id,
-                    'nama_lengkap' => $userData['name'],
-                    'jenis_kelamin' => $profileData['jenis_kelamin'] ?? 'L',
-                    'tanggal_lahir' => $profileData['tanggal_lahir'] ?? now(),
-                    'alamat' => $profileData['alamat'] ?? '-',
-                    'no_telp' => $profileData['no_telp'] ?? '-',
-                    'nisn' => $profileData['nisn'] ?? null,
-                    'nis' => $profileData['nis'] ?? null,
-                    'semester' => $profileData['semester'] ?? 1,
-                    'id_kelas' => $profileData['id_kelas'] ?? null
+                    'nama_lengkap' => $request->name,
+                    'jenis_kelamin' => $request->data['jenis_kelamin'],
+                    'tanggal_lahir' => $request->data['tanggal_lahir'],
+                    'alamat' => $request->data['alamat'],
+                    'no_telp' => $request->data['no_telp'],
+                    'nisn' => $request->data['nisn'],
+                    'nis' => $request->data['nis'],
+                    'semester' => $request->data['semester'],
+                    'id_kelas' => $request->data['id_kelas']
                 ]);
                 $user->load('siswa');
-            } else if (in_array($userData['role'], ['guru', 'konselor', 'admin'])) {
+            } else if ($request->profile === 'guru') {
                 $profile = Guru::create([
                     'user_id' => $user->id,
-                    'mata_pelajaran_id' => $profileData['mata_pelajaran_id'] ?? 1,
-                    'nama' => $userData['name'],
-                    'tanggal_lahir' => $profileData['tanggal_lahir'] ?? now(),
-                    'alamat' => $profileData['alamat'] ?? '-',
-                    'no_telp' => $profileData['no_telp'] ?? '-',
-                    'jenis_kelamin' => $profileData['jenis_kelamin'] ?? 'L',
-                    'nip' => $profileData['nip'] ?? 'TEMP-' . time()
+                    'nama' => $request->name,
+                    'jenis_kelamin' => $request->data['jenis_kelamin'],
+                    'nip' => $request->data['nip'],
+                    'tanggal_lahir' => $request->data['tanggal_lahir'],
+                    'alamat' => $request->data['alamat'],
+                    'no_telp' => $request->data['no_telp']
                 ]);
                 $user->load('guru');
             }
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'User created successfully',
-                'data' => [
-                    'user' => $user
-                ]
-            ], 201);
+            // Create Privileges
+            $privileges = [
+                'id_user' => $user->id,
+                'is_superadmin' => false,
+                'is_admin' => false,
+                'is_guru' => false,
+                'is_siswa' => false,
+                'is_conselor' => false
+            ];
+
+            foreach ($request->privileges as $privilege) {
+                $privileges[$privilege] = true;
+            }
+
+            Privilege::create($privileges);
+            $user->load('privilege');
+            return $this->handleReturnData($user, 'User');
+
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Internal server error',
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->handleError($e, 'createUser');
         }
     }
 
@@ -208,44 +215,31 @@ class UserController extends Controller
     private function validation($data, $id = null)
     {
         $rules = [
-            // User attributes
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255' . ($id ? ',email,' . $id : '|unique:users'),
             'password' => $id ? 'nullable|string|min:8' : 'required|string|min:8',
-            'role' => 'required|in:admin,konselor,guru,siswa',
+            'profile' => 'required|in:guru,siswa',
             'is_active' => 'boolean',
-            'profile.jenis_kelamin' => 'nullable|in:L,P',
-            'profile.tanggal_lahir' => 'nullable|date',
-            'profile.alamat' => 'nullable|string',
-            'profile.no_telp' => 'nullable|string',
-            'profile.mata_pelajaran_id' => 'nullable|exists:mata_pelajaran,id',
-            'profile.id_kelas' => 'nullable|exists:kelas,id',
-            'profile.nisn' => 'nullable|string|unique:siswa,nisn',
-            'profile.nis' => 'nullable|string|unique:siswa,nis',
-            'profile.semester' => 'nullable|integer',
-            'profile.nip' => 'nullable|string',
+            'data.jenis_kelamin' => 'nullable|in:L,P',
+            'data.tanggal_lahir' => 'nullable|date',
+            'data.alamat' => 'nullable|string',
+            'data.no_telp' => 'nullable|string',
+            'data.id_kelas' => 'nullable|exists:kelas,id',
+            'data.nisn' => 'nullable|string|unique:siswa,nisn',
+            'data.nis' => 'nullable|string|unique:siswa,nis',
+            'data.semester' => 'nullable|integer',
+            'data.nip' => 'nullable|string',
         ];
 
         $validator = Validator::make($data, $rules);
 
         if ($validator->fails()) {
-            return [
-                'status' => false,
-                'errors' => $validator->errors()
-            ];
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors(),
+            ], 422);
         }
 
-        $validated = $validator->validated();
-
-
-        // Separate user and profile data
-        $profileData = isset($validated['profile']) ? $validated['profile'] : [];
-        unset($validated['profile']);
-
-        return [
-            'status' => true,
-            'data' => $validated,
-            'profile' => $profileData
-        ];
+        return true;
     }
 }

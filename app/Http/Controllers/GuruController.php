@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\GuruResource;
 use App\Models\Guru;
-use App\Models\MataPelajaran;
 use App\Traits\ApiResponseHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -41,10 +41,14 @@ class GuruController extends Controller
     {
         try {
             $guru = Guru::select('guru.*', 'mata_pelajaran.nama_pelajaran')
+                ->join('users', 'users.id', '=', 'guru.user_id')
+                ->join('privileges', 'privileges.id_user', '=', 'users.id')
                 ->join('jadwal', 'jadwal.id_guru', '=', 'guru.id')
                 ->join('mata_pelajaran', 'mata_pelajaran.id', '=', 'jadwal.id_mata_pelajaran')
+                ->where('users.profile', 'guru')
+                ->where('privileges.is_guru', '=', true)
                 ->get();
-            $groupedGuru = $this->grouping($guru);
+            $groupedGuru = GuruResource::grouping($guru);
             return response()->json([
                 'status' => 'success',
                 'message' => $guru->isEmpty() ? 'No guru found' : 'Guru retrieved successfully',
@@ -59,8 +63,12 @@ class GuruController extends Controller
     {
         try {
             $guru = Guru::select('guru.*', 'mata_pelajaran.nama_pelajaran')
+                ->join('users', 'users.id', '=', 'guru.user_id')
+                ->join('privileges', 'privileges.id_user', '=', 'users.id')
                 ->join('jadwal', 'jadwal.id_guru', '=', 'guru.id')
                 ->join('mata_pelajaran', 'mata_pelajaran.id', '=', 'jadwal.id_mata_pelajaran')
+                ->where('users.profile', 'guru')
+                ->where('privileges.is_guru', '=', true)
                 ->where('jadwal.id_mata_pelajaran', '=', $id)
                 ->get();
 
@@ -85,15 +93,19 @@ class GuruController extends Controller
     {
         try {
             $guru = Guru::select('guru.*', 'mata_pelajaran.nama_pelajaran')
+                ->join('users', 'users.id', '=', 'guru.user_id')
+                ->join('privileges', 'privileges.id_user', '=', 'users.id')
                 ->join('jadwal', 'jadwal.id_guru', '=', 'guru.id')
                 ->join('mata_pelajaran', 'mata_pelajaran.id', '=', 'jadwal.id_mata_pelajaran')
+                ->where('users.profile', 'guru')
+                ->where('privileges.is_guru', '=', true)
                 ->where('guru.id', '=', $id)
                 ->get();
 
             if ($guru->isEmpty()) {
                 return $this->handleNotFoundData($id, 'Guru');
             }
-            $groupedGuru = $this->grouping($guru);
+            $groupedGuru = GuruResource::grouping($guru);
 
             return response()->json([
                 'status' => 'success',
@@ -131,6 +143,7 @@ class GuruController extends Controller
                 ]);
             }
 
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Guru updated successfully',
@@ -160,26 +173,5 @@ class GuruController extends Controller
         }
 
         return true;
-    }
-
-    private function grouping($guru)
-    {
-        return $guru->groupBy('id')->map(function ($items) {
-            $guru = $items->first(); // Ambil data guru (kolom non-pelajaran)
-
-            return [
-                'id' => $guru->id,
-                'user_id' => $guru->user_id,
-                'nama' => $guru->nama,
-                'tanggal_lahir' => $guru->tanggal_lahir,
-                'alamat' => $guru->alamat,
-                'no_telp' => $guru->no_telp,
-                'jenis_kelamin' => $guru->jenis_kelamin,
-                'nip' => $guru->nip,
-                'created_at' => $guru->created_at,
-                'updated_at' => $guru->updated_at,
-                'nama_pelajaran' => $items->pluck('nama_pelajaran')->unique()->values(), // jadi array
-            ];
-        })->values();
     }
 }

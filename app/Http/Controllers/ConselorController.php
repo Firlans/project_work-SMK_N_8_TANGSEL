@@ -40,9 +40,13 @@ class ConselorController extends Controller
     public function getAllConselor()
     {
         try {
-            $conselors = Guru::select('guru.*')
+            $conselors = Guru::select('guru.*', 'mata_pelajaran.nama_pelajaran')
                 ->join('users', 'users.id', '=', 'guru.user_id')
-                ->where('role', '=', 'konselor')
+                ->join('privileges', 'privileges.id_user', '=', 'users.id')
+                ->join('jadwal', 'jadwal.id_guru', '=', 'guru.id')
+                ->join('mata_pelajaran', 'mata_pelajaran.id', '=', 'jadwal.id_mata_pelajaran')
+                ->where('users.profile', 'guru')
+                ->where('privileges.is_conselor', '=', true)
                 ->get();
 
             return response()->json([
@@ -58,10 +62,24 @@ class ConselorController extends Controller
     public function getConselorById($id)
     {
         try {
-            $conselor = Guru::select('guru.*')
+            if (
+                empty($id) ||
+                $id === null ||
+                $id === "null" ||
+                $id === "undefined" ||
+                !is_numeric($id)
+            ) {
+                return $this->invalidParameter("Conselor id = {$id}");
+            }
+
+            $conselor = Guru::select('guru.*', 'mata_pelajaran.nama_pelajaran')
                 ->join('users', 'users.id', '=', 'guru.user_id')
-                ->where('users.role', '=', 'konselor')
-                ->where('guru.id', $id)
+                ->join('privileges', 'privileges.id_user', '=', 'users.id')
+                ->join('jadwal', 'jadwal.id_guru', '=', 'guru.id')
+                ->join('mata_pelajaran', 'mata_pelajaran.id', '=', 'jadwal.id_mata_pelajaran')
+                ->where('users.profile', 'guru')
+                ->where('privileges.is_conselor', '=', true)
+                ->where('guru.id', '=',$id)
                 ->first();
 
             if (!$conselor) {
@@ -84,9 +102,19 @@ class ConselorController extends Controller
     public function updateConselor(Request $request, $id)
     {
         try {
-            $conselor =Guru::select('guru.*')
+            if (
+                empty($id) ||
+                $id === null ||
+                $id === "null" ||
+                $id === "undefined" ||
+                !is_numeric($id)
+            ) {
+                return $this->invalidParameter("Conselor id = {$id}");
+            }
+
+            $conselor = Guru::select('guru.*')
                 ->join('users', 'users.id', '=', 'guru.user_id')
-                ->where('users.role', '=', 'konselor')
+                ->where('users.profile', '=', 'guru')
                 ->where('guru.id', $id)
                 ->first();
 
@@ -134,7 +162,6 @@ class ConselorController extends Controller
             'tanggal_lahir' => 'required|date|before:today',
             'alamat' => 'required|string',
             'no_telp' => 'required|string|max:15',
-            'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id'
         ]);
 
         if ($validator->fails()) {
