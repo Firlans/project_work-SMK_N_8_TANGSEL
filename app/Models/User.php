@@ -68,7 +68,7 @@ class User extends Authenticatable implements JWTSubject
         });
     }
 
-    public function privilege()
+    public function privileges()
     {
         return $this->hasOne(Privilege::class, 'id_user');
     }

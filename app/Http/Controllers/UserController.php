@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Traits\ApiResponseHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
@@ -36,13 +37,21 @@ class UserController extends Controller
     public function getUserById($id)
     {
         try {
+            if (
+                empty($id) ||
+                $id === null ||
+                $id === "null" ||
+                $id === "undefined" ||
+                !is_numeric($id)
+            ) {
+                return $this->invalidParameter("user id = {$id}");
+            }
+
+
             $user = User::where('id', $id)->first();
 
             if (!$user) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'User not found'
-                ], 404);
+                return $this->handleNotFoundData($user, 'User');
             }
 
             return response()->json([
@@ -115,12 +124,16 @@ class UserController extends Controller
                 'is_conselor' => false
             ];
 
-            foreach ($request->privileges as $privilege) {
-                $privileges[$privilege] = true;
+            if (is_array($request->privileges)) {
+                foreach ($request->privileges as $key => $value) {
+                    if (array_key_exists($key, $privileges)) {
+                        $privileges[$key] = (bool) $value;
+                    }
+                }
             }
 
             Privilege::create($privileges);
-            $user->load('privilege');
+            $user->load('privileges');
             return $this->handleReturnData($user, 'User');
 
         } catch (\Exception $e) {
@@ -131,32 +144,53 @@ class UserController extends Controller
     public function updateUser(Request $request, $id)
     {
         try {
-            $user = User::find($id);
+            if (
+                empty($id) ||
+                $id === null ||
+                $id === "null" ||
+                $id === "undefined" ||
+                !is_numeric($id)
+            ) {
+                return $this->invalidParameter("user id = {$id}");
+            }
+
+            $user = User::with('privileges')->find($id);
             if (!$user) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'User not found'
-                ], 404);
+                return $this->handleNotFoundData($user, 'User');
+            }
+            $data = $request->all();
+            $validationResult = $this->validation($data, $id);
+            if ($validationResult !== true) {
+                return $validationResult;
             }
 
-            $validation = $this->validation($request->all(), $id);
-            if (!$validation['status']) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Validation failed',
-                    'errors' => $validation['errors']
-                ], 422);
-            }
-
-            $userData = $validation['data'];
-            if (isset($userData['password'])) {
-                $userData['password'] = bcrypt($userData['password']);
+            if (isset($data['password'])) {
+                $data['password'] = bcrypt($data['password']);
             } else {
-                unset($userData['password']);
+                unset($data['password']);
             }
 
-            $user->update($userData);
+            $user->update($data);
 
+
+            if (isset($request->privileges)) {
+                $privileges = [
+                    'is_superadmin' => false,
+                    'is_admin' => false,
+                    'is_guru' => false,
+                    'is_siswa' => false,
+                    'is_conselor' => false
+                ];
+
+                foreach ($request->privileges as $key => $value) {
+                    if (array_key_exists($key, $privileges)) {
+                        $privileges[$key] = $value;
+                    }
+                }
+
+                $user->privileges()->update($privileges);
+                $user->load('privileges');
+            }
             return response()->json([
                 'status' => 'success',
                 'message' => 'User updated successfully',
@@ -174,7 +208,7 @@ class UserController extends Controller
     public function deleteUser($id)
     {
         try {
-            $user = User::with(['siswa', 'guru'])->find($id);
+            $user = User::with(['siswa', 'guru', 'privileges'])->find($id);
             if (!$user) {
                 return response()->json([
                     'status' => 'error',
@@ -191,6 +225,9 @@ class UserController extends Controller
             }
             if ($user->guru) {
                 $user->guru->delete();
+            }
+            if ($user->privileges) {
+                $user->privileges->delete();
             }
 
             // Delete the user
@@ -216,9 +253,15 @@ class UserController extends Controller
     {
         $rules = [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255' . ($id ? ',email,' . $id : '|unique:users'),
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($id),
+            ],
             'password' => $id ? 'nullable|string|min:8' : 'required|string|min:8',
-            'profile' => 'required|in:guru,siswa',
+            'profile' => $id ? 'nullable|in:guru,siswa' : 'required|in:guru,siswa',
             'is_active' => 'boolean',
             'data.jenis_kelamin' => 'nullable|in:L,P',
             'data.tanggal_lahir' => 'nullable|date',
