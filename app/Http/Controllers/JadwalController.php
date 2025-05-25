@@ -52,7 +52,7 @@ class JadwalController extends Controller
     {
         try {
             $id_siswa = $request->query('id_siswa');
-
+            \Log::info('getJadwalBySiswa called with id_siswa: ' . $id_siswa);
             if (
                 empty($id_siswa) ||
                 $id_siswa === null ||

@@ -50,23 +50,23 @@ Route::put("/mata-pelajaran/{id_mata_pelajaran}", [MataPelajaranController::clas
 Route::delete("/mata-pelajaran/{id_mata_pelajaran}", [MataPelajaranController::class, 'deleteMataPelajaran']);
 
 // route jadwal
-Route::get('/jadwal', [JadwalController::class, 'getAllJadwal']);
-Route::get('/jadwal/{id_jadwal}', [JadwalController::class, 'getJadwalById']);
 Route::get('/jadwal/siswa', [JadwalController::class, 'getJadwalBySiswa']);
 Route::get('/jadwal/mata-pelajaran', [JadwalController::class, 'getJadwalBySiswaMapel']);
 Route::get('/jadwal/hari', [JadwalController::class, 'getJadwalBySiswaHari']);
-Route::get('/jadwal/guru/{id_guru}', [JadwalController::class, 'getJadwalByGuruId']);
+Route::get("/jadwal/guru/{id_guru}", [JadwalController::class, 'getJadwalByGuruId']);
+Route::get('/jadwal', [JadwalController::class, 'getAllJadwal']);
+Route::get("/jadwal/{id_jadwal}", [JadwalController::class, 'getJadwalById']);
 Route::post('/jadwal', [JadwalController::class, 'createJadwal']);
-Route::put('/jadwal/{id_jadwal}', [JadwalController::class, 'updateJadwal']);
-Route::delete('/jadwal/{id_jadwal}', [JadwalController::class, 'deleteJadwal']);
+Route::put("/jadwal/{id_jadwal}", [JadwalController::class, 'updateJadwal']);
+Route::delete("/jadwal/{id_jadwal}", [JadwalController::class, 'deleteJadwal']);
 
 // route pertemuan
-Route::get('/pertemuan',[PertemuanController::class, 'getAllPertemuan']);
-Route::get('/pertemuan/{id}',[PertemuanController::class, 'getPertemuanById']);
-Route::get('/pertemuan/jadwal/{idJadwal}',[PertemuanController::class, 'getPertemuanByJadwalId']);
-Route::post('/pertemuan',[PertemuanController::class, 'createPertemuan']);
-Route::put('/pertemuan/{id}',[PertemuanController::class, 'updatePertemuan']);
-Route::delete('/pertemuan/{id}',[PertemuanController::class, 'deletePertemuan']);
+Route::get('/pertemuan', [PertemuanController::class, 'getAllPertemuan']);
+Route::get('/pertemuan/{id}', [PertemuanController::class, 'getPertemuanById']);
+Route::get('/pertemuan/jadwal/{idJadwal}', [PertemuanController::class, 'getPertemuanByJadwalId']);
+Route::post('/pertemuan', [PertemuanController::class, 'createPertemuan']);
+Route::put('/pertemuan/{id}', [PertemuanController::class, 'updatePertemuan']);
+Route::delete('/pertemuan/{id}', [PertemuanController::class, 'deletePertemuan']);
 
 // route kelas
 Route::get('/kelas', [KelasController::class, 'getAllKelas']);

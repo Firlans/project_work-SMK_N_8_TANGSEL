@@ -113,11 +113,6 @@ class ConselorController extends Controller
             }
 
 
-            $data = $request->except('role');
-            $validationResult = $this->validation($data, $id);
-            if ($validationResult !== true) {
-                return $validationResult;
-            }
             $conselor = Guru::select('guru.*')
                 ->join('users', 'users.id', '=', 'guru.user_id')
                 ->where('users.profile', '=', 'guru')
@@ -129,6 +124,12 @@ class ConselorController extends Controller
                     'status' => 'error',
                     'message' => 'Conselor not found'
                 ], 404);
+            }
+
+            $data = $request->except('role');
+            $validationResult = $this->validation($data, $id);
+            if ($validationResult !== true) {
+                return $validationResult;
             }
 
             if (isset($data['password'])) {

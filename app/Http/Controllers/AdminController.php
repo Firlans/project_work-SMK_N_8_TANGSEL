@@ -32,9 +32,9 @@ class AdminController extends Controller
     {
         try {
             $admins = Guru::select('guru.*')
-                ->join('users', 'users.id', '=', 'guru.user_id')
-                ->join('privileges', 'privileges.id_user', '=', 'users.id')
-                ->join('jadwal', 'jadwal.id_guru', '=', 'guru.id')
+                ->leftJoin('users', 'users.id', '=', 'guru.user_id')
+                ->leftJoin('privileges', 'privileges.id_user', '=', 'users.id')
+                ->leftJoin('jadwal', 'jadwal.id_guru', '=', 'guru.id')
                 ->where('users.profile', 'guru')
                 ->where(function ($query) {
                     $query->where('privileges.is_admin', true)
@@ -62,9 +62,9 @@ class AdminController extends Controller
             }
 
             $admin = Guru::select('guru.*')
-                ->join('users', 'users.id', '=', 'guru.user_id')
-                ->join('privileges', 'privileges.id_user', '=', 'users.id')
-                ->join('jadwal', 'jadwal.id_guru', '=', 'guru.id')
+                ->leftJoin('users', 'users.id', '=', 'guru.user_id')
+                ->leftJoin('privileges', 'privileges.id_user', '=', 'users.id')
+                ->leftJoin('jadwal', 'jadwal.id_guru', '=', 'guru.id')
                 ->where('users.profile', 'guru')
                 ->where(function ($query) {
                     $query->where('privileges.is_admin', true)
