@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\GuruResource;
 use App\Models\Guru;
 use App\Traits\ApiResponseHandler;
 use Illuminate\Http\Request;
@@ -39,15 +40,19 @@ class GuruController extends Controller
     public function getAllGuru()
     {
         try {
-            $guru = Guru::select('guru.*')
+            $guru = Guru::select('guru.*', 'mata_pelajaran.nama_pelajaran')
                 ->join('users', 'users.id', '=', 'guru.user_id')
-                ->where('users.role', '=', 'guru')
+                ->join('privileges', 'privileges.id_user', '=', 'users.id')
+                ->join('jadwal', 'jadwal.id_guru', '=', 'guru.id')
+                ->join('mata_pelajaran', 'mata_pelajaran.id', '=', 'jadwal.id_mata_pelajaran')
+                ->where('users.profile', 'guru')
+                ->where('privileges.is_guru', '=', true)
                 ->get();
-
+            $groupedGuru = GuruResource::grouping($guru);
             return response()->json([
                 'status' => 'success',
                 'message' => $guru->isEmpty() ? 'No guru found' : 'Guru retrieved successfully',
-                'data' => $guru
+                'data' => $groupedGuru
             ], 200);
         } catch (\Exception $e) {
             return $this->handleError($e, 'getAllGuru');
@@ -57,10 +62,14 @@ class GuruController extends Controller
     public function getGuruByMataPelajaranId($id)
     {
         try {
-            $guru = Guru::select('guru.*')
+            $guru = Guru::select('guru.*', 'mata_pelajaran.nama_pelajaran')
                 ->join('users', 'users.id', '=', 'guru.user_id')
-                ->where('users.role', '=', 'guru')
-                ->where('mata_pelajaran_id', $id)
+                ->join('privileges', 'privileges.id_user', '=', 'users.id')
+                ->join('jadwal', 'jadwal.id_guru', '=', 'guru.id')
+                ->join('mata_pelajaran', 'mata_pelajaran.id', '=', 'jadwal.id_mata_pelajaran')
+                ->where('users.profile', 'guru')
+                ->where('privileges.is_guru', '=', true)
+                ->where('jadwal.id_mata_pelajaran', '=', $id)
                 ->get();
 
             if ($guru->isEmpty()) {
@@ -83,22 +92,25 @@ class GuruController extends Controller
     public function getGuruById($id)
     {
         try {
-            $guru = Guru::select('guru.*')
+            $guru = Guru::select('guru.*', 'mata_pelajaran.nama_pelajaran')
                 ->join('users', 'users.id', '=', 'guru.user_id')
-                ->where('users.role', '=', 'guru')
-                ->where('guru.id', $id)->first();
+                ->join('privileges', 'privileges.id_user', '=', 'users.id')
+                ->join('jadwal', 'jadwal.id_guru', '=', 'guru.id')
+                ->join('mata_pelajaran', 'mata_pelajaran.id', '=', 'jadwal.id_mata_pelajaran')
+                ->where('users.profile', 'guru')
+                ->where('privileges.is_guru', '=', true)
+                ->where('guru.id', '=', $id)
+                ->get();
 
-            if (!$guru) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Guru not found'
-                ], 404);
+            if ($guru->isEmpty()) {
+                return $this->handleNotFoundData($id, 'Guru');
             }
+            $groupedGuru = GuruResource::grouping($guru);
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Guru retrieved successfully',
-                'data' => $guru
+                'data' => $groupedGuru[0]
             ], 200);
         } catch (\Exception $e) {
             return $this->handleError($e, 'getGuruById');
@@ -131,6 +143,7 @@ class GuruController extends Controller
                 ]);
             }
 
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Guru updated successfully',
@@ -150,7 +163,6 @@ class GuruController extends Controller
             'tanggal_lahir' => 'required|date|before:today',
             'alamat' => 'required|string',
             'no_telp' => 'required|string|max:15',
-            'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id'
         ]);
 
         if ($validator->fails()) {

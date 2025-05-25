@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AbsenController;
 use App\Http\Controllers\ConselorController;
@@ -50,6 +51,7 @@ Route::delete("/mata-pelajaran/{id_mata_pelajaran}", [MataPelajaranController::c
 
 // route jadwal
 Route::get('/jadwal', [JadwalController::class, 'getAllJadwal']);
+Route::get('/jadwal/{id_jadwal}', [JadwalController::class, 'getJadwalById']);
 Route::get('/jadwal/siswa', [JadwalController::class, 'getJadwalBySiswa']);
 Route::get('/jadwal/mata-pelajaran', [JadwalController::class, 'getJadwalBySiswaMapel']);
 Route::get('/jadwal/hari', [JadwalController::class, 'getJadwalBySiswaHari']);
@@ -85,6 +87,11 @@ Route::get('/siswa', [SiswaController::class, 'getAllSiswa']);
 Route::get('/siswa/{id}', [SiswaController::class, 'getSiswaById']);
 Route::put('/siswa/{id}', [SiswaController::class, 'updateSiswa']);
 Route::delete('/siswa/{id}', [SiswaController::class, 'deleteSiswa']);
+
+// route admin
+Route::get('/admin', [AdminController::class, 'getAllAdmin']);
+Route::get('/admin/{id_admin}', [AdminController::class, 'getAdminById']);
+Route::put('/admin/{id_admin}', [AdminController::class, 'updateAdmin']);
 
 // route guru
 Route::get('/guru', [GuruController::class, 'getAllGuru']);

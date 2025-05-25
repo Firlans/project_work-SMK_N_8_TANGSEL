@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Privilege;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -44,13 +45,18 @@ class AuthController extends Controller
 
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'Invalid credentials'], 401);
+                return response()->json(
+                    [
+                        'status' => 'fail',
+                        'message' => 'Invalid credentials',
+                    ],
+                    401
+                );
             }
 
-            // Get the authenticated user with related model
             $user = auth()->user();
+            $privilege = Privilege::where('id_user', $user->id)->first();
 
-            // Add role to token claims
             $token = JWTAuth::claims(['role' => $user->role])->fromUser($user);
 
             return response()->json([
@@ -58,6 +64,7 @@ class AuthController extends Controller
                 'message' => 'login success',
                 'data' => [
                     'user' => $user,
+                    'privilege' => $privilege,
                     'token' => $token
                 ]
             ], 200);
@@ -72,10 +79,16 @@ class AuthController extends Controller
     {
         try {
             if (!$user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json(['error' => 'User not found'], 404);
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'User not found'
+                ], 404);
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Invalid token'], 400);
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'Invalid token'
+            ], 400);
         }
 
         return response()->json(compact('user'));
@@ -86,6 +99,9 @@ class AuthController extends Controller
     {
         JWTAuth::invalidate(JWTAuth::getToken());
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Successfully logged out'
+        ]);
     }
 }

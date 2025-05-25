@@ -8,7 +8,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-
+use \App\Http\Controllers\SiswaController;
+use \App\Http\Controllers\GuruController;
 class RoleMiddleware
 {
     public function handle(Request $request, Closure $next): Response
@@ -27,17 +28,15 @@ class RoleMiddleware
             }
 
             // Cek role dan arahkan ke controller yang sesuai
-            switch ($user->role) {
-                case 'admin':
-                case 'konselor':
+            switch ($user->profile) {
                 case 'guru':
-                    return app(\App\Http\Controllers\GuruController::class)->profile($request);
+                    return app(GuruController::class)->profile($request);
                 case 'siswa':
-                    return app(\App\Http\Controllers\SiswaController::class)->profile($request);
+                    return app(SiswaController::class)->profile($request);
                 default:
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'Invalid role'
+                        'message' => 'Invalid profile'
                     ], 403);
             }
         } catch (TokenExpiredException $e) {

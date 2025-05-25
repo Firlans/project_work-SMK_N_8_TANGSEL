@@ -22,7 +22,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-        'role',
+        'profile',
         'is_active'
     ];
 
@@ -66,6 +66,11 @@ class User extends Authenticatable implements JWTSubject
                 $guru->user()->update(['name' => $guru->nama]);
             }
         });
+    }
+
+    public function privileges()
+    {
+        return $this->hasOne(Privilege::class, 'id_user');
     }
 
     public function siswa()
