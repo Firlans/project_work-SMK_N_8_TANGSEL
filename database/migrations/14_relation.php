@@ -57,11 +57,11 @@ return new class extends Migration {
         Schema::table('chat_rooms', function (Blueprint $table) {
             $table->foreign('id_siswa')
                 ->references('id')
-                ->on('siswa')
+                ->on('users')
                 ->onDelete('cascade');
             $table->foreign('id_guru')
                 ->references('id')
-                ->on('guru')
+                ->on('users')
                 ->onDelete('cascade');
         });
         Schema::table('chat_details', function (Blueprint $table) {

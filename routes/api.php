@@ -134,3 +134,12 @@ Route::post('/waktu', [WaktuController::class, 'createWaktu']);
 Route::put('/waktu/{id}', [WaktuController::class, 'updateWaktu']);
 Route::delete('/waktu/{id}', [WaktuController::class, 'deleteWaktu']);
 Route::get('/waktu', [WaktuController::class, 'getAllWaktu']);
+
+// route chat room
+Route::get('/chat-room', [UserController::class, 'getAllChatRoom']);
+Route::get('/chat-room/{id}', [UserController::class, 'getChatRoomById']);
+Route::get('/chat-room/siswa/{id_user}', [UserController::class, 'getChatRoomBySiswa']);
+Route::get('/chat-room/conselor/{id_user}', [UserController::class, 'getChatRoomByConselor']);
+Route::post('/chat-room', [UserController::class, 'createChatRoom']);
+Route::put('/chat-room/{id}', [UserController::class, 'updateChatRoom']);
+Route::delete('/chat-room/{id}', [UserController::class, 'deleteChatRoom']);
