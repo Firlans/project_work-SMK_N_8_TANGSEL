@@ -15,8 +15,8 @@ const FormLogin = ({ role }) => {
   const navigate = useNavigate();
 
   const handleChange = (event) => {
-    setFormData((prevState) => ({
-      ...prevState,
+    setFormData((prev) => ({
+      ...prev,
       [event.target.name]: event.target.value,
     }));
   };
@@ -38,34 +38,49 @@ const FormLogin = ({ role }) => {
         password: formData.password,
       });
 
-      const { token, user } = response.data.data;
-      // debugging;
-      console.log("Login berhasil:", response.data);
-      console.log("Role:", user.role);
+      const { token, privilege } = response.data.data;
 
-      // Cek apakah role dari backend sesuai dengan halaman login
-      if (user.role !== role) {
+      // Batasan role yang diizinkan per halaman login
+      const allowedRoles = {
+        siswa: ["is_siswa"],
+        guru: ["is_guru"],
+        conselor: ["is_conselor"],
+        admin: ["is_admin", "is_superadmin"],
+      };
+
+      const allowedPrivileges = allowedRoles[role];
+
+      // Cek apakah user punya privilege yang sesuai dengan halaman login
+      const hasAccess = allowedPrivileges?.some((key) => privilege[key] === 1);
+
+      if (!hasAccess) {
         setError("Anda tidak memiliki akses ke halaman ini.");
+        setIsLoading(false);
         return;
       }
 
-      // Simpan token di cookie
+      // Simpan token & role ke cookie
       Cookies.set("token", token, {
         expires: 1,
         secure: false, // Set to true jika sudah di deploy dengan HTTPS
         sameSite: "Strict",
       });
-      Cookies.set("userRole", user.role, {
+
+      Cookies.set("userRole", role, {
         expires: 1,
         secure: false, // Set to true jika sudah di deploy dengan HTTPS
         sameSite: "Strict",
       });
 
-      // Set token di axios
+      // Set token untuk axios
       axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      // Redirect berdasarkan role
-      navigate(`/dashboard-${user.role}`);
+      // Arahkan ke dashboard yang sesuai
+      if (privilege.is_superadmin === 1 && role === "admin") {
+        navigate("/dashboard-admin");
+      } else {
+        navigate(`/dashboard-${role}`);
+      }
     } catch (error) {
       console.error("Login gagal:", error.response?.data);
 
@@ -76,12 +91,12 @@ const FormLogin = ({ role }) => {
 
       setError(errorMessage);
     } finally {
-      setIsLoading(false); // Stop loading whether success or error
+      setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleLogin}>
+    <form onSubmit={handleLogin} className="relative space-y-4">
       {isLoading && (
         <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="flex flex-col items-center gap-2">
@@ -90,8 +105,9 @@ const FormLogin = ({ role }) => {
           </div>
         </div>
       )}
-      {error && <p className="text-red-500">{error}</p>}{" "}
-      {/* Tampilkan error jika ada */}
+
+      {error && <p className="text-red-500">{error}</p>}
+
       <InputForm
         label="Email"
         type="email"
@@ -108,12 +124,12 @@ const FormLogin = ({ role }) => {
         value={formData.password}
         onChange={handleChange}
       />
-      <Button 
-        type="submit" 
+      <Button
+        type="submit"
         className="bg-yellow-600 text-white"
         disabled={isLoading}
       >
-        {isLoading ? 'Logging in...' : 'Login'}
+        {isLoading ? "Logging in..." : "Login"}
       </Button>
     </form>
   );
