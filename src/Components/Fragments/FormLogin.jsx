@@ -38,7 +38,9 @@ const FormLogin = ({ role }) => {
         password: formData.password,
       });
 
+      // Setelah mendapatkan response
       const { token, privilege } = response.data.data;
+      console.log("Received privilege:", privilege);
 
       // Batasan role yang diizinkan per halaman login
       const allowedRoles = {
@@ -58,6 +60,14 @@ const FormLogin = ({ role }) => {
         setIsLoading(false);
         return;
       }
+
+      // Sebelum menyimpan ke cookies
+      Cookies.set("userPrivilege", JSON.stringify(privilege), {
+        expires: 1,
+        secure: false,
+        sameSite: "Strict",
+      });
+      console.log("Saved privilege to cookies:", JSON.stringify(privilege));
 
       // Simpan token & role ke cookie
       Cookies.set("token", token, {
