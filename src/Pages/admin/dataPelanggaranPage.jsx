@@ -3,7 +3,7 @@ import DataPelanggaran from "../../Components/Fragments/Admin/Data Pelanggaran/D
 
 const DataPelanggaranPage = () => {
   return (
-    <AdminLayout defaultActivePage="violations">
+    <AdminLayout defaultActivePage="violation">
       <DataPelanggaran />
     </AdminLayout>
   );

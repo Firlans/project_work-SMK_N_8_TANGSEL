@@ -3,7 +3,7 @@ import DataKonselor from "../../Components/Fragments/Admin/Data Konselor/DataKon
 
 const DataKonselorPage = () => {
     return (
-        <AdminLayout defaultActivePage="counselors">
+        <AdminLayout defaultActivePage="counselor">
             <DataKonselor />
         </AdminLayout>
     )

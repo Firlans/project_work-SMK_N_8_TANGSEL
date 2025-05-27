@@ -3,7 +3,7 @@ import DataAdmin from "../../Components/Fragments/Admin/Data Admin/DataAdmin";
 
 const DataAdminPage = () => {
   return (
-    <AdminLayout defaultActivePage="admins">
+    <AdminLayout defaultActivePage="admin">
       <DataAdmin />
     </AdminLayout>
   );
