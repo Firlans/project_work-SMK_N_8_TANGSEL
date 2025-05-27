@@ -9,14 +9,15 @@ import {
 import LandingPage from "./Pages/landingPage";
 import DashboardGuruPage from "./Pages/dashboardGuruPage";
 import DashboardSiswaPage from "./Pages/dashboardSiswaPage";
-import DashboardAdminPage from "./Pages/dashboardAdminPage";
+import DashboardAdminPage from "./Pages/admin/dashboardAdminPage";
 import ProtectedRoute from "./protectedRoute";
 import Unauthorized from "./Pages/unauthorizedPage";
 import DashboardKonselorPage from "./Pages/dashboardKonselorPage";
 import LoginGuru from "./Pages/loginGuru";
 import LoginSiswa from "./Pages/loginSiswa";
-import LoginAdmin from "./Pages/loginAdmin";
+import LoginAdmin from "./Pages/admin/loginAdmin";
 import LoginKonselor from "./Pages/loginKonselor";
+import DataUserPage from "./Pages/admin/dataUserPage";
 
 const router = createBrowserRouter([
   {
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
   { path: "/unauthorized", element: <Unauthorized /> },
   // Jika path tidak ditemukan, redirect ke "/"
   { path: "*", element: <Navigate to="/" replace /> },
+  {
+    path: "/data-user",
+    element: <DataUserPage />,
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(
