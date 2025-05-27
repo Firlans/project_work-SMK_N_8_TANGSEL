@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->unsignedBigInteger('id_siswa');
             $table->unsignedBigInteger('id_guru');
+            $table->string('access_code')->nullable();
             $table->enum('status', ['Open', 'Closed'])->default('Open');
             $table->boolean('is_private')->default(false);
             $table->timestamps();

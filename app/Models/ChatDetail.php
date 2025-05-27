@@ -15,9 +15,10 @@ class ChatDetail extends Model
 
     protected $fillable = [
         'id_chat_room',
+        'id_sender',
         'message',
-        'sender_id',
-        'sender_type'
+        'encrypted_message',
+        'is_read'
     ];
 
     public function chatRoom()

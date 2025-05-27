@@ -91,4 +91,11 @@ trait ApiResponseHandler
             400
         );
     }
+
+    protected function handleFail($task, $object){
+        return response()->json([
+            'status'=> 'fail',
+            'message' => "failed to $task $object"
+        ]);
+    }
 }

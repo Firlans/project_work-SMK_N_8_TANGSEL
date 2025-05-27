@@ -131,7 +131,6 @@ class UserController extends Controller
                     }
                 }
             }
-
             Privilege::create($privileges);
             $user->load('privileges');
             return $this->handleReturnData($user, 'User');
@@ -172,7 +171,7 @@ class UserController extends Controller
 
             $user->update($data);
 
-
+            \Log::info('user' . json_encode($user));
             if (isset($request->privileges)) {
                 $privileges = [
                     'is_superadmin' => false,
@@ -230,8 +229,11 @@ class UserController extends Controller
                 $user->privileges->delete();
             }
 
-            // Delete the user
-            $user->delete();
+            $isDeleted = $user->delete();
+
+            if(!$isDeleted){
+                return $this->handleFail('delete', 'user');
+            }
 
             return response()->json([
                 'status' => 'success',

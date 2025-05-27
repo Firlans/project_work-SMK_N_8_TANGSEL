@@ -15,7 +15,7 @@ class Privilege extends Model
         'is_superadmin',
         'is_admin',
         'is_guru',
-        'is_Conselor',
+        'is_conselor',
         'is_siswa',
     ];
 }

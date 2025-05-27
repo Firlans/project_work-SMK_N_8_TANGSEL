@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_chat_room');
             $table->foreignId('id_sender')->constrained('users')->onDelete('cascade');
-            $table->text('message');
+            $table->text('message')->nullable();
+            $table->text('encrypted_message')->nullable();
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
     }
