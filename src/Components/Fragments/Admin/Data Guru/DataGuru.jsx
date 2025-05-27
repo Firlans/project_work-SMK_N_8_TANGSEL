@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import axiosClient from "../../../../axiosClient";
 import EditGuru from "./EditGuru";
-import DetailGuru from "../../../Layouts/DetailGuruLayouts";
+import DetailGuru from "./DetailGuru";
 import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
+import Cookies from "js-cookie";
 
 const DataGuru = () => {
   const [teachers, setTeachers] = useState([]);
@@ -14,36 +15,59 @@ const DataGuru = () => {
   const [selectedGuru, setSelectedGuru] = useState(null);
   const [message, setMessage] = useState({ text: "", type: "" });
   const [isLoading, setIsLoading] = useState(true);
+  const [userPrivilege, setUserPrivilege] = useState(null);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      // Fetch teachers
+      const teachersResponse = await axiosClient.get("/guru");
+      setTeachers(teachersResponse.data.data);
+      console.log("Data Guru:", teachersResponse.data.data);
+
+      // Fetch subjects
+      const subjectsResponse = await axiosClient.get("/mata-pelajaran");
+      // Convert array to object for easier lookup
+      const subjectsMap = subjectsResponse.data.data.reduce((acc, subject) => {
+        acc[subject.id] = subject.nama_pelajaran;
+        return acc;
+      }, {});
+      setSubjects(subjectsMap);
+      console.log("Data Mapel:", subjectsResponse.data.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
+    // Ambil dan parse privilege dari cookies
+    const privilegeData = Cookies.get("userPrivilege");
+    console.log("Cookie privilege data:", privilegeData);
+
+    if (privilegeData) {
       try {
-        // Fetch teachers
-        const teachersResponse = await axiosClient.get("/guru");
-        setTeachers(teachersResponse.data.data);
-        console.log("Data Guru:", teachersResponse.data.data);
-
-        // Fetch subjects
-        const subjectsResponse = await axiosClient.get("/mata-pelajaran");
-        // Convert array to object for easier lookup
-        const subjectsMap = subjectsResponse.data.data.reduce(
-          (acc, subject) => {
-            acc[subject.id] = subject.nama_pelajaran;
-            return acc;
-          },
-          {}
-        );
-        setSubjects(subjectsMap);
+        const parsedPrivilege = JSON.parse(privilegeData);
+        console.log("Parsed privilege:", parsedPrivilege);
+        setUserPrivilege(parsedPrivilege);
       } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsLoading(false);
+        console.error("Error parsing privilege:", error);
       }
-    };
+    }
 
+    // Panggil fetchUsers
     fetchData();
   }, []);
+
+  const isSuperAdmin = () => {
+    if (!userPrivilege) {
+      console.log("userPrivilege is null");
+      return false;
+    }
+    const isSuperAdmin = userPrivilege.is_superadmin === 1;
+    return isSuperAdmin;
+  };
 
   // Mengurutkan data guru berdasarkan nama
   const sortedTeachers = [...teachers].sort((a, b) =>
@@ -54,8 +78,8 @@ const DataGuru = () => {
   const filteredTeachers =
     selectedSubject === "all"
       ? sortedTeachers
-      : sortedTeachers.filter(
-          (teacher) => teacher.mata_pelajaran_id === parseInt(selectedSubject)
+      : sortedTeachers.filter((teacher) =>
+          teacher.nama_pelajaran?.includes(subjects[selectedSubject])
         );
 
   // Sort subjects by name for dropdown
@@ -162,7 +186,7 @@ const DataGuru = () => {
                         {teacher.nama}
                       </td>
                       <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
-                        {subjects[teacher.mata_pelajaran_id] || "Loading..."}
+                        {teacher.nama_pelajaran?.join(", ") || "Tidak ada data"}
                       </td>
                       <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
                         <div className="flex gap-2 justify-center">
@@ -173,20 +197,18 @@ const DataGuru = () => {
                           >
                             <FaEye className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => handleEdit(teacher)}
-                            className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
-                            aria-label="Edit teacher"
-                          >
-                            <FaEdit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(teacher.id)}
-                            className="p-1 text-red-500 hover:text-red-700 transition-colors"
-                            aria-label="Delete teacher"
-                          >
-                            <FaTrash className="w-4 h-4" />
-                          </button>
+                          {/* Tombol Edit dan Delete hanya untuk non-superadmin */}
+                          {!isSuperAdmin() && (
+                            <>
+                              <button
+                                onClick={() => handleEdit(user)}
+                                className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
+                                aria-label="Edit user"
+                              >
+                                <FaEdit className="w-4 h-4" />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>

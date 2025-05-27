@@ -1,5 +1,4 @@
-import React from "react";
-import { formatTanggal } from "../../utils/dateFormatter";
+import { formatTanggal } from "../../../../utils/dateFormatter";
 
 const DetailGuru = ({ isOpen, onClose, guru, subjects }) => {
   if (!isOpen || !guru) return null;
@@ -70,7 +69,7 @@ const DetailGuru = ({ isOpen, onClose, guru, subjects }) => {
               Mata Pelajaran
             </label>
             <p className="mt-1 px-3 py-2 block w-full rounded-md border border-gray-200 bg-gray-50">
-              {subjects[guru.mata_pelajaran_id]}
+              {guru.nama_pelajaran?.join(", ")}
             </p>
           </div>
         </div>
