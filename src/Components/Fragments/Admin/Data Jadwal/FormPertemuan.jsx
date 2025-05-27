@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axiosClient from "../../../axiosClient";
+import axiosClient from "../../../../axiosClient";
 
 const FormPertemuan = ({ isOpen, onClose, data, idJadwal, onSuccess }) => {
   const [form, setForm] = useState({

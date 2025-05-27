@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { FaEdit, FaTrash, FaEye, FaPlus } from "react-icons/fa";
-import axiosClient from "../../../axiosClient";
+import { useState, useEffect } from "react";
+import { FaEdit, FaTrash, FaEye, } from "react-icons/fa";
+import axiosClient from "../../../../axiosClient";
 import EditSiswa from "./EditSiswa";
-import DetailSiswa from "../../Layouts/DetailSiswaLayouts";
-import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import DetailSiswa from "../../../Layouts/DetailSiswaLayouts";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 
 const DataSiswa = () => {
   const [loading, setLoading] = useState(true);

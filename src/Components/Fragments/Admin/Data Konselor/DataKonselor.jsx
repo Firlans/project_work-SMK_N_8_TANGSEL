@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { FaEdit, FaTrash, FaEye, FaPlus } from "react-icons/fa";
-import axiosClient from "../../../axiosClient";
-import EditGuru from "./EditGuru";
-import DetailGuru from "../../Layouts/DetailGuruLayouts";
-import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import { useState, useEffect } from "react";
+import { FaEdit, FaTrash, FaEye, } from "react-icons/fa";
+import axiosClient from "../../../../axiosClient";
+import EditKonselor from "./EditKonselor";
+import DetailKonselor from "../../../Layouts/DetailKonselorLayouts";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 
-const DataGuru = () => {
+const DataKonselor = () => {
   const [teachers, setTeachers] = useState([]);
   const [subjects, setSubjects] = useState({});
   const [selectedSubject, setSelectedSubject] = useState("all");
@@ -20,7 +20,7 @@ const DataGuru = () => {
       setIsLoading(true);
       try {
         // Fetch teachers
-        const teachersResponse = await axiosClient.get("/guru");
+        const teachersResponse = await axiosClient.get("/konselor");
         setTeachers(teachersResponse.data.data);
         console.log("Data Guru:", teachersResponse.data.data);
 
@@ -71,12 +71,15 @@ const DataGuru = () => {
   const handleUpdate = async (formData) => {
     try {
       console.log("Memulai proses update...", formData);
-      const response = await axiosClient.put(`/guru/${formData.id}`, formData);
+      const response = await axiosClient.put(
+        `/konselor/${formData.id}`,
+        formData
+      );
       console.log("Response dari server:", response.data);
 
       if (response.data.status === "success") {
         console.log("Update berhasil!");
-        const teachersResponse = await axiosClient.get("/guru");
+        const teachersResponse = await axiosClient.get("/konselor");
         setTeachers(teachersResponse.data.data);
         setIsEditModalOpen(false);
         setSelectedGuru(null);
@@ -113,22 +116,8 @@ const DataGuru = () => {
       {/* Header Section with Responsive Layout */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
-          Data Guru
+          Data Konselor
         </h2>
-        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-          <select
-            className="w-full sm:w-64 p-2 border rounded-md text-sm sm:text-base"
-            value={selectedSubject}
-            onChange={(e) => setSelectedSubject(e.target.value)}
-          >
-            <option value="all">Semua Mata Pelajaran</option>
-            {sortedSubjects.map(([id, name]) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </div>
       </div>
 
       {/* Table Container with Horizontal Scroll */}
@@ -141,10 +130,7 @@ const DataGuru = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
-                    Nama Guru
-                  </th>
-                  <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
-                    Mata Pelajaran
+                    Nama Konselor
                   </th>
                   <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
                     Aksi
@@ -161,9 +147,6 @@ const DataGuru = () => {
                       <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
                         {teacher.nama}
                       </td>
-                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
-                        {subjects[teacher.mata_pelajaran_id] || "Loading..."}
-                      </td>
                       <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
                         <div className="flex gap-2 justify-center">
                           <button
@@ -176,14 +159,14 @@ const DataGuru = () => {
                           <button
                             onClick={() => handleEdit(teacher)}
                             className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
-                            aria-label="Edit teacher"
+                            aria-label="Edit konselor"
                           >
                             <FaEdit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(teacher.id)}
                             className="p-1 text-red-500 hover:text-red-700 transition-colors"
-                            aria-label="Delete teacher"
+                            aria-label="Delete konselor"
                           >
                             <FaTrash className="w-4 h-4" />
                           </button>
@@ -194,10 +177,10 @@ const DataGuru = () => {
                 ) : (
                   <tr>
                     <td
-                      colSpan="3"
+                      colSpan="2"
                       className="px-3 sm:px-6 py-4 text-center text-gray-500 text-xs sm:text-sm"
                     >
-                      Tidak ada Data Guru
+                      Tidak ada Data Konselor
                     </td>
                   </tr>
                 )}
@@ -208,7 +191,7 @@ const DataGuru = () => {
       </div>
 
       {/* Modals */}
-      <EditGuru
+      <EditKonselor
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
@@ -218,7 +201,7 @@ const DataGuru = () => {
         subjects={subjects}
         onSubmit={handleUpdate}
       />
-      <DetailGuru
+      <DetailKonselor
         isOpen={isDetailModalOpen}
         onClose={() => {
           setIsDetailModalOpen(false);
@@ -231,4 +214,4 @@ const DataGuru = () => {
   );
 };
 
-export default DataGuru;
+export default DataKonselor;

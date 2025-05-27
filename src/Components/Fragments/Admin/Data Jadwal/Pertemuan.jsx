@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
-import { formatTanggal } from "../../../utils/dateFormatter";
+import { formatTanggal } from "../../../../utils/dateFormatter";
 import FormPertemuan from "./FormPertemuan";
-import axiosClient from "../../../axiosClient";
+import axiosClient from "../../../../axiosClient";
 import { FaEye } from "react-icons/fa6";
-import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 
 const PertemuanList = ({ data, onClickKehadiran, idJadwal, onRefresh }) => {
   const [selectedPertemuan, setSelectedPertemuan] = useState(null);

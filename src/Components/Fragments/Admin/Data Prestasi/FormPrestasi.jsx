@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axiosClient from "../../../axiosClient";
+import axiosClient from "../../../../axiosClient";
 
 const ModalPrestasi = ({ onClose, onSuccess, initialData }) => {
   const [formData, setFormData] = useState({

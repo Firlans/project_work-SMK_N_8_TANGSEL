@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import axiosClient from "../../../axiosClient";
+import axiosClient from "../../../../axiosClient";
 import FormJadwal from "./FormJadwal";
 import PertemuanList from "./Pertemuan";
 import PresensiList from "./Presensi";
 import { FaEye, FaEdit, FaPlus, FaTrash } from "react-icons/fa";
-import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 
-const JadwalMapel = () => {
+const DataJadwal = () => {
   const [jadwal, setJadwal] = useState([]);
   const [waktu, setWaktu] = useState([]);
   const [kelas, setKelas] = useState([]);
@@ -304,4 +304,4 @@ const JadwalMapel = () => {
   );
 };
 
-export default JadwalMapel;
+export default DataJadwal;

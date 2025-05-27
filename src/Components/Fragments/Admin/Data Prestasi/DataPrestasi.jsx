@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import axiosClient from "../../../axiosClient";
-import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import axiosClient from "../../../../axiosClient";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
-import Badge from "../../Elements/Badges/Index";
+import Badge from "../../../Elements/Badges/Index";
 import ModalPrestasi from "./FormPrestasi";
 
-const Prestasi = () => {
+const DataPrestasi = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -108,9 +108,9 @@ const Prestasi = () => {
                       </td>
                       <td className="px-3 sm:px-6 py-2 sm:py-4">
                         <img
-                          // src={item.foto}
-                          // alt=""
-                          // className="h-16 w-16 object-cover rounded"
+                        // src={item.foto}
+                        // alt=""
+                        // className="h-16 w-16 object-cover rounded"
                         />
                       </td>
                       <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
@@ -170,4 +170,4 @@ const Prestasi = () => {
   );
 };
 
-export default Prestasi;
+export default DataPrestasi;

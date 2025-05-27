@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useState } from "react";
-import axiosClient from "../../../axiosClient";
-import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import axiosClient from "../../../../axiosClient";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import EditMapel from "./EditMapel";
 

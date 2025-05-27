@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import axiosClient from "../../../axiosClient";
-import { formatTanggal } from "../../../utils/dateFormatter";
-import Badge from "../../Elements/Badges/Index";
+import axiosClient from "../../../../axiosClient";
+import { formatTanggal } from "../../../../utils/dateFormatter";
+import Badge from "../../../Elements/Badges/Index";
 import ModalPelanggaran from "./FormPelanggaran";
-import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 
-const Pelanggaran = () => {
+const DataPelanggaran = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -160,4 +160,4 @@ const Pelanggaran = () => {
   );
 };
 
-export default Pelanggaran;
+export default DataPelanggaran;

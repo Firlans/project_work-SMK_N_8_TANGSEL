@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import axiosClient from "../../../axiosClient";
+import axiosClient from "../../../../axiosClient";
 import EditKelas from "./EditKelas";
-import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
-import React from "react";
 
 const DataKelas = () => {
   const [loading, setLoading] = useState(true);

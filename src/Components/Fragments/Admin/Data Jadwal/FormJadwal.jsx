@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axiosClient from "../../../axiosClient";
+import axiosClient from "../../../../axiosClient";
 
 const FormJadwal = ({
   isOpen,

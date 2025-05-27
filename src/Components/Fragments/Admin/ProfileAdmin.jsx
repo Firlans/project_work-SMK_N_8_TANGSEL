@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import axiosClient from "../../axiosClient";
-import Button from "../Elements/Button";
-import { formatTanggal } from "../../utils/dateFormatter";
-import LoadingSpinner from "../Elements/Loading/LoadingSpinner";
+import axiosClient from "../../../axiosClient";
+import Button from "../../Elements/Button";
+import { formatTanggal } from "../../../utils/dateFormatter";
+import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 
 const ProfileAdmin = () => {
   const [isEditing, setIsEditing] = useState(false);

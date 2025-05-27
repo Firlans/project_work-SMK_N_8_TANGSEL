@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { FaEdit, FaTrash, FaEye, FaPlus } from "react-icons/fa";
-import axiosClient from "../../../axiosClient";
-import EditKonselor from "./EditKonselor";
-import DetailKonselor from "../../Layouts/DetailKonselorLayouts";
-import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import { useState, useEffect } from "react";
+import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
+import axiosClient from "../../../../axiosClient";
+import EditGuru from "./EditGuru";
+import DetailGuru from "../../../Layouts/DetailGuruLayouts";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 
-const DataKonselor = () => {
+const DataGuru = () => {
   const [teachers, setTeachers] = useState([]);
   const [subjects, setSubjects] = useState({});
   const [selectedSubject, setSelectedSubject] = useState("all");
@@ -20,7 +20,7 @@ const DataKonselor = () => {
       setIsLoading(true);
       try {
         // Fetch teachers
-        const teachersResponse = await axiosClient.get("/konselor");
+        const teachersResponse = await axiosClient.get("/guru");
         setTeachers(teachersResponse.data.data);
         console.log("Data Guru:", teachersResponse.data.data);
 
@@ -71,15 +71,12 @@ const DataKonselor = () => {
   const handleUpdate = async (formData) => {
     try {
       console.log("Memulai proses update...", formData);
-      const response = await axiosClient.put(
-        `/konselor/${formData.id}`,
-        formData
-      );
+      const response = await axiosClient.put(`/guru/${formData.id}`, formData);
       console.log("Response dari server:", response.data);
 
       if (response.data.status === "success") {
         console.log("Update berhasil!");
-        const teachersResponse = await axiosClient.get("/konselor");
+        const teachersResponse = await axiosClient.get("/guru");
         setTeachers(teachersResponse.data.data);
         setIsEditModalOpen(false);
         setSelectedGuru(null);
@@ -116,8 +113,22 @@ const DataKonselor = () => {
       {/* Header Section with Responsive Layout */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
-          Data Konselor
+          Data Guru
         </h2>
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <select
+            className="w-full sm:w-64 p-2 border rounded-md text-sm sm:text-base"
+            value={selectedSubject}
+            onChange={(e) => setSelectedSubject(e.target.value)}
+          >
+            <option value="all">Semua Mata Pelajaran</option>
+            {sortedSubjects.map(([id, name]) => (
+              <option key={id} value={id}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Table Container with Horizontal Scroll */}
@@ -130,7 +141,10 @@ const DataKonselor = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
-                    Nama Konselor
+                    Nama Guru
+                  </th>
+                  <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
+                    Mata Pelajaran
                   </th>
                   <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
                     Aksi
@@ -147,6 +161,9 @@ const DataKonselor = () => {
                       <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
                         {teacher.nama}
                       </td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
+                        {subjects[teacher.mata_pelajaran_id] || "Loading..."}
+                      </td>
                       <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
                         <div className="flex gap-2 justify-center">
                           <button
@@ -159,14 +176,14 @@ const DataKonselor = () => {
                           <button
                             onClick={() => handleEdit(teacher)}
                             className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
-                            aria-label="Edit konselor"
+                            aria-label="Edit teacher"
                           >
                             <FaEdit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(teacher.id)}
                             className="p-1 text-red-500 hover:text-red-700 transition-colors"
-                            aria-label="Delete konselor"
+                            aria-label="Delete teacher"
                           >
                             <FaTrash className="w-4 h-4" />
                           </button>
@@ -177,10 +194,10 @@ const DataKonselor = () => {
                 ) : (
                   <tr>
                     <td
-                      colSpan="2"
+                      colSpan="3"
                       className="px-3 sm:px-6 py-4 text-center text-gray-500 text-xs sm:text-sm"
                     >
-                      Tidak ada Data Konselor
+                      Tidak ada Data Guru
                     </td>
                   </tr>
                 )}
@@ -191,7 +208,7 @@ const DataKonselor = () => {
       </div>
 
       {/* Modals */}
-      <EditKonselor
+      <EditGuru
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
@@ -201,7 +218,7 @@ const DataKonselor = () => {
         subjects={subjects}
         onSubmit={handleUpdate}
       />
-      <DetailKonselor
+      <DetailGuru
         isOpen={isDetailModalOpen}
         onClose={() => {
           setIsDetailModalOpen(false);
@@ -214,4 +231,4 @@ const DataKonselor = () => {
   );
 };
 
-export default DataKonselor;
+export default DataGuru;

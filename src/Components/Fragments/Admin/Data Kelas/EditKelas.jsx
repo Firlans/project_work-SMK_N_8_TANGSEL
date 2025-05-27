@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axiosClient from "../../../axiosClient";
+import axiosClient from "../../../../axiosClient";
 
 const EditKelas = ({ onClose, refreshData, initialData, siswaList }) => {
   const [form, setForm] = useState({
@@ -17,7 +17,7 @@ const EditKelas = ({ onClose, refreshData, initialData, siswaList }) => {
       if (initialData) {
         await axiosClient.put(`/kelas/${initialData.id}`, form);
         console.log("Data kelas berhasil diperbarui:", form);
-      }  else {
+      } else {
         await axiosClient.post("/kelas", form);
         console.log("Data kelas berhasil ditambahkan:", form);
       }

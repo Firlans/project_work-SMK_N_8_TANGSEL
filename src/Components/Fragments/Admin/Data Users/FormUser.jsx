@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axiosClient from "../../../axiosClient";
+import axiosClient from "../../../../axiosClient";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 
 const FormUser = ({ mode, user, onClose, onSuccess }) => {
   // State untuk form data

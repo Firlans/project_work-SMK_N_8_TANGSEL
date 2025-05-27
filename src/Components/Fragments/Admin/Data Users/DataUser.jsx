@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaEye, FaPlus } from "react-icons/fa";
-import axiosClient from "../../../axiosClient";
+import axiosClient from "../../../../axiosClient";
 import DetailUser from "./DetailUser";
-import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import Cookies from "js-cookie";
 import FormUser from "./FormUser";
 

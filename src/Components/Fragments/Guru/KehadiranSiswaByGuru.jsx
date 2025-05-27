@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../../../axiosClient";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
-import PresensiList from "../JadwalMapel/Presensi";
+import PresensiList from "../Admin/Data Jadwal/Presensi"
 
 const PresensiGuru = () => {
   const [jadwalList, setJadwalList] = useState([]);

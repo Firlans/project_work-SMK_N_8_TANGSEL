@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axiosClient from "../../../axiosClient";
+import axiosClient from "../../../../axiosClient";
 import { FaTrash } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 
