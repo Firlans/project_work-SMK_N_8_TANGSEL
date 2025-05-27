@@ -37,7 +37,7 @@ export const adminPageRoutes = {
   admin: "/data-admin",
   classes: "/data-kelas",
   subjects: "/data-mapel",
-  schedule: "/jadwal-mapel",
-  achievement: "/prestasi",
-  violation: "/pelanggaran",
+  schedule: "/data-jadwal",
+  achievement: "/data-prestasi",
+  violation: "/data-pelanggaran",
 };

@@ -1,5 +1,5 @@
 import AdminLayout from "../../Components/Layouts/AdminLayout";
-import DataUser from "../../Components/Fragments/Data Users/DataUser";
+import DataUser from "../../Components/Fragments/Admin/Data Users/DataUser";
 
 const DataUserPage = () => {
   return (

@@ -18,7 +18,15 @@ import LoginSiswa from "./Pages/loginSiswa";
 import LoginAdmin from "./Pages/admin/loginAdmin";
 import LoginKonselor from "./Pages/loginKonselor";
 import DataUserPage from "./Pages/admin/dataUserPage";
-
+import DataGuruPage from "./Pages/admin/dataGuruPage";
+import DataKonselorPage from "./Pages/admin/dataKonselorPage";
+import DataSiswaPage from "./Pages/admin/dataSiswaPage";
+import DataKelasPage from "./Pages/admin/dataKelasPage";
+import DataMapelPage from "./Pages/admin/dataMapelPage";
+import DataJadwalPage from "./Pages/admin/dataJadwalPage";
+import DataPrestasiPage from "./Pages/admin/dataPrestasiPage";
+import DataPelanggaranPage from "./Pages/admin/dataPelanggaranPage";
+import DataAdminPage from "./Pages/admin/dataAdminPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -71,6 +79,42 @@ const router = createBrowserRouter([
   {
     path: "/data-user",
     element: <DataUserPage />,
+  },
+  {
+    path: "/data-admin",
+    element: <DataAdminPage />,
+  },
+  {
+    path: "/data-guru",
+    element: <DataGuruPage />,
+  },
+  {
+    path: "/data-konselor",
+    element: <DataKonselorPage />,
+  },
+  {
+    path: "/data-siswa",
+    element: <DataSiswaPage />,
+  },
+  {
+    path: "/data-kelas",
+    element: <DataKelasPage />,
+  },
+  {
+    path: "/data-mapel",
+    element: <DataMapelPage />,
+  },
+  {
+    path: "/data-jadwal",
+    element: <DataJadwalPage />,
+  },
+  {
+    path: "/data-prestasi",
+    element: <DataPrestasiPage />,
+  },
+  {
+    path: "/data-pelanggaran",
+    element: <DataPelanggaranPage />,
   },
 ]);
 

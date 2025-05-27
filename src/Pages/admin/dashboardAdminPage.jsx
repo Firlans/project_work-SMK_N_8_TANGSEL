@@ -1,5 +1,5 @@
 import AdminLayout from "../../Components/Layouts/AdminLayout";
-import ProfileAdmin from "../../Components/Fragments/ProfileAdmin";
+import ProfileAdmin from "../../Components/Fragments/Admin/ProfileAdmin";
 
 const DashboardAdminPage = () => {
   return (
