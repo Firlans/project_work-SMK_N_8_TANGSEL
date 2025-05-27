@@ -39,8 +39,19 @@ const DetailUser = ({ user, onClose }) => {
             <p>{userData.email}</p>
           </div>
           <div>
-            <label className="font-bold">Role:</label>
-            <p className="capitalize">{userData.role}</p>
+            <label className="font-bold">Privilege:</label>
+            <p className="capitalize">{userData.profile}</p>
+            {userData.privileges && (
+              <>
+                {userData.privileges.is_admin === 1 && <p>- Admin</p>}
+                {userData.privileges.is_guru === 1 && <p>- Guru</p>}
+                {userData.privileges.is_siswa === 1 && <p>- Siswa</p>}
+                {userData.privileges.is_conselor === 1 && <p>- Konselor</p>}
+                {userData.privileges.is_superadmin === 1 && (
+                  <p>- Super Admin</p>
+                )}
+              </>
+            )}
           </div>
           {userData.profile && (
             <>
@@ -51,14 +62,6 @@ const DetailUser = ({ user, onClose }) => {
                     ? "Laki-laki"
                     : "Perempuan"}
                 </p>
-              </div>
-              <div>
-                <label className="font-bold">Phone:</label>
-                <p>{userData.profile.no_telp}</p>
-              </div>
-              <div>
-                <label className="font-bold">Address:</label>
-                <p>{userData.profile.alamat}</p>
               </div>
             </>
           )}
