@@ -1,14 +1,7 @@
-import React from "react";
-import { formatTanggal } from "../../utils/dateFormatter";
+import { formatTanggal } from "../../../../utils/dateFormatter";
 
 const DetailSiswa = ({ isOpen, onClose, siswa, kelas }) => {
-  console.log("[DetailSiswa] Props:", { isOpen, siswa, kelas });
-
   if (!isOpen || !siswa) {
-    console.log("[DetailSiswa] Component not rendered:", {
-      isOpen,
-      hasSiswa: !!siswa,
-    });
     return null;
   }
 
