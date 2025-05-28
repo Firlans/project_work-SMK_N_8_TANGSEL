@@ -5,12 +5,14 @@ import Badge from "../../../Elements/Badges/Index";
 import ModalPelanggaran from "./FormPelanggaran";
 import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import Cookies from "js-cookie";
 
 const DataPelanggaran = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [userPrivilege, setUserPrivilege] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -34,8 +36,31 @@ const DataPelanggaran = () => {
   };
 
   useEffect(() => {
+    // Ambil dan parse privilege dari cookies
+    const privilegeData = Cookies.get("userPrivilege");
+    console.log("Cookie privilege data:", privilegeData);
+
+    if (privilegeData) {
+      try {
+        const parsedPrivilege = JSON.parse(privilegeData);
+        console.log("Parsed privilege:", parsedPrivilege);
+        setUserPrivilege(parsedPrivilege);
+      } catch (error) {
+        console.error("Error parsing privilege:", error);
+      }
+    }
+
     fetchData();
   }, []);
+
+  const isSuperAdmin = () => {
+    if (!userPrivilege) {
+      console.log("userPrivilege is null");
+      return false;
+    }
+    const isSuperAdmin = userPrivilege.is_superadmin === 1;
+    return isSuperAdmin;
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Yakin ingin menghapus data ini?")) return;
@@ -57,15 +82,17 @@ const DataPelanggaran = () => {
             <h2 className="text-2xl font-bold text-gray-800">
               Daftar Pelanggaran
             </h2>
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
-              onClick={() => {
-                setSelected(null);
-                setShowModal(true);
-              }}
-            >
-              <FaPlus /> Tambah Pelanggaran
-            </button>
+            {!isSuperAdmin() && (
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+                onClick={() => {
+                  setSelected(null);
+                  setShowModal(true);
+                }}
+              >
+                <FaPlus /> Tambah Pelanggaran
+              </button>
+            )}
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -78,7 +105,7 @@ const DataPelanggaran = () => {
                   <th className="px-6 py-3">Bukti</th>
                   <th className="px-6 py-3">Deskripsi</th>
                   <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">Aksi</th>
+                  {!isSuperAdmin() && <th className="px-6 py-3">Aksi</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -118,21 +145,25 @@ const DataPelanggaran = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap space-x-2">
                       <div className="flex gap-2 justify-center">
-                        <button
-                          onClick={() => {
-                            setSelected(item);
-                            setShowModal(true);
-                          }}
-                          className="text-yellow-500 hover:text-yellow-700"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(item.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <FaTrash />
-                        </button>
+                        {!isSuperAdmin() && (
+                          <>
+                            <button
+                              onClick={() => {
+                                setSelected(item);
+                                setShowModal(true);
+                              }}
+                              className="text-yellow-500 hover:text-yellow-700"
+                            >
+                              <FaEdit />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <FaTrash />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

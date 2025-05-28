@@ -5,6 +5,7 @@ import PertemuanList from "./Pertemuan";
 import PresensiList from "./Presensi";
 import { FaEye, FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
+import Cookies from "js-cookie";
 
 const DataJadwal = () => {
   const [jadwal, setJadwal] = useState([]);
@@ -18,6 +19,7 @@ const DataJadwal = () => {
   const [pertemuan, setPertemuan] = useState([]);
   const [selectedJadwalId, setSelectedJadwalId] = useState(null);
   const [selectedPertemuanId, setSelectedPertemuanId] = useState(null);
+  const [userPrivilege, setUserPrivilege] = useState(null);
 
   const hariMap = {
     1: "Senin",
@@ -28,37 +30,60 @@ const DataJadwal = () => {
     6: "Sabtu",
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [resJadwal, resWaktu, resKelas, resGuru, resMapel] =
-          await Promise.all([
-            axiosClient.get("/jadwal"),
-            axiosClient.get("/waktu"),
-            axiosClient.get("/kelas"),
-            axiosClient.get("/guru"),
-            axiosClient.get("/mata-pelajaran"),
-          ]);
+  const fetchData = async () => {
+    try {
+      const [resJadwal, resWaktu, resKelas, resGuru, resMapel] =
+        await Promise.all([
+          axiosClient.get("/jadwal"),
+          axiosClient.get("/waktu"),
+          axiosClient.get("/kelas"),
+          axiosClient.get("/guru"),
+          axiosClient.get("/mata-pelajaran"),
+        ]);
 
-        setJadwal(resJadwal.data.data);
-        setWaktu(resWaktu.data.data);
-        setKelas(
-          resKelas.data.data.sort((a, b) =>
-            a.nama_kelas.localeCompare(b.nama_kelas)
-          )
-        );
-        setGuru(resGuru.data.data);
-        setMapel(resMapel.data.data);
-        setLoading(false);
-        console.log("Data jadwal:", resJadwal.data.data);
+      setJadwal(resJadwal.data.data);
+      setWaktu(resWaktu.data.data);
+      setKelas(
+        resKelas.data.data.sort((a, b) =>
+          a.nama_kelas.localeCompare(b.nama_kelas)
+        )
+      );
+      setGuru(resGuru.data.data);
+      setMapel(resMapel.data.data);
+      setLoading(false);
+      console.log("Data jadwal:", resJadwal.data.data);
+    } catch (error) {
+      console.error("Gagal mengambil data:", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Ambil dan parse privilege dari cookies
+    const privilegeData = Cookies.get("userPrivilege");
+    console.log("Cookie privilege data:", privilegeData);
+
+    if (privilegeData) {
+      try {
+        const parsedPrivilege = JSON.parse(privilegeData);
+        console.log("Parsed privilege:", parsedPrivilege);
+        setUserPrivilege(parsedPrivilege);
       } catch (error) {
-        console.error("Gagal mengambil data:", error);
-        setLoading(false);
+        console.error("Error parsing privilege:", error);
       }
-    };
+    }
 
     fetchData();
   }, []);
+
+  const isSuperAdmin = () => {
+    if (!userPrivilege) {
+      console.log("userPrivilege is null");
+      return false;
+    }
+    const isSuperAdmin = userPrivilege.is_superadmin === 1;
+    return isSuperAdmin;
+  };
 
   const getKodeGuruMapel = (guruId) => {
     const guruData = guru.find((g) => g.id === guruId);
@@ -131,12 +156,16 @@ const DataJadwal = () => {
                 </button>
               )}
               {!selectedJadwalId && (
-                <button
-                  onClick={() => setShowForm(true)}
-                  className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors"
-                >
-                  <FaPlus className="w-4 h-4" /> Tambah Jadwal
-                </button>
+                <>
+                  {!isSuperAdmin() && (
+                    <button
+                      onClick={() => setShowForm(true)}
+                      className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors"
+                    >
+                      <FaPlus className="w-4 h-4" /> Tambah Jadwal
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -193,26 +222,34 @@ const DataJadwal = () => {
                                     <>
                                       {getKodeGuruMapel(slot.id_guru)}
                                       <div className="hidden group-hover:flex gap-2 justify-center mt-1">
-                                        <button
-                                          className="p-1 text-blue-500 hover:text-blue-700"
-                                          onClick={() =>
-                                            handleFetchPertemuan(slot.id)
-                                          }
-                                        >
-                                          <FaEye className="w-3 h-3 sm:w-4 sm:h-4" />
-                                        </button>
-                                        <button
-                                          onClick={() => handleEdit(slot)}
-                                          className="p-1 text-yellow-500 hover:text-yellow-700"
-                                        >
-                                          <FaEdit className="w-3 h-3 sm:w-4 sm:h-4" />
-                                        </button>
-                                        <button
-                                          onClick={() => handleDelete(slot.id)}
-                                          className="p-1 text-red-500 hover:text-red-700"
-                                        >
-                                          <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" />
-                                        </button>
+                                        <>
+                                          {!isSuperAdmin() && (
+                                            <>
+                                              <button
+                                                className="p-1 text-blue-500 hover:text-blue-700"
+                                                onClick={() =>
+                                                  handleFetchPertemuan(slot.id)
+                                                }
+                                              >
+                                                <FaEye className="w-3 h-3 sm:w-4 sm:h-4" />
+                                              </button>
+                                              <button
+                                                onClick={() => handleEdit(slot)}
+                                                className="p-1 text-yellow-500 hover:text-yellow-700"
+                                              >
+                                                <FaEdit className="w-3 h-3 sm:w-4 sm:h-4" />
+                                              </button>
+                                              <button
+                                                onClick={() =>
+                                                  handleDelete(slot.id)
+                                                }
+                                                className="p-1 text-red-500 hover:text-red-700"
+                                              >
+                                                <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" />
+                                              </button>
+                                            </>
+                                          )}
+                                        </>
                                       </div>
                                     </>
                                   ) : (

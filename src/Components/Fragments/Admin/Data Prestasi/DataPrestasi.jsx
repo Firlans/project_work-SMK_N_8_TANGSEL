@@ -4,12 +4,14 @@ import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import Badge from "../../../Elements/Badges/Index";
 import ModalPrestasi from "./FormPrestasi";
+import Cookies from "js-cookie";
 
 const DataPrestasi = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [userPrivilege, setUserPrivilege] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -33,8 +35,31 @@ const DataPrestasi = () => {
   };
 
   useEffect(() => {
+    // Ambil dan parse privilege dari cookies
+    const privilegeData = Cookies.get("userPrivilege");
+    console.log("Cookie privilege data:", privilegeData);
+
+    if (privilegeData) {
+      try {
+        const parsedPrivilege = JSON.parse(privilegeData);
+        console.log("Parsed privilege:", parsedPrivilege);
+        setUserPrivilege(parsedPrivilege);
+      } catch (error) {
+        console.error("Error parsing privilege:", error);
+      }
+    }
+
     fetchData();
   }, []);
+
+  const isSuperAdmin = () => {
+    if (!userPrivilege) {
+      console.log("userPrivilege is null");
+      return false;
+    }
+    const isSuperAdmin = userPrivilege.is_superadmin === 1;
+    return isSuperAdmin;
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Yakin ingin menghapus data ini?")) return;
@@ -57,15 +82,17 @@ const DataPrestasi = () => {
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
               Daftar Prestasi
             </h2>
-            <button
-              className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors"
-              onClick={() => {
-                setSelected(null);
-                setShowModal(true);
-              }}
-            >
-              <FaPlus className="w-4 h-4" /> Tambah Prestasi
-            </button>
+            {!isSuperAdmin() && (
+              <button
+                className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors"
+                onClick={() => {
+                  setSelected(null);
+                  setShowModal(true);
+                }}
+              >
+                <FaPlus className="w-4 h-4" /> Tambah Prestasi
+              </button>
+            )}
           </div>
 
           {/* Table Container with Horizontal Scroll */}
@@ -89,9 +116,11 @@ const DataPrestasi = () => {
                     <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
                       Status
                     </th>
-                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
-                      Aksi
-                    </th>
+                    {!isSuperAdmin() && (
+                      <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
+                        Aksi
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
@@ -123,23 +152,27 @@ const DataPrestasi = () => {
                       </td>
                       <td className="px-3 sm:px-6 py-2 sm:py-4">
                         <div className="flex gap-2 justify-center">
-                          <button
-                            onClick={() => {
-                              setSelected(item);
-                              setShowModal(true);
-                            }}
-                            className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
-                            aria-label="Edit prestasi"
-                          >
-                            <FaEdit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(item.id)}
-                            className="p-1 text-red-500 hover:text-red-700 transition-colors"
-                            aria-label="Hapus prestasi"
-                          >
-                            <FaTrash className="w-4 h-4" />
-                          </button>
+                          {!isSuperAdmin() && (
+                            <>
+                              <button
+                                onClick={() => {
+                                  setSelected(item);
+                                  setShowModal(true);
+                                }}
+                                className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
+                                aria-label="Edit prestasi"
+                              >
+                                <FaEdit className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(item.id)}
+                                className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                                aria-label="Hapus prestasi"
+                              >
+                                <FaTrash className="w-4 h-4" />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>

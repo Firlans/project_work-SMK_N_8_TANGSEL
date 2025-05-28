@@ -3,6 +3,7 @@ import axiosClient from "../../../../axiosClient";
 import EditKelas from "./EditKelas";
 import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
+import Cookies from "js-cookie";
 
 const DataKelas = () => {
   const [loading, setLoading] = useState(true);
@@ -10,6 +11,7 @@ const DataKelas = () => {
   const [siswaList, setSiswaList] = useState([]);
   const [modalData, setModalData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userPrivilege, setUserPrivilege] = useState(null);
 
   const fetchKelas = async () => {
     try {
@@ -39,9 +41,31 @@ const DataKelas = () => {
   };
 
   useEffect(() => {
+    // Ambil dan parse privilege dari cookies
+    const privilegeData = Cookies.get("userPrivilege");
+    console.log("Cookie privilege data:", privilegeData);
+
+    if (privilegeData) {
+      try {
+        const parsedPrivilege = JSON.parse(privilegeData);
+        console.log("Parsed privilege:", parsedPrivilege);
+        setUserPrivilege(parsedPrivilege);
+      } catch (error) {
+        console.error("Error parsing privilege:", error);
+      }
+    }
     fetchKelas();
     fetchSiswa();
   }, []);
+
+  const isSuperAdmin = () => {
+    if (!userPrivilege) {
+      console.log("userPrivilege is null");
+      return false;
+    }
+    const isSuperAdmin = userPrivilege.is_superadmin === 1;
+    return isSuperAdmin;
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Yakin ingin menghapus kelas ini?")) return;
@@ -66,15 +90,19 @@ const DataKelas = () => {
         <>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold text-gray-800">Data Kelas</h2>
-            <button
-              onClick={() => {
-                setModalData(null);
-                setIsModalOpen(true);
-              }}
-              className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
-            >
-              <FaPlus /> Tambah Kelas
-            </button>
+            {!isSuperAdmin() && (
+              <>
+                <button
+                  onClick={() => {
+                    setModalData(null);
+                    setIsModalOpen(true);
+                  }}
+                  className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+                >
+                  <FaPlus /> Tambah Kelas
+                </button>
+              </>
+            )}
           </div>
 
           <div className="overflow-x-auto">
@@ -83,7 +111,11 @@ const DataKelas = () => {
                 <tr className="bg-gray-50">
                   <th className="px-6 py-3">Nama Kelas</th>
                   <th className="px-6 py-3">Ketua Kelas</th>
-                  <th className="px-6 py-3">Aksi</th>
+                  {!isSuperAdmin() && (
+                    <>
+                      <th className="px-6 py-3">Aksi</th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -97,21 +129,25 @@ const DataKelas = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap space-x-2">
                       <div className="flex gap-2 justify-center">
-                        <button
-                          onClick={() => {
-                            setModalData(k);
-                            setIsModalOpen(true);
-                          }}
-                          className="text-yellow-500 hover:text-yellow-700"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(k.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <FaTrash />
-                        </button>
+                        {/* Tombol Edit dan Delete hanya untuk non-superadmin */}
+                        {!isSuperAdmin() && (
+                          <>
+                            <button
+                              onClick={() => handleEdit(user)}
+                              className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
+                              aria-label="Edit user"
+                            >
+                              <FaEdit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(user.id)}
+                              className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                              aria-label="Delete user"
+                            >
+                              <FaTrash className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
