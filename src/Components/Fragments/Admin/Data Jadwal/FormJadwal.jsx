@@ -9,6 +9,7 @@ const FormJadwal = ({
   kelas,
   guru,
   jadwal,
+  mapel,
   onSuccess,
 }) => {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ const FormJadwal = ({
     id_waktu: data?.id_waktu || "",
     id_kelas: data?.id_kelas || "",
     id_guru: data?.id_guru || "",
+    id_mata_pelajaran: data?.id_mata_pelajaran || "",
   });
   const [error, setError] = useState("");
 
@@ -45,7 +47,7 @@ const FormJadwal = ({
     setError("");
 
     // Validasi required fields
-    const requiredFields = ["id_kelas", "id_guru", "id_hari", "id_waktu"];
+    const requiredFields = ["id_kelas", "id_guru", "id_hari", "id_waktu", "id_mata_pelajaran"];
     const emptyFields = requiredFields.filter((field) => !formData[field]);
 
     if (emptyFields.length > 0) {
@@ -184,6 +186,29 @@ const FormJadwal = ({
               {guru.map((g) => (
                 <option key={g.id} value={g.id}>
                   {g.nama}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm">Mata Pelajaran</label>
+            <select
+              name="id_mata_pelajaran"
+              value={formData.id_mata_pelajaran}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  id_mata_pelajaran: Number(e.target.value),
+                }))
+              }
+              className="w-full border px-3 py-2 rounded"
+              required
+            >
+              <option value="">Pilih Mata Pelajaran</option>
+              {mapel.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.nama}
                 </option>
               ))}
             </select>

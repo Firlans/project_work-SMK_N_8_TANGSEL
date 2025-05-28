@@ -19,6 +19,7 @@ const DataJadwal = () => {
   const [pertemuan, setPertemuan] = useState([]);
   const [selectedJadwalId, setSelectedJadwalId] = useState(null);
   const [selectedPertemuanId, setSelectedPertemuanId] = useState(null);
+  const [infoPresensi, setInfoPresensi] = useState({});
   const [userPrivilege, setUserPrivilege] = useState(null);
 
   const hariMap = {
@@ -85,12 +86,11 @@ const DataJadwal = () => {
     return isSuperAdmin;
   };
 
-  const getKodeGuruMapel = (guruId) => {
-    const guruData = guru.find((g) => g.id === guruId);
-    if (!guruData) return "-";
+  const getKodeGuruMapel = (slot) => {
+    const guruData = guru.find((g) => g.id === slot.id_guru);
+    const mapelData = mapel.find((m) => m.id === slot.id_mata_pelajaran);
 
-    const mapelData = mapel.find((m) => m.id === guruData.mata_pelajaran_id);
-    if (!mapelData) return "-";
+    if (!guruData || !mapelData) return "-";
 
     const guruIndex = guru.indexOf(guruData) + 1;
     const mapelIndex = mapel.indexOf(mapelData) + 1;
@@ -120,9 +120,9 @@ const DataJadwal = () => {
       setPertemuan(res.data.data);
       setSelectedJadwalId(jadwalId);
       console.log("Pertemuan:", res.data.data);
-      setLoading(false);
     } catch (err) {
       console.error("Gagal mengambil pertemuan:", err);
+    } finally {
       setLoading(false);
     }
   };
@@ -220,7 +220,7 @@ const DataJadwal = () => {
                                 <div className="text-xs sm:text-sm">
                                   {slot ? (
                                     <>
-                                      {getKodeGuruMapel(slot.id_guru)}
+                                      {getKodeGuruMapel(slot)}
                                       <div className="hidden group-hover:flex gap-2 justify-center mt-1">
                                         <>
                                           {!isSuperAdmin() && (
@@ -299,14 +299,30 @@ const DataJadwal = () => {
           {selectedJadwalId && !selectedPertemuanId && (
             <PertemuanList
               data={pertemuan}
-              onClickKehadiran={(id) => setSelectedPertemuanId(id)}
+              onClickKehadiran={(id, info) => {
+                setSelectedPertemuanId(id);
+                setInfoPresensi(info);
+              }}
               idJadwal={selectedJadwalId}
+              mapelName={(() => {
+                const slot = jadwal.find((j) => j.id === selectedJadwalId);
+                const mapelData = mapel.find(
+                  (m) => m.id === slot?.id_mata_pelajaran
+                );
+                return mapelData?.nama_pelajaran || "-";
+              })()}
+              jadwal={jadwal} // ✅ tambahan
+              kelas={kelas} // ✅ tambahan
+              mapel={mapel} // ✅ tambahan
               onRefresh={() => handleFetchPertemuan(selectedJadwalId)}
             />
           )}
 
           {selectedPertemuanId && (
-            <PresensiList idPertemuan={selectedPertemuanId} />
+            <PresensiList
+              idPertemuan={selectedPertemuanId}
+              info={infoPresensi}
+            />
           )}
 
           {/* Form Modal */}
@@ -322,6 +338,7 @@ const DataJadwal = () => {
               kelas={kelas}
               guru={guru}
               jadwal={jadwal}
+              mapel={mapel}
               onSuccess={(newData) => {
                 if (selectedData) {
                   setJadwal((prev) =>

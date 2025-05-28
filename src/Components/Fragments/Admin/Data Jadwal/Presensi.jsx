@@ -5,7 +5,9 @@ import { FaEdit } from "react-icons/fa";
 
 const statusOptions = ["Hadir", "Izin", "Sakit", "Alpha"];
 
-const PresensiList = ({ idPertemuan }) => {
+const PresensiList = ({ idPertemuan, info }) => {
+  console.log("Info Presensi:", info); // Tambahkan log
+
   const [presensi, setPresensi] = useState([]);
   const [siswaList, setSiswaList] = useState([]);
   const [tanggalPertemuan, setTanggalPertemuan] = useState("");
@@ -137,9 +139,15 @@ const PresensiList = ({ idPertemuan }) => {
     <div className="w-full bg-white p-4 sm:p-6 rounded-xl shadow-sm">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
-          Daftar Presensi
-        </h3>
+        <div>
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
+            Daftar Presensi
+          </h3>
+          <p className="text-sm text-gray-500 mt-1">
+            Kelas: <strong>{info?.namaKelas || "-"}</strong> | Mata Pelajaran:{" "}
+            <strong>{info?.namaMapel || "-"}</strong>
+          </p>
+        </div>
       </div>
 
       {/* Table Container with horizontal scroll for small devices */}

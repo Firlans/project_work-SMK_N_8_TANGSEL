@@ -4,9 +4,17 @@ import { formatTanggal } from "../../../../utils/dateFormatter";
 import FormPertemuan from "./FormPertemuan";
 import axiosClient from "../../../../axiosClient";
 import { FaEye } from "react-icons/fa6";
-import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 
-const PertemuanList = ({ data, onClickKehadiran, idJadwal, onRefresh }) => {
+const PertemuanList = ({
+  data,
+  onClickKehadiran,
+  idJadwal,
+  onRefresh,
+  jadwal,
+  kelas,
+  mapel,
+  mapelName,
+}) => {
   const [selectedPertemuan, setSelectedPertemuan] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -24,13 +32,20 @@ const PertemuanList = ({ data, onClickKehadiran, idJadwal, onRefresh }) => {
       onRefresh();
     } catch (error) {
       console.error("Gagal menghapus pertemuan:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Daftar Pertemuan</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800">Daftar Pertemuan</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            Mata Pelajaran: <strong>{mapelName}</strong>
+          </p>
+        </div>
         <button
           onClick={() => {
             setSelectedPertemuan(null);
@@ -72,7 +87,20 @@ const PertemuanList = ({ data, onClickKehadiran, idJadwal, onRefresh }) => {
                   <td className="px-6 py-4 whitespace-nowrap space-x-2">
                     <div className="flex gap-2 justify-center">
                       <button
-                        onClick={() => onClickKehadiran(item.id)}
+                        onClick={() => {
+                          const slot = jadwal.find((j) => j.id === idJadwal);
+                          const kelasData = kelas.find(
+                            (k) => k.id === slot?.id_kelas
+                          );
+                          const mapelData = mapel.find(
+                            (m) => m.id === slot?.id_mata_pelajaran
+                          );
+
+                          onClickKehadiran(item.id, {
+                            namaKelas: kelasData?.nama_kelas || "-",
+                            namaMapel: mapelData?.nama_pelajaran || "-",
+                          });
+                        }}
                         className="text-blue-600 hover:underline text-sm"
                       >
                         <FaEye />
