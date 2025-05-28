@@ -133,7 +133,10 @@ const DataKelas = () => {
                         {!isSuperAdmin() && (
                           <>
                             <button
-                              onClick={() => handleEdit(user)}
+                              onClick={() => {
+                                setModalData(k);
+                                setIsModalOpen(true);
+                              }}
                               className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
                               aria-label="Edit user"
                             >

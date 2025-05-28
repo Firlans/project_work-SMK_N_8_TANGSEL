@@ -120,11 +120,13 @@ const DataMapel = () => {
             {/* Sembunyikan tombol Tambah untuk superadmin */}
             {!isSuperAdmin() && (
               <button
-                onClick={handleCreate}
-                className="bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors w-full sm:w-auto"
+                onClick={() => {
+                  setModalData(null);
+                  setIsModalOpen(true);
+                }}
+                className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
               >
-                <FaPlus className="w-4 h-4" />
-                <span>Tambah User</span>
+                <FaPlus /> Tambah Mata Pelajaran
               </button>
             )}
           </div>
