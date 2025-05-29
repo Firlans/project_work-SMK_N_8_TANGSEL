@@ -6,8 +6,6 @@ import { FaEdit } from "react-icons/fa";
 const statusOptions = ["Hadir", "Izin", "Sakit", "Alpha"];
 
 const PresensiList = ({ idPertemuan, info }) => {
-  console.log("Info Presensi:", info); // Tambahkan log
-
   const [presensi, setPresensi] = useState([]);
   const [siswaList, setSiswaList] = useState([]);
   const [tanggalPertemuan, setTanggalPertemuan] = useState("");
@@ -145,7 +143,12 @@ const PresensiList = ({ idPertemuan, info }) => {
           </h3>
           <p className="text-sm text-gray-500 mt-1">
             Kelas: <strong>{info?.namaKelas || "-"}</strong> | Mata Pelajaran:{" "}
-            <strong>{info?.namaMapel || "-"}</strong>
+            <strong>{info?.namaMapel || "-"}</strong> |{" "}
+            {info?.namaPertemuan && (
+              <>
+                Pertemuan: <strong>{info.namaPertemuan}</strong>
+              </>
+            )}
           </p>
         </div>
       </div>
