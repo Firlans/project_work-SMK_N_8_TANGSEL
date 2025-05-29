@@ -14,12 +14,38 @@ const DataPelanggaran = () => {
   const [selected, setSelected] = useState(null);
   const [userPrivilege, setUserPrivilege] = useState(null);
 
+  // Fungsi untuk mengecek role user
+  const checkUserRole = () => {
+    if (!userPrivilege) return null;
+    if (userPrivilege.is_superadmin === 1) return "superadmin";
+    if (userPrivilege.is_admin === 1) return "admin";
+    if (userPrivilege.is_conselor === 1) return "conselor";
+    if (userPrivilege.is_guru === 1) return "guru";
+    if (userPrivilege.is_siswa === 1) return "siswa";
+    return null;
+  };
+
   const fetchData = async () => {
     try {
+      const userRole = checkUserRole();
       const res = await axiosClient.get("/pelanggaran");
-      console.log("Data pelanggaran:", res.data.data);
+      console.log("Raw data pelanggaran:", res.data.data);
+
+      let filteredData = res.data.data;
+
+      // Filter data untuk guru dan siswa
+      if (
+        (userRole === "guru" || userRole === "siswa") &&
+        userPrivilege?.id_user
+      ) {
+        filteredData = res.data.data.filter(
+          (item) => item.pelapor === userPrivilege.id_user
+        );
+        console.log("Filtered data for user:", filteredData);
+      }
+
       const pelanggaranWithNama = await Promise.all(
-        res.data.data.map(async (item) => {
+        filteredData.map(async (item) => {
           const siswa = await axiosClient.get(`/siswa/${item.terlapor}`);
           return {
             ...item,
@@ -27,6 +53,8 @@ const DataPelanggaran = () => {
           };
         })
       );
+
+      console.log("Final data with names:", pelanggaranWithNama);
       setData(pelanggaranWithNama);
     } catch (err) {
       console.error("Gagal mengambil pelanggaran:", err);
@@ -36,40 +64,44 @@ const DataPelanggaran = () => {
   };
 
   useEffect(() => {
-    // Ambil dan parse privilege dari cookies
     const privilegeData = Cookies.get("userPrivilege");
-    console.log("Cookie privilege data:", privilegeData);
-
     if (privilegeData) {
       try {
         const parsedPrivilege = JSON.parse(privilegeData);
-        console.log("Parsed privilege:", parsedPrivilege);
         setUserPrivilege(parsedPrivilege);
       } catch (error) {
         console.error("Error parsing privilege:", error);
       }
     }
-
-    fetchData();
   }, []);
 
-  const isSuperAdmin = () => {
-    if (!userPrivilege) {
-      console.log("userPrivilege is null");
-      return false;
+  useEffect(() => {
+    if (userPrivilege) {
+      fetchData();
     }
-    const isSuperAdmin = userPrivilege.is_superadmin === 1;
-    return isSuperAdmin;
+  }, [userPrivilege]);
+
+  // Fungsi untuk mengecek apakah user bisa edit/delete
+  const canModifyData = (item) => {
+    const userRole = checkUserRole();
+
+    // Admin dan konselor bisa modify semua data
+    if (userRole === "admin" || userRole === "conselor") return true;
+
+    // Guru dan siswa hanya bisa modify data mereka
+    if (
+      (userRole === "guru" || userRole === "siswa") &&
+      item.pelapor === userPrivilege?.id_user
+    )
+      return true;
+
+    return false;
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Yakin ingin menghapus data ini?")) return;
-    try {
-      await axiosClient.delete(`/pelanggaran/${id}`);
-      fetchData();
-    } catch (err) {
-      console.error("Gagal menghapus:", err);
-    }
+  // Fungsi untuk mengecek apakah user bisa menambah data
+  const canAddData = () => {
+    const userRole = checkUserRole();
+    return userRole !== "superadmin"; // Semua role bisa tambah data kecuali superadmin
   };
 
   return (
@@ -82,7 +114,7 @@ const DataPelanggaran = () => {
             <h2 className="text-2xl font-bold text-gray-800">
               Daftar Pelanggaran
             </h2>
-            {!isSuperAdmin() && (
+            {canAddData() && (
               <button
                 className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
                 onClick={() => {
@@ -105,7 +137,7 @@ const DataPelanggaran = () => {
                   <th className="px-6 py-3">Bukti</th>
                   <th className="px-6 py-3">Deskripsi</th>
                   <th className="px-6 py-3">Status</th>
-                  {!isSuperAdmin() && <th className="px-6 py-3">Aksi</th>}
+                  <th className="px-6 py-3">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -145,7 +177,7 @@ const DataPelanggaran = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap space-x-2">
                       <div className="flex gap-2 justify-center">
-                        {!isSuperAdmin() && (
+                        {canModifyData(item) && (
                           <>
                             <button
                               onClick={() => {
