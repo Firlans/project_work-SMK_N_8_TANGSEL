@@ -14,7 +14,7 @@ import ProtectedRoute from "./protectedRoute";
 import Unauthorized from "./Pages/unauthorizedPage";
 import DashboardKonselorPage from "./Pages/dashboardKonselorPage";
 import LoginGuru from "./Pages/loginGuru";
-import LoginSiswa from "./Pages/loginSiswa";
+import LoginSiswa from "./Pages/siswa/loginSiswa";
 import LoginAdmin from "./Pages/admin/loginAdmin";
 import LoginKonselor from "./Pages/loginKonselor";
 import DataUserPage from "./Pages/admin/dataUserPage";
@@ -29,6 +29,7 @@ import DataPelanggaranPage from "./Pages/admin/dataPelanggaranPage";
 import DataAdminPage from "./Pages/admin/dataAdminPage";
 import JadwalSiswaPage from "./Pages/siswa/jadwalSiswaPage";
 import KehadiranSiswaPage from "./Pages/siswa/kehadiranSiswaPage";
+import PelaporanPage from "./Pages/siswa/pelaporanPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -125,6 +126,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard-siswa/kehadiran",
     element: <KehadiranSiswaPage />,
+  },
+  {
+    path: "/dashboard-siswa/pelaporan",
+    element: <PelaporanPage />,
   },
 ]);
 
