@@ -14,6 +14,7 @@ const PertemuanList = ({
   kelas,
   mapel,
   mapelName,
+  info,
 }) => {
   const [selectedPertemuan, setSelectedPertemuan] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -43,7 +44,8 @@ const PertemuanList = ({
         <div>
           <h2 className="text-2xl font-bold text-gray-800">Daftar Pertemuan</h2>
           <p className="text-sm text-gray-500 mt-1">
-            Mata Pelajaran: <strong>{mapelName}</strong>
+            Mata Pelajaran: <strong>{mapelName}</strong> | Kelas:{" "}
+            <strong>{info?.namaKelas || "-"}</strong>
           </p>
         </div>
         <button
@@ -99,12 +101,14 @@ const PertemuanList = ({
                           onClickKehadiran(item.id, {
                             namaKelas: kelasData?.nama_kelas || "-",
                             namaMapel: mapelData?.nama_pelajaran || "-",
+                            namaPertemuan: item.nama_pertemuan || "-",
                           });
                         }}
                         className="text-blue-600 hover:underline text-sm"
                       >
                         <FaEye />
                       </button>
+
                       <button
                         onClick={() => handleEdit(item)}
                         className="text-yellow-600 hover:underline text-sm"
@@ -145,6 +149,7 @@ const PertemuanList = ({
             onRefresh();
             setShowForm(false);
           }}
+          // idKelas={kelasData.id}
         />
       )}
     </div>

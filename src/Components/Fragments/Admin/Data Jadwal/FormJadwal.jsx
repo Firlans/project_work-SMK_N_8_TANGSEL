@@ -47,7 +47,13 @@ const FormJadwal = ({
     setError("");
 
     // Validasi required fields
-    const requiredFields = ["id_kelas", "id_guru", "id_hari", "id_waktu", "id_mata_pelajaran"];
+    const requiredFields = [
+      "id_kelas",
+      "id_guru",
+      "id_hari",
+      "id_waktu",
+      "id_mata_pelajaran",
+    ];
     const emptyFields = requiredFields.filter((field) => !formData[field]);
 
     if (emptyFields.length > 0) {
@@ -68,6 +74,16 @@ const FormJadwal = ({
         : await axiosClient.post("/jadwal", formData);
 
       onSuccess(response.data.data);
+
+      // ✅ Buat pertemuan otomatis jika tambah baru
+      if (!data?.id) {
+        await axiosClient.post("/pertemuan", {
+          id_jadwal: response.data.data.id,
+          nama_pertemuan: "Pertemuan 1",
+          tanggal: new Date().toISOString().split("T")[0],
+        });
+        console.log("Pertemuan otomatis berhasil dibuat");
+      }
     } catch (err) {
       if (err.response?.status === 422) {
         // Handle validation errors from backend
@@ -208,7 +224,7 @@ const FormJadwal = ({
               <option value="">Pilih Mata Pelajaran</option>
               {mapel.map((m) => (
                 <option key={m.id} value={m.id}>
-                  {m.nama}
+                  {m.nama_pelajaran}
                 </option>
               ))}
             </select>
