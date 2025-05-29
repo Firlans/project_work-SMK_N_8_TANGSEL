@@ -167,7 +167,7 @@ const ProfileSiswa = () => {
               label="Jenis Kelamin"
               value={siswa?.jenis_kelamin === "L" ? "Laki-laki" : "Perempuan"}
             />
-            <ProfileField label="Kelas" value={`Kelas ${siswa?.id_kelas}`} />
+            <ProfileField label="Kelas" value={`${siswa?.kelas?.nama_kelas}`} />
             <ProfileField
               label="Tanggal Lahir"
               value={formatTanggal(siswa?.tanggal_lahir)}

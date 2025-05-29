@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import axiosClient from "../../../axiosClient";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 import { formatTanggal } from "../../../utils/dateFormatter";
-// import formatTanggal from "../../../utils/dateFormatter";
 
 const PresensiSiswa = () => {
   const [presensi, setPresensi] = useState([]);
@@ -16,57 +15,49 @@ const PresensiSiswa = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Ambil ID siswa
         const profileRes = await axiosClient.get("/profile");
         const idSiswa = profileRes.data.data.id;
 
-        // Ambil presensi
-        const presensiRes = await axiosClient.get(
-          `/absen/siswa?id_siswa=${idSiswa}`
-        );
+        const [presensiRes, jadwalRes, guruRes, mapelRes] = await Promise.all([
+          axiosClient.get(`/absen/siswa?id_siswa=${idSiswa}`),
+          axiosClient.get(`/jadwal/siswa?id_siswa=${idSiswa}`),
+          axiosClient.get("/guru"),
+          axiosClient.get("/mata-pelajaran"),
+        ]);
+
         const presensiData = presensiRes.data.data;
-        setPresensi(presensiData);
+        const jadwalData = jadwalRes.data.data;
+        const guruData = guruRes.data.data;
+        const mapelData = mapelRes.data.data;
 
-        // Ambil jadwal siswa
-        const jadwalRes = await axiosClient.get(
-          `/jadwal/siswa?id_siswa=${idSiswa}`
-        );
-        const jadwalMapById = {};
-        jadwalRes.data.data.forEach((jadwal) => {
-          jadwalMapById[jadwal.id] = jadwal;
-        });
-        setJadwalMap(jadwalMapById);
-
-        // Ambil semua guru
-        const guruRes = await axiosClient.get("/guru");
+        const jadwalById = {};
         const guruById = {};
-        guruRes.data.data.forEach((guru) => {
-          guruById[guru.id] = guru;
-        });
-        setGuruMap(guruById);
-
-        // Ambil semua mata pelajaran
-        const mapelRes = await axiosClient.get("/mata-pelajaran");
         const mapelById = {};
-        mapelRes.data.data.forEach((mapel) => {
-          mapelById[mapel.id] = mapel.nama_pelajaran;
-        });
+
+        jadwalData.forEach((j) => (jadwalById[j.id] = j));
+        guruData.forEach((g) => (guruById[g.id] = g));
+        mapelData.forEach((m) => (mapelById[m.id] = m.nama_pelajaran));
+
+        setPresensi(presensiData);
+        setJadwalMap(jadwalById);
+        setGuruMap(guruById);
         setMapelMap(mapelById);
 
-        // Buat daftar unik mata pelajaran dari jadwal yang digunakan presensi
+        // Ambil ID mapel unik dari jadwal yang digunakan di presensi
         const mapelSet = new Set();
         presensiData.forEach((p) => {
-          const jadwal = jadwalMapById[p.id_jadwal];
-          const guru = guruById[jadwal?.id_guru];
-          if (guru) mapelSet.add(guru.mata_pelajaran_id);
+          const jadwal = jadwalById[p.id_jadwal];
+          if (jadwal?.id_mata_pelajaran) {
+            mapelSet.add(jadwal.id_mata_pelajaran);
+          }
         });
 
         const mapelList = Array.from(mapelSet).map((id) => ({
           id,
           nama: mapelById[id] || "Tidak diketahui",
         }));
-        setMataPelajaranList(mapelList);
 
+        setMataPelajaranList(mapelList);
         setLoading(false);
       } catch (error) {
         console.error("Gagal mengambil data presensi:", error);
@@ -80,8 +71,7 @@ const PresensiSiswa = () => {
   const filteredPresensi = selectedMapel
     ? presensi.filter((item) => {
         const jadwal = jadwalMap[item.id_jadwal];
-        const guru = guruMap[jadwal?.id_guru];
-        return guru?.mata_pelajaran_id === parseInt(selectedMapel);
+        return jadwal?.id_mata_pelajaran === parseInt(selectedMapel);
       })
     : presensi;
 
@@ -91,7 +81,6 @@ const PresensiSiswa = () => {
         <LoadingSpinner />
       ) : (
         <div className="space-y-6">
-          {/* Header and Filter Section */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
               Presensi Siswa
@@ -115,7 +104,6 @@ const PresensiSiswa = () => {
             </div>
           </div>
 
-          {/* Table Section */}
           <div className="-mx-4 sm:mx-0 overflow-x-auto">
             <div className="inline-block min-w-full align-middle">
               <table className="min-w-full divide-y divide-gray-200">
@@ -142,8 +130,10 @@ const PresensiSiswa = () => {
                   {filteredPresensi.length > 0 ? (
                     filteredPresensi.map((item) => {
                       const jadwal = jadwalMap[item.id_jadwal];
-                      const guru = guruMap[jadwal?.id_guru];
-                      const namaMapel = mapelMap[guru?.mata_pelajaran_id];
+                      const namaMapel =
+                        mapelMap[jadwal?.id_mata_pelajaran] ||
+                        "Tidak ditemukan";
+                      const status = item.status?.toLowerCase();
 
                       return (
                         <tr
@@ -151,7 +141,7 @@ const PresensiSiswa = () => {
                           className="hover:bg-gray-50 transition-colors"
                         >
                           <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm">
-                            {namaMapel || "Tidak ditemukan"}
+                            {namaMapel}
                           </td>
                           <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm whitespace-nowrap">
                             {formatTanggal(item.tanggal)}
@@ -162,16 +152,21 @@ const PresensiSiswa = () => {
                           <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm">
                             <span
                               className={`inline-flex px-2 py-1 text-xs rounded-full font-medium whitespace-nowrap ${
-                                item.status === "Hadir"
+                                status === "hadir"
                                   ? "bg-green-100 text-green-800"
-                                  : item.status === "Izin"
+                                  : status === "izin"
                                   ? "bg-yellow-100 text-yellow-800"
-                                  : item.status === "Sakit"
+                                  : status === "sakit"
                                   ? "bg-blue-100 text-blue-800"
-                                  : "bg-red-100 text-red-800"
+                                  : status === "alpha"
+                                  ? "bg-red-100 text-red-800"
+                                  : "bg-gray-100 text-gray-800"
                               }`}
                             >
-                              {item.status}
+                              {item.status
+                                ? item.status.charAt(0).toUpperCase() +
+                                  item.status.slice(1)
+                                : "-"}
                             </span>
                           </td>
                           <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm">
