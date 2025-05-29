@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import LandingPage from "./Pages/landingPage";
 import DashboardGuruPage from "./Pages/dashboardGuruPage";
-import DashboardSiswaPage from "./Pages/dashboardSiswaPage";
+import DashboardSiswaPage from "./Pages/siswa/dashboardSiswaPage";
 import DashboardAdminPage from "./Pages/admin/dashboardAdminPage";
 import ProtectedRoute from "./protectedRoute";
 import Unauthorized from "./Pages/unauthorizedPage";
@@ -27,6 +27,8 @@ import DataJadwalPage from "./Pages/admin/dataJadwalPage";
 import DataPrestasiPage from "./Pages/admin/dataPrestasiPage";
 import DataPelanggaranPage from "./Pages/admin/dataPelanggaranPage";
 import DataAdminPage from "./Pages/admin/dataAdminPage";
+import JadwalSiswaPage from "./Pages/siswa/jadwalSiswaPage";
+import KehadiranSiswaPage from "./Pages/siswa/kehadiranSiswaPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -115,6 +117,14 @@ const router = createBrowserRouter([
   {
     path: "/data-pelanggaran",
     element: <DataPelanggaranPage />,
+  },
+  {
+    path: "/dashboard-siswa/jadwal-siswa",
+    element: <JadwalSiswaPage />,
+  },
+  {
+    path: "/dashboard-siswa/kehadiran",
+    element: <KehadiranSiswaPage />,
   },
 ]);
 

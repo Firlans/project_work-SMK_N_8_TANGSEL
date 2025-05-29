@@ -1,8 +1,8 @@
-import axiosClient from "../../axiosClient.js";
+import axiosClient from "../../../axiosClient.js";
 import { useState, useEffect } from "react";
-import Button from "../Elements/Button/index.jsx";
-import { formatTanggal } from "../../utils/dateFormatter.js";
-import LoadingSpinner from "../Elements/Loading/LoadingSpinner.jsx";
+import Button from "../../Elements/Button/index.jsx";
+import { formatTanggal } from "../../../utils/dateFormatter.js";
+import LoadingSpinner from "../../Elements/Loading/LoadingSpinner.jsx";
 
 const ProfileSiswa = () => {
   const [isEditing, setIsEditing] = useState(false);
