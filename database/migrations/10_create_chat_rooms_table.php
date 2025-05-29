@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('chat_rooms', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
-            $table->unsignedBigInteger('id_siswa');
+            $table->unsignedBigInteger('id_siswa')->nullable();
             $table->unsignedBigInteger('id_guru');
-            $table->string('access_code')->nullable();
+            $table->string('access_code')->unique()->nullable();
             $table->enum('status', ['Open', 'Closed'])->default('Open');
             $table->boolean('is_private')->default(false);
             $table->timestamps();

@@ -40,7 +40,7 @@ trait ApiResponseHandler
         return response()->json([
             "status" => "success",
             "message" => $isEmpty ? "No $objectName records found" : "Successfully retrieved $objectName records",
-            "data" => $data
+            "data" => $data ?? (object) []
         ], 200);
     }
 
@@ -53,11 +53,12 @@ trait ApiResponseHandler
         ], 200);
     }
 
-    protected function handleDeleted($objectName)
+    protected function handleDeleted($objectName, $data)
     {
         return response()->json([
             'status' => 'success',
-            'message' => "$objectName deleted successfully"
+            'message' => "$objectName deleted successfully",
+            'id' => $data
         ], 200);
     }
     protected function handleCreated($data, $objectName)

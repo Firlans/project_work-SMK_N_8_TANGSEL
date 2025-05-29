@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AbsenController;
 use App\Http\Controllers\ChatRoomController;
 use App\Http\Controllers\ConselorController;
+use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KelasController;
@@ -137,10 +138,17 @@ Route::delete('/waktu/{id}', [WaktuController::class, 'deleteWaktu']);
 Route::get('/waktu', [WaktuController::class, 'getAllWaktu']);
 
 // route chat room
-Route::get('/chat-room', [ChatRoomController::class, 'getAllChatRoom']);
+Route::get('/chat-room', [ChatRoomController::class, 'getAllChatRooms']);
 Route::get('/chat-room/{id}', [ChatRoomController::class, 'getChatRoomById']);
-Route::get('/chat-room/siswa/{id_user}', [ChatRoomController::class, 'getChatRoomBySiswa']);
-Route::get('/chat-room/conselor/{id_user}', [ChatRoomController::class, 'getChatRoomByConselor']);
+Route::get('/chat-room/siswa/{id_user}', [ChatRoomController::class, 'getChatRoomsBySiswa']);
+Route::get('/chat-room/conselor/{id_user}', [ChatRoomController::class, 'getChatRoomsByConselor']);
+Route::get('/chat-room/access-code/{id_user}', [ChatRoomController::class, 'getChatRoomsByAccessCode']);
 Route::post('/chat-room', [ChatRoomController::class, 'createChatRoom']);
 Route::put('/chat-room/{id}', [ChatRoomController::class, 'updateChatRoom']);
 Route::delete('/chat-room/{id}', [ChatRoomController::class, 'deleteChatRoom']);
+
+// route conversation
+Route::post('/chat/send', [ConversationController::class, 'createConversation']);
+Route::put('/chat/edit/{id_conversation}', [ConversationController::class, 'updateConversation']);
+Route::delete('/chat/delete/{id_conversation}', [ConversationController::class, 'deleteConversation']);
+Route::get('chat', [ConversationController::class, 'getConversation']);

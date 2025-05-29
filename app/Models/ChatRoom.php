@@ -15,6 +15,7 @@ class ChatRoom extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
+        'name',
         'id_siswa',
         'id_guru',
         'access_code',
