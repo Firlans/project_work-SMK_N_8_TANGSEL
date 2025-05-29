@@ -7,13 +7,13 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import LandingPage from "./Pages/landingPage";
-import DashboardGuruPage from "./Pages/dashboardGuruPage";
+import DashboardGuruPage from "./Pages/guru/dashboardGuruPage";
 import DashboardSiswaPage from "./Pages/siswa/dashboardSiswaPage";
 import DashboardAdminPage from "./Pages/admin/dashboardAdminPage";
 import ProtectedRoute from "./protectedRoute";
 import Unauthorized from "./Pages/unauthorizedPage";
 import DashboardKonselorPage from "./Pages/dashboardKonselorPage";
-import LoginGuru from "./Pages/loginGuru";
+import LoginGuru from "./Pages/guru/loginGuru";
 import LoginSiswa from "./Pages/siswa/loginSiswa";
 import LoginAdmin from "./Pages/admin/loginAdmin";
 import LoginKonselor from "./Pages/loginKonselor";
@@ -29,7 +29,11 @@ import DataPelanggaranPage from "./Pages/admin/dataPelanggaranPage";
 import DataAdminPage from "./Pages/admin/dataAdminPage";
 import JadwalSiswaPage from "./Pages/siswa/jadwalSiswaPage";
 import KehadiranSiswaPage from "./Pages/siswa/kehadiranSiswaPage";
-import PelaporanPage from "./Pages/siswa/pelaporanPage";
+import PelaporanSiswaPage from "./Pages/siswa/pelaporanSiswaPage";
+import JadwalGuruPage from "./Pages/guru/jadwalGuruPage";
+import PresensiSiswaPage from "./Pages/guru/presensiSiswaPage";
+import PelaporanGuruPage from "./Pages/guru/pelaporanGuruPage";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -129,7 +133,19 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard-siswa/pelaporan",
-    element: <PelaporanPage />,
+    element: <PelaporanSiswaPage />,
+  },
+  {
+    path: "/dashboard-guru/jadwal-guru",
+    element: <JadwalGuruPage />,
+  },
+  {
+    path: "/dashboard-guru/kehadiran-siswa",
+    element: <PresensiSiswaPage />,
+  },
+  {
+    path: "/dashboard-guru/pelaporan",
+    element: <PelaporanGuruPage />,
   },
 ]);
 

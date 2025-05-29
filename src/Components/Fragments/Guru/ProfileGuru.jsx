@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import axiosClient from "../../axiosClient";
-import Button from "../Elements/Button";
-import LoadingSpinner from "../Elements/Loading/LoadingSpinner";
-import { formatTanggal } from "../../utils/dateFormatter";
+import axiosClient from "../../../axiosClient";
+import Button from "../../Elements/Button";
+import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import { formatTanggal } from "../../../utils/dateFormatter";
 
 const ProfileGuru = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -67,15 +67,15 @@ const ProfileGuru = () => {
       setLoading(true);
       // Siapkan payload dengan field yang dibutuhkan
       const payload = {
-      nip: profileData.data.nip,
-      nama: profileData.data.nama,
-      jenis_kelamin: profileData.data.jenis_kelamin,
-      tanggal_lahir: profileData.data.tanggal_lahir,
-      mata_pelajaran_id: profileData.data.mata_pelajaran_id,
-      // Data yang diupdate
-      alamat: editedData.alamat,
-      no_telp: editedData.no_telp,
-    };
+        nip: profileData.data.nip,
+        nama: profileData.data.nama,
+        jenis_kelamin: profileData.data.jenis_kelamin,
+        tanggal_lahir: profileData.data.tanggal_lahir,
+        mata_pelajaran_id: profileData.data.mata_pelajaran_id,
+        // Data yang diupdate
+        alamat: editedData.alamat,
+        no_telp: editedData.no_telp,
+      };
       console.log("HANDLE SAVE, payload to send:", payload);
 
       const response = await axiosClient.put(
