@@ -46,7 +46,7 @@ const FormLogin = ({ role }) => {
       const allowedRoles = {
         siswa: ["is_siswa"],
         guru: ["is_guru"],
-        conselor: ["is_conselor"],
+        konselor: ["is_conselor"],
         admin: ["is_admin", "is_superadmin"],
       };
 

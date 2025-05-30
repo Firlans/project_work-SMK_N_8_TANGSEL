@@ -1,5 +1,5 @@
-import FormLogin from "../Components/Fragments/FormLogin";
-import AuthLayout from "../Components/Layouts/AuthLayouts";
+import FormLogin from "../../Components/Fragments/FormLogin";
+import AuthLayout from "../../Components/Layouts/AuthLayouts";
 
 const LoginKonselor = () => {
   return (
