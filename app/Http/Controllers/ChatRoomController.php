@@ -190,7 +190,7 @@ class ChatRoomController extends Controller
     }
 
 
-    private function validation($data, $id)
+    private function validation($data, $id = null)
     {
         $validator = Validator::make($data, [
             'id_siswa' => 'nullable|exists:users,id',

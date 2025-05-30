@@ -151,4 +151,4 @@ Route::delete('/chat-room/{id}', [ChatRoomController::class, 'deleteChatRoom']);
 Route::post('/chat/send', [ConversationController::class, 'createConversation']);
 Route::put('/chat/edit/{id_conversation}', [ConversationController::class, 'updateConversation']);
 Route::delete('/chat/delete/{id_conversation}', [ConversationController::class, 'deleteConversation']);
-Route::get('chat', [ConversationController::class, 'getConversation']);
+Route::get('chat/room/{id_room}', [ConversationController::class, 'getConversationsByChatRoom']);
