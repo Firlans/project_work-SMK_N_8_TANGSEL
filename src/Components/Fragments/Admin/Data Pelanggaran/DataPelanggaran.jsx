@@ -81,6 +81,16 @@ const DataPelanggaran = () => {
     }
   }, [userPrivilege]);
 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Yakin ingin menghapus data ini?")) return;
+    try {
+      await axiosClient.delete(`/pelanggaran/${id}`);
+      fetchData();
+    } catch (err) {
+      console.error("Gagal menghapus:", err);
+    }
+  };
+
   // Fungsi untuk mengecek apakah user bisa edit/delete
   const canModifyData = (item) => {
     const userRole = checkUserRole();
@@ -215,6 +225,7 @@ const DataPelanggaran = () => {
                 setShowModal(false);
               }}
               initialData={selected}
+              userPrivilege={userPrivilege}
             />
           )}{" "}
         </>

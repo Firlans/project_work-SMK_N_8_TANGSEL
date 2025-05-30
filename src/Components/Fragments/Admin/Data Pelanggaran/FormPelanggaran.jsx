@@ -1,169 +1,161 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../../../../axiosClient";
+import Cookies from "js-cookie";
 
-const ModalPelanggaran = ({ onClose, onSuccess, initialData }) => {
+const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
   const [formData, setFormData] = useState({
-    id: "",
-    nama_pelanggaran: "",
-    deskripsi: "",
-    status: "Pengajuan",
     pelapor: "",
     terlapor: "",
+    nama_pelanggaran: "",
+    deskripsi: "",
     nama_foto: null,
+    status: "pengajuan",
   });
+  const [previewImage, setPreviewImage] = useState(null);
+  const [siswaList, setSiswaList] = useState([]);
+  const [userPrivilege, setUserPrivilege] = useState(null);
 
-  const [siswaOptions, setSiswaOptions] = useState([]);
-  const [error, setError] = useState("");
+  const isEdit = Boolean(initialData);
 
   useEffect(() => {
-    // Mengambil data siswa untuk dropdown terlapor
-    const fetchSiswa = async () => {
+    const privilegeData = Cookies.get("userPrivilege");
+    if (privilegeData) {
       try {
-        const res = await axiosClient.get("/siswa");
-        console.log("✅ Data siswa berhasil dimuat:", res.data);
-        const sortedSiswa = res.data.data.sort((a, b) =>
-          a.nama_lengkap.localeCompare(b.nama_lengkap)
-        );
-        setSiswaOptions(sortedSiswa);
-      } catch (err) {
-        console.error("❌ Gagal mengambil data siswa:", err);
-      }
-    };
-
-    // Mengambil data user yang sedang login untuk field pelapor
-    const fetchUser = async () => {
-      try {
-        const res = await axiosClient.get("/profile");
-        console.log("✅ Data user berhasil dimuat:", res.data);
-        // Hanya set pelapor jika tidak dalam mode edit
+        const parsedPrivilege = JSON.parse(privilegeData);
+        setUserPrivilege(parsedPrivilege);
         if (!initialData) {
-          setFormData((prev) => ({ ...prev, pelapor: res.data.data.user.id }));
+          setFormData((prev) => ({
+            ...prev,
+            pelapor: parsedPrivilege.id_user,
+          }));
         }
-      } catch (err) {
-        console.error("❌ Gagal mengambil data user:", err);
+      } catch (error) {
+        console.error("Error parsing privilege:", error);
       }
-    };
-
-    // Load data awal
-    fetchSiswa();
-    if (!initialData) {
-      fetchUser();
-    }
-
-    // Set form data jika mode edit
-    if (initialData) {
-      console.log("🔄 Mode Edit - Initial Data:", initialData);
-      setFormData({
-        id: initialData.id,
-        nama_pelanggaran: initialData.nama_pelanggaran,
-        deskripsi: initialData.deskripsi,
-        status: initialData.status,
-        pelapor: initialData.pelapor,
-        terlapor: initialData.terlapor,
-        nama_foto: null,
-      });
-
-      // Debug form data setelah diset
-      console.log("📝 Form Data setelah diset:", {
-        id: initialData.id,
-        nama_pelanggaran: initialData.nama_pelanggaran,
-        deskripsi: initialData.deskripsi,
-        status: initialData.status,
-        pelapor: initialData.pelapor,
-        terlapor: initialData.terlapor,
-      });
     }
   }, [initialData]);
 
+  useEffect(() => {
+    const fetchSiswa = async () => {
+      try {
+        const res = await axiosClient.get("/siswa");
+        const sortedSiswa = res.data.data.sort((a, b) =>
+          a.nama_lengkap.localeCompare(b.nama_lengkap)
+        );
+        setSiswaList(sortedSiswa);
+      } catch (err) {
+        console.error("Gagal mengambil data siswa:", err);
+      }
+    };
+
+    if (isOpen) {
+      fetchSiswa();
+      if (initialData) {
+        setFormData(initialData);
+        if (initialData.nama_foto) {
+          setPreviewImage(
+            `http://localhost:8000/storage/pelanggaran/${initialData.nama_foto}`
+          );
+        }
+      } else {
+        setFormData({
+          pelapor: userPrivilege?.id_user || "",
+          terlapor: "",
+          nama_pelanggaran: "",
+          deskripsi: "",
+          nama_foto: null,
+          status: "pengajuan",
+        });
+        setPreviewImage(null);
+      }
+    }
+  }, [isOpen, initialData]);
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    console.log("[FormPelanggaran] Field Change:", {
-      name,
-      value: files ? files[0] : value,
-    });
-
-    // Handle khusus untuk input file
     if (name === "nama_foto") {
-      setFormData((prev) => ({ ...prev, nama_foto: files[0] }));
+      setFormData({ ...formData, [name]: files[0] });
+      setPreviewImage(URL.createObjectURL(files[0]));
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData({ ...formData, [name]: value });
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      // Persiapkan FormData untuk pengiriman
-      const form = new FormData();
-      Object.keys(formData).forEach((key) => {
-        if (formData[key] !== null) {
-          form.append(key, formData[key]);
-        }
+  if (!userPrivilege?.id_user) {
+    alert("Pelapor tidak ditemukan. Silakan login ulang.");
+    return;
+  }
+
+  const submitData = new FormData();
+  submitData.append("pelapor", isEdit ? formData.pelapor : userPrivilege?.id_user);
+  submitData.append("terlapor", formData.terlapor);
+  submitData.append("nama_pelanggaran", formData.nama_pelanggaran);
+  submitData.append("deskripsi", formData.deskripsi);
+  submitData.append("status", formData.status || "pengajuan");
+
+  if (formData.nama_foto) {
+    submitData.append("bukti_gambar", formData.nama_foto);
+  }
+
+  try {
+    if (initialData) {
+      await axiosClient.post(`/pelanggaran/${initialData.id}?_method=PUT`, submitData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-
-      // Append foto jika ada
-      if (formData.nama_foto) {
-        form.append("nama_foto", formData.nama_foto);
-      }
-
-      let response;
-
-      // Handle update data
-      if (initialData) {
-        response = await axiosClient.put(
-          `/pelanggaran/${initialData.id}`,
-          form, // Kirim object langsung, bukan FormData
-          {
-            headers: { "Content-Type": "application/json" },
-            nama_pelanggaran: formData.nama_pelanggaran,
-            deskripsi: formData.deskripsi,
-            status: formData.status,
-            pelapor: formData.pelapor,
-            terlapor: formData.terlapor,
-          }
-        );
-      }
-      // Handle create data
-      else {
-        console.log("📝 Mengirim request create");
-        response = await axiosClient.post("/pelanggaran", form, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      }
-
-      console.log("✅ Response:", response.data);
-      onSuccess();
-    } catch (err) {
-      // Handle error dan tampilkan pesan
-      console.error("❌ Error saat submit:", {
-        message: err.message,
-        status: err.response?.status,
-        data: err.response?.data,
-        sentData: formData,
+    } else {
+      await axiosClient.post("/pelanggaran", submitData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-
-      if (err.response?.status === 422) {
-        const errors = err.response.data.message;
-        const errorMessages = Object.entries(errors)
-          .map(([field, msgs]) => `${field}: ${msgs.join(", ")}`)
-          .join("\n");
-        setError(errorMessages);
-      } else {
-        setError(err.message || "Terjadi kesalahan saat menyimpan data");
-      }
     }
+    onSuccess();
+  } catch (err) {
+    console.error("Gagal simpan pelanggaran:", err);
+  }
+};
+
+
+  const getUserRole = () => {
+    if (!userPrivilege) return null;
+    if (userPrivilege.is_superadmin === 1) return "superadmin";
+    if (userPrivilege.is_admin === 1) return "admin";
+    if (userPrivilege.is_conselor === 1) return "conselor";
+    if (userPrivilege.is_guru === 1) return "guru";
+    if (userPrivilege.is_siswa === 1) return "siswa";
+    return null;
   };
+
+  const userRole = getUserRole();
+
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg w-full max-w-lg relative">
-        <h2 className="text-lg font-semibold mb-4">
-          {initialData ? "Edit" : "Tambah"} Pelanggaran
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
+      <div className="bg-white p-6 rounded-lg w-full max-w-xl shadow-lg relative">
+        <h2 className="text-xl font-bold mb-4">
+          {isEdit ? "Edit Pelanggaran" : "Tambah Pelanggaran"}
         </h2>
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm">Terlapor</label>
+            <select
+              name="terlapor"
+              value={formData.terlapor}
+              onChange={handleChange}
+              required
+              className="w-full border px-3 py-2 rounded"
+            >
+              <option value="">-- Pilih Siswa --</option>
+              {siswaList.map((siswa) => (
+                <option key={siswa.id} value={siswa.id}>
+                  {siswa.nama_lengkap}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label className="block text-sm">Jenis Pelanggaran</label>
             <input
@@ -171,57 +163,59 @@ const ModalPelanggaran = ({ onClose, onSuccess, initialData }) => {
               name="nama_pelanggaran"
               value={formData.nama_pelanggaran}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
               required
+              className="w-full border px-3 py-2 rounded"
             />
           </div>
+
           <div>
             <label className="block text-sm">Deskripsi</label>
             <textarea
               name="deskripsi"
               value={formData.deskripsi}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
               required
+              className="w-full border px-3 py-2 rounded"
             />
           </div>
+
           <div>
-            <label className="block text-sm">Status</label>
-            <select
-              name="status"
-              value={formData.status}
+            <label className="block text-sm">Bukti Foto</label>
+            <input
+              type="file"
+              name="nama_foto"
+              accept="image/*"
               onChange={handleChange}
               className="w-full border px-3 py-2 rounded"
-              required
-            >
-              <option value="pengajuan">Pengajuan</option>
-              <option value="proses">Proses</option>
-              <option value="ditolak">Ditolak</option>
-              <option value="selesai">Selesai</option>
-            </select>
+            />
+            {previewImage && (
+              <img
+                src={previewImage}
+                alt="Preview"
+                className="mt-2 w-32 h-32 object-cover rounded"
+              />
+            )}
           </div>
-          <div>
-            <label className="block text-sm">Terlapor</label>
-            <select
-              name="terlapor"
-              value={formData.terlapor}
-              onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
-              required
-            >
-              <option value="">Pilih siswa...</option>
-              {siswaOptions.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.nama_lengkap}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm">Upload Bukti (Opsional)</label>
-            <input type="file" name="nama_foto" onChange={handleChange} />
-          </div>
-          <div className="flex justify-end gap-2">
+
+          {(userRole === "admin" || userRole === "conselor") && (
+            <div>
+              <label className="block text-sm">Status</label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded"
+                required
+              >
+                <option value="pengajuan">Pengajuan</option>
+                <option value="proses">Proses</option>
+                <option value="ditolak">Ditolak</option>
+                <option value="selesai">Selesai</option>
+              </select>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2 mt-4">
             <button
               type="button"
               onClick={onClose}
@@ -231,7 +225,7 @@ const ModalPelanggaran = ({ onClose, onSuccess, initialData }) => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded"
+              className="px-4 py-2 bg-blue-500 text-white rounded"
             >
               Simpan
             </button>
