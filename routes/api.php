@@ -22,6 +22,10 @@ use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\SiswaMiddleware;
 
 
+Broadcast::routes([
+    'middleware' => [JwtMiddleware::class],
+]);
+
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::middleware([JwtMiddleware::class])->group(function () {
@@ -29,10 +33,13 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     Route::middleware([RoleMiddleware::class])->group(function () {
         Route::get('/profile', function () { });
     });
-    Route::middleware([SiswaMiddleware::class])->group(function () {
 
 
-    });
+    // route conversation
+    Route::post('/chat/send', [ConversationController::class, 'createConversation']);
+    Route::put('/chat/edit/{id_conversation}', [ConversationController::class, 'updateConversation']);
+    Route::delete('/chat/delete/{id_conversation}', [ConversationController::class, 'deleteConversation']);
+    Route::get('chat/room/{id_room}', [ConversationController::class, 'getConversationsByChatRoom']);
 });
 // route absen
 Route::get('/absen', [AbsenController::class, 'getAllKehadiran']);
@@ -146,9 +153,3 @@ Route::get('/chat-room/access-code/{id_user}', [ChatRoomController::class, 'getC
 Route::post('/chat-room', [ChatRoomController::class, 'createChatRoom']);
 Route::put('/chat-room/{id}', [ChatRoomController::class, 'updateChatRoom']);
 Route::delete('/chat-room/{id}', [ChatRoomController::class, 'deleteChatRoom']);
-
-// route conversation
-Route::post('/chat/send', [ConversationController::class, 'createConversation']);
-Route::put('/chat/edit/{id_conversation}', [ConversationController::class, 'updateConversation']);
-Route::delete('/chat/delete/{id_conversation}', [ConversationController::class, 'deleteConversation']);
-Route::get('chat/room/{id_room}', [ConversationController::class, 'getConversationsByChatRoom']);

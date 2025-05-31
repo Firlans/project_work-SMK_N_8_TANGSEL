@@ -13,8 +13,8 @@
 </body>
 <script>
     setTimeout(() => {
-        window.Echo.channel('testing-channel')
-            .listen('TestingEvent', (e) => {
+        window.Echo.private('room.9')
+            .listen(`.App\\Events\SendMessageEvent`, (e) => {
                 console.log(e)
                 console.log(window.Echo)
             })

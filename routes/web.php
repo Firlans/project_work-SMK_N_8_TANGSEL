@@ -5,17 +5,16 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\User;
+use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function(){
     return view('BroadcastTesting');
 });
-Route::get('/send-message/{message}', function($message){
+Broadcast::routes([
+    'middleware' => [JwtMiddleware::class],
+]);
 
-    event(new TestingEvent($message));
-
-    return 'done';
-});
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/dashboard', [SiswaController::class, 'siswa']);
