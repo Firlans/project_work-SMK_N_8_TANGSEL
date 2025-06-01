@@ -22,9 +22,6 @@ use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\SiswaMiddleware;
 
 
-Broadcast::routes([
-    'middleware' => [JwtMiddleware::class],
-]);
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);

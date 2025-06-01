@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\SendMessageEvent;
+use App\Jobs\BroadcastMessageJob;
 use App\Models\ChatDetail;
 use App\Models\ChatRoom;
 use App\Traits\ApiResponseHandler;
@@ -26,7 +27,7 @@ class ConversationController extends Controller
             $user = auth()->user();
             $message = ChatDetail::create($data);
 
-            broadcast(new SendMessageEvent($message->message, $message->id_chat_room, $user))->toOthers();
+            BroadcastMessageJob::dispatch($message->message, $message->id_chat_room, $user);
 
             return $this->handleCreated($message, 'message');
         } catch (\Exception $e) {
