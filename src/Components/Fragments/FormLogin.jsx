@@ -5,7 +5,7 @@ import axiosClient from "../../axiosClient.js";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
-const FormLogin = ({ role }) => {
+const FormLogin = ({ privilege }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -41,7 +41,7 @@ const FormLogin = ({ role }) => {
       console.log("Role:", user.role);
 
       // Cek apakah role dari backend sesuai dengan halaman login
-      if (user.role !== role) {
+      if (user.privilege !== privilege) {
         setError("Anda tidak memiliki akses ke halaman ini.");
         return;
       }
