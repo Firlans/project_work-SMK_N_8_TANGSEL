@@ -65,8 +65,8 @@ class PertemuanController extends Controller
                 ->join('jadwal', 'jadwal.id', '=', 'pertemuan.id_jadwal')
                 ->where('jadwal.id', '=', $idJadwal)
                 ->get();
-
-            if ($pertemuan->isEmpty()) {
+            \Log::info('pertemuan'. json_encode($pertemuan));
+            if (!$pertemuan) {
                 return $this->handleNotFoundData($idJadwal, 'Pertemuan', 'id jadwal');
             }
 

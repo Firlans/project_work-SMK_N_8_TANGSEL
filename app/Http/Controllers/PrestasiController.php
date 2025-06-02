@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Prestasi;
 use App\Models\Siswa;
 use App\Traits\ApiResponseHandler;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -45,6 +46,31 @@ class PrestasiController extends Controller
             return $this->handleReturnData($prestasi, 'Prestasi');
         } catch (\Exception $e) {
             return $this->handleError($e, 'getPrestasiById');
+        }
+    }
+
+    public function getPrestasiByIdSiswa($id_siswa){
+        try{
+            if (
+                empty($id_siswa)
+                || $id_siswa == null
+                || $id_siswa == "null"
+                || $id_siswa == "undefined"
+                || !is_numeric($id_siswa)
+            ) {
+                return $this->invalidParameter($id_siswa);
+            }
+
+            $prestasi = Prestasi::where('siswa_id', '=', $id_siswa)->get();
+
+            if(!$prestasi){
+                return $this->handleNotFoundData($id_siswa, 'Prestasi', 'id siswa');
+            }
+
+            return $this->handleReturnData($prestasi, 'Prestasi');
+        }catch(Exception $e){
+            return
+            $this->handleError($e, 'getPrestasiByIdSiswa');
         }
     }
 
