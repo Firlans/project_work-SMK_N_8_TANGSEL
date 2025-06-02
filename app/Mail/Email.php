@@ -16,9 +16,11 @@ class Email extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    protected $name;
+
+    public function __construct($name)
     {
-        //
+        $this->name = $name;;
     }
 
     /**
@@ -27,7 +29,7 @@ class Email extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Mail',
+            subject: "Wellcome to SMK Negeri Tangsel {$this->name}",
         );
     }
 
@@ -37,7 +39,10 @@ class Email extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'mails.wellcome',
+            with: [
+                'name'=> $this->name
+            ]
         );
     }
 

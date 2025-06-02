@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\Email;
 use App\Models\Prestasi;
 use App\Models\Siswa;
 use App\Traits\ApiResponseHandler;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use function PHPUnit\Framework\isNumeric;
@@ -49,8 +51,9 @@ class PrestasiController extends Controller
         }
     }
 
-    public function getPrestasiByIdSiswa($id_siswa){
-        try{
+    public function getPrestasiByIdSiswa($id_siswa)
+    {
+        try {
             if (
                 empty($id_siswa)
                 || $id_siswa == null
@@ -63,14 +66,14 @@ class PrestasiController extends Controller
 
             $prestasi = Prestasi::where('siswa_id', '=', $id_siswa)->get();
 
-            if(!$prestasi){
+            if (!$prestasi) {
                 return $this->handleNotFoundData($id_siswa, 'Prestasi', 'id siswa');
             }
 
             return $this->handleReturnData($prestasi, 'Prestasi');
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return
-            $this->handleError($e, 'getPrestasiByIdSiswa');
+                $this->handleError($e, 'getPrestasiByIdSiswa');
         }
     }
 
@@ -91,9 +94,9 @@ class PrestasiController extends Controller
                 $data['nama_foto'] = $imageName;
             }
 
-
             $prestasi = Prestasi::create($data);
-            return $this->handleCreated($prestasi,'Prestasi');
+
+            return $this->handleCreated($prestasi, 'Prestasi');
         } catch (\Exception $e) {
             return $this->handleError($e, 'createPrestasi');
         }
@@ -125,15 +128,26 @@ class PrestasiController extends Controller
             }
 
             $prestasi->update($data);
+            if ($data['status'] === 'disetujui') {
 
+                $siswa = Prestasi::select('siswa.nama_lengkap', 'users.email')
+                    ->leftJoin('siswa', 'siswa.id', '=', 'prestasi.siswa_id')
+                    ->leftJoin('users', 'users.id', '=', 'siswa.user_id')
+                    ->where('siswa.id', '=', $prestasi->siswa_id)
+                    ->first();
+
+                \Log::info('email tujuan : ' . json_encode($siswa));
+                $send = Mail::to($siswa->email)->send(new Email($siswa->nama_lengkap));
+            }
             return $this->handleUpdated($prestasi, 'Prestasi');
         } catch (\Exception $e) {
             return $this->handleError($e, 'updatePrestasi');
         }
     }
 
-    public function deletePrestasi($id){
-        try{
+    public function deletePrestasi($id)
+    {
+        try {
             $prestasi = Prestasi::find($id);
             if (!$prestasi) {
                 return $this->handleNotFoundData($id, 'Prestasi', 'ID');
@@ -146,7 +160,7 @@ class PrestasiController extends Controller
             $prestasi->delete();
 
             return $this->handleDeleted('Prestasi');
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return $this->handleError($e, 'deletePrestasi');
         }
     }
