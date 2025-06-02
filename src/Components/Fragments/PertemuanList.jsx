@@ -5,11 +5,13 @@ import { FaPlus, FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { formatTanggal } from "../../utils/dateFormatter";
 import { IoChevronBackSharp } from "react-icons/io5";
 import LoadingSpinner from "../Elements/Loading/LoadingSpinner";
+import Cookies from "js-cookie";
 
 const PertemuanList = () => {
   const { idJadwal } = useParams();
   const [pertemuan, setPertemuan] = useState([]);
   const navigate = useNavigate();
+  const userRole = Cookies.get("userRole");
   const [info, setInfo] = useState({ namaKelas: "", namaMapel: "" });
   const [loading, setLoading] = useState(true);
 
@@ -51,6 +53,21 @@ const PertemuanList = () => {
     if (idJadwal) fetchInfo();
   }, [idJadwal]);
 
+  const handleLihatPresensi = (p) => {
+    const basePath =
+      userRole === "guru"
+        ? "/dashboard-guru/jadwal-guru"
+        : "/dashboard-admin/data-jadwal";
+
+    navigate(`${basePath}/${idJadwal}/pertemuan/${p.id}/presensi`, {
+      state: {
+        namaKelas: info.namaKelas || "-",
+        namaMapel: info.namaMapel || "-",
+        namaPertemuan: p.nama_pertemuan || "-",
+      },
+    });
+  };
+
   if (loading) return <LoadingSpinner />;
 
   return (
@@ -58,19 +75,33 @@ const PertemuanList = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
           <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
-            Daftar Pertemuan (Jadwal ID: {idJadwal})
+            Daftar Pertemuan
           </h3>
           <p className="text-sm text-gray-500 mt-1">
             Mata Pelajaran: <strong>{info.namaMapel}</strong> | Kelas:{" "}
             <strong>{info.namaKelas}</strong>
           </p>
         </div>
-        <button
-          onClick={() => navigate(-1)}
-          className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
-        >
-          <IoChevronBackSharp /> Kembali
-        </button>
+        <div className="flex gap-2 mt-4 sm:mt-0 ">
+          {userRole !== "guru" && (
+            <button
+              onClick={() => {
+                setSelectedPertemuan(null);
+                setShowForm(true);
+              }}
+              className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+            >
+              <FaPlus />
+              Tambah Pertemuan
+            </button>
+          )}
+          <button
+            onClick={() => navigate(-1)}
+            className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+          >
+            <IoChevronBackSharp /> Kembali
+          </button>
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -99,27 +130,20 @@ const PertemuanList = () => {
                     <div className="flex gap-2 justify-center">
                       <button
                         className="text-blue-600 hover:underline text-sm"
-                        onClick={() =>
-                          navigate(
-                            `/dashboard-guru/jadwal-guru/${idJadwal}/pertemuan/${p.id}/presensi`,
-                            {
-                              state: {
-                                namaKelas: info.namaKelas || "-",
-                                namaMapel: info.namaMapel || "-",
-                                namaPertemuan: p.nama_pertemuan || "-",
-                              },
-                            }
-                          )
-                        }
+                        onClick={() => handleLihatPresensi(p)}
                       >
                         <FaEye />
                       </button>
-                      <button className="text-yellow-600 hover:underline text-sm">
-                        <FaEdit />
-                      </button>
-                      <button className="text-red-600 hover:underline text-sm">
-                        <FaTrash />
-                      </button>
+                      {userRole !== "guru" && (
+                        <>
+                          <button className="text-yellow-600 hover:underline text-sm">
+                            <FaEdit />
+                          </button>
+                          <button className="text-red-600 hover:underline text-sm">
+                            <FaTrash />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
