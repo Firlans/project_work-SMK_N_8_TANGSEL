@@ -1,12 +1,12 @@
-import DataPelanggaran from "../../Components/Fragments/Admin/Data Pelanggaran/DataPelanggaran";
+import PelanggaranGuru from "../../Components/Fragments/Guru/PelanggaranGuru";
 import GuruLayouts from "../../Components/Layouts/GuruLayouts";
 
 const PelaporanGuruPage = () => {
-    return (
-        <GuruLayouts defaultActivePage="pelaporan">
-            <DataPelanggaran />
-        </GuruLayouts>
-    );
+  return (
+    <GuruLayouts defaultActivePage="pelaporan">
+      <PelanggaranGuru />
+    </GuruLayouts>
+  );
 };
 
 export default PelaporanGuruPage;
