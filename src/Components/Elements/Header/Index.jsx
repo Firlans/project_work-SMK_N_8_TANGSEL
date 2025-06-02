@@ -16,7 +16,8 @@ const Header = () => {
     }
 
     Cookies.remove("token");
-    Cookies.remove("userRole"); // Hapus token dari localStorage
+    Cookies.remove("userRole");
+    Cookies.remove("userPrivilege");
     delete axiosClient.defaults.headers.common["Authorization"]; // Hapus token dari axios
     navigate("/login"); // Redirect ke halaman login
   };
