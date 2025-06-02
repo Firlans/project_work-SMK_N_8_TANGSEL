@@ -35,6 +35,8 @@ import DataSiswaPage from "./Pages/admin/dataSiswaPage";
 import DataKelasPage from "./Pages/admin/dataKelasPage";
 import DataMapelPage from "./Pages/admin/dataMapelPage";
 import DataJadwalPage from "./Pages/admin/dataJadwalPage";
+import DataPertemuanPage from "./Pages/admin/dataPertemuanPage";
+import DataPresensiPage from "./Pages/admin/dataPresensiPage";
 import DataPrestasiPage from "./Pages/admin/dataPrestasiPage";
 import DataPelanggaranPage from "./Pages/admin/dataPelanggaranPage";
 
@@ -61,6 +63,14 @@ const adminDataRoutes = [
   { path: "/dashboard-admin/data-kelas", element: <DataKelasPage /> },
   { path: "/dashboard-admin/data-mapel", element: <DataMapelPage /> },
   { path: "/dashboard-admin/data-jadwal", element: <DataJadwalPage /> },
+  {
+    path: "/dashboard-admin/data-jadwal/:idJadwal/pertemuan",
+    element: <DataPertemuanPage />,
+  },
+  {
+    path: "/dashboard-admin/data-jadwal/:idJadwal/pertemuan/:idPertemuan/presensi",
+    element: <DataPresensiPage />,
+  },
   { path: "/dashboard-admin/data-prestasi", element: <DataPrestasiPage /> },
   {
     path: "/dashboard-admin/data-pelanggaran",

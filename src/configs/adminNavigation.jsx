@@ -38,6 +38,10 @@ export const adminPageRoutes = {
   classes: "/dashboard-admin/data-kelas",
   subjects: "/dashboard-admin/data-mapel",
   schedule: "/dashboard-admin/data-jadwal",
+  pertemuan: (idJadwal) => `/dashboard-admin/data-jadwal/${idJadwal}/pertemuan`,
+  presensi: (idJadwal, idPertemuan) =>
+    `/dashboard-admin/data-jadwal/${idJadwal}/pertemuan/${idPertemuan}/presensi`,
+
   achievement: "/dashboard-admin/data-prestasi",
   violation: "/dashboard-admin/data-pelanggaran",
 };
