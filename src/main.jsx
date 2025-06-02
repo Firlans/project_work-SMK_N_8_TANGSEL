@@ -45,8 +45,9 @@ import PelaporanSiswaPage from "./Pages/siswa/pelaporanSiswaPage";
 
 // Guru Pages
 import JadwalGuruPage from "./Pages/guru/jadwalGuruPage";
-import PresensiSiswaPage from "./Pages/guru/presensiSiswaPage";
 import PelaporanGuruPage from "./Pages/guru/pelaporanGuruPage";
+import PertemuanGuruPage from "./Pages/guru/pertemuanGuruPage";
+import PresensiGuruPage from "./Pages/guru/PresensiGuruPage";
 
 // Konselor Pages
 import PelaporanKonselorPage from "./Pages/konselor/pelaporanKonselorPage";
@@ -61,7 +62,10 @@ const adminDataRoutes = [
   { path: "/dashboard-admin/data-mapel", element: <DataMapelPage /> },
   { path: "/dashboard-admin/data-jadwal", element: <DataJadwalPage /> },
   { path: "/dashboard-admin/data-prestasi", element: <DataPrestasiPage /> },
-  { path: "/dashboard-admin/data-pelanggaran", element: <DataPelanggaranPage /> },
+  {
+    path: "/dashboard-admin/data-pelanggaran",
+    element: <DataPelanggaranPage />,
+  },
 ];
 
 const siswaRoutes = [
@@ -72,7 +76,14 @@ const siswaRoutes = [
 
 const guruRoutes = [
   { path: "/dashboard-guru/jadwal-guru", element: <JadwalGuruPage /> },
-  { path: "/dashboard-guru/kehadiran-siswa", element: <PresensiSiswaPage /> },
+  {
+    path: "/dashboard-guru/jadwal-guru/:idJadwal/pertemuan",
+    element: <PertemuanGuruPage />,
+  },
+  {
+    path: "/dashboard-guru/jadwal-guru/:idJadwal/pertemuan/:idPertemuan/presensi",
+    element: <PresensiGuruPage />,
+  },
   { path: "/dashboard-guru/pelaporan", element: <PelaporanGuruPage /> },
 ];
 
@@ -93,22 +104,34 @@ const router = createBrowserRouter([
   {
     path: "/dashboard-siswa",
     element: <ProtectedRoute allowedRoles={["siswa"]} />,
-    children: [{ path: "/dashboard-siswa", element: <DashboardSiswaPage /> }, ...siswaRoutes],
+    children: [
+      { path: "/dashboard-siswa", element: <DashboardSiswaPage /> },
+      ...siswaRoutes,
+    ],
   },
   {
     path: "/dashboard-guru",
     element: <ProtectedRoute allowedRoles={["guru"]} />,
-    children: [{ path: "/dashboard-guru", element: <DashboardGuruPage /> }, ...guruRoutes],
+    children: [
+      { path: "/dashboard-guru", element: <DashboardGuruPage /> },
+      ...guruRoutes,
+    ],
   },
   {
     path: "/dashboard-admin",
     element: <ProtectedRoute allowedRoles={["admin"]} />,
-    children: [{ path: "/dashboard-admin", element: <DashboardAdminPage /> }, ...adminDataRoutes],
+    children: [
+      { path: "/dashboard-admin", element: <DashboardAdminPage /> },
+      ...adminDataRoutes,
+    ],
   },
   {
     path: "/dashboard-konselor",
     element: <ProtectedRoute allowedRoles={["konselor"]} />,
-    children: [{ path: "/dashboard-konselor", element: <DashboardKonselorPage /> }, ...konselorRoutes],
+    children: [
+      { path: "/dashboard-konselor", element: <DashboardKonselorPage /> },
+      ...konselorRoutes,
+    ],
   },
 
   // Catch all unknown routes
