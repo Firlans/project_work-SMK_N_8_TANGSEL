@@ -93,69 +93,81 @@ const JadwalGuru = () => {
   };
 
   return (
-    <div className="space-y-6 sm:space-y-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-6 sm:py-8 space-y-6">
+      {/* Judul Halaman */}
+      <div>
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
+          JADWAL GURU
+        </h3>
+      </div>
+
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <>
-          {Object.entries(hariMap).map(([hariId, namaHari]) => {
-            const rows = getDataByHari(parseInt(hariId));
-            if (rows.length === 0) return null;
-            return (
-              <div
-                key={hariId}
-                className="bg-white p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
-              >
-                <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-800">
-                  {namaHari}
-                </h3>
-                <div className="overflow-x-auto -mx-4 sm:mx-0">
-                  <div className="inline-block min-w-full align-middle">
-                    <table className="min-w-full table-fixed divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="w-1/4 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
-                            Waktu
-                          </th>
-                          <th className="w-2/5 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
-                            Mata Pelajaran
-                          </th>
-                          <th className="w-1/3 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
-                            Guru
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200 bg-white">
-                        {rows.map((row, index) => (
-                          <tr
-                            key={index}
-                            className="hover:bg-gray-50 transition-colors"
+        Object.entries(hariMap).map(([hariId, namaHari]) => {
+          const rows = getDataByHari(parseInt(hariId));
+          if (rows.length === 0) return null;
+
+          return (
+            <div
+              key={hariId}
+              className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 sm:p-6"
+            >
+              {/* Nama Hari */}
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">
+                {namaHari}
+              </h2>
+
+              {/* Table Responsive */}
+              <div className="overflow-x-auto">
+                <table className="min-w-full table-auto divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500">
+                        Waktu
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500">
+                        Mata Pelajaran
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500">
+                        Guru
+                      </th>
+                      <th className="px-4 py-3 text-center text-xs sm:text-sm font-semibold text-gray-500">
+                        Aksi
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {rows.map((row, index) => (
+                      <tr
+                        key={index}
+                        className="hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="px-4 py-3 text-sm text-gray-800 whitespace-nowrap">
+                          {row.waktu}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-800 truncate">
+                          {row.kelas}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-800 truncate">
+                          {row.mapel}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <button
+                            onClick={() => handleLihatPertemuan(row.id)}
+                            className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
                           >
-                            <td className="w-1/4 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 whitespace-nowrap">
-                              {row.waktu}
-                            </td>
-                            <td className="w-2/5 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 truncate">
-                              {row.kelas}
-                            </td>
-                            <td className="w-1/3 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 truncate">
-                              {row.mapel}
-                              <button
-                                onClick={() => handleLihatPertemuan(row.id)}
-                                className="text-blue-600 hover:underline"
-                              >
-                                Lihat Pertemuan
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                            Presensi
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            );
-          })}
-        </>
+            </div>
+          );
+        })
       )}
     </div>
   );
