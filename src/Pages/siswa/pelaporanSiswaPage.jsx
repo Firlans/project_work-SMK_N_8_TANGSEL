@@ -1,10 +1,10 @@
-import DataPelanggaran from "../../Components/Fragments/Admin/Data Pelanggaran/DataPelanggaran"
+import PelanggaranSiswa from "../../Components/Fragments/Siswa/PelanggaranSiswa"
 import SiswaLayout from "../../Components/Layouts/SiswaLayouts"
 
 const PelaporanSiswaPage = () => {
     return (
         <SiswaLayout defaultActivePage="pelaporan">
-            <DataPelanggaran />
+            <PelanggaranSiswa/>
         </SiswaLayout>
     )
 }
