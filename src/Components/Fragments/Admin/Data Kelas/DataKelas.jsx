@@ -143,7 +143,7 @@ const DataKelas = () => {
                               <FaEdit className="w-4 h-4" />
                             </button>
                             <button
-                              onClick={() => handleDelete(user.id)}
+                              onClick={() => handleDelete(k.id)}
                               className="p-1 text-red-500 hover:text-red-700 transition-colors"
                               aria-label="Delete user"
                             >

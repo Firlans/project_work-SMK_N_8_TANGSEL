@@ -70,6 +70,14 @@ const DataMapel = () => {
     }
   };
 
+  const capitalizeEachWord = (text) => {
+    return text
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   const requestSort = (key) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
@@ -157,14 +165,17 @@ const DataMapel = () => {
                 {getSortedData().map((m) => (
                   <tr key={m.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 text-center">{m.id}</td>
-                    <td className="px-6 py-4">{m.nama_pelajaran}</td>
+                    <td className="px-6 py-4">{capitalizeEachWord(m.nama_pelajaran)}</td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2 justify-center">
                         {/* Tombol Edit dan Delete hanya untuk non-superadmin */}
                         {!isSuperAdmin() && (
                           <>
                             <button
-                              onClick={() => handleEdit(user)}
+                              onClick={() => {
+                                setModalData(m);
+                                setIsModalOpen(true);
+                              }}
                               className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
                               aria-label="Edit user"
                             >

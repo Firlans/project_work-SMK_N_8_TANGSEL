@@ -8,6 +8,7 @@ const EditKelas = ({ onClose, refreshData, initialData, siswaList }) => {
     ketua_kelas: initialData?.ketua_kelas || "",
   });
   const [error, setError] = useState("");
+  const tingkatList = ["10", "11", "12"];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,14 +55,21 @@ const EditKelas = ({ onClose, refreshData, initialData, siswaList }) => {
           </div>
           <div>
             <label className="block text-sm">Tingkat</label>
-            <input
-              type="text"
+            <select
               value={form.tingkat}
               onChange={(e) => setForm({ ...form, tingkat: e.target.value })}
               className="w-full border p-2 rounded"
               required
-            />
+            >
+              <option value="">- Pilih Tingkat -</option>
+              {tingkatList.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
           </div>
+
           <div>
             <label className="block text-sm">Ketua Kelas</label>
             <select
