@@ -48,16 +48,16 @@ const DataUser = () => {
   }, []);
 
   // Fungsi untuk mengecek apakah user adalah superadmin
-  const isSuperAdmin = () => {
+  const isAdmin = () => {
     if (!userPrivilege) {
       console.log("userPrivilege is null");
       return false;
     }
-    const isSuperAdmin = userPrivilege.is_superadmin === 1;
+    const isAdmin = userPrivilege.is_admin === 1;
     // console.log("userPrivilege:", userPrivilege);
     // console.log("is_superadmin:", userPrivilege.is_superadmin);
     // console.log("isSuperAdmin result:", isSuperAdmin);
-    return isSuperAdmin;
+    return isAdmin;
   };
 
   const handleCreate = () => {
@@ -127,7 +127,7 @@ const DataUser = () => {
                 <option value="konselor">Konselor</option>
               </select>
               {/* Sembunyikan tombol Tambah untuk superadmin */}
-              {!isSuperAdmin() && (
+              {!isAdmin() && (
                 <button
                   onClick={handleCreate}
                   className="bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors w-full sm:w-auto"
@@ -180,7 +180,7 @@ const DataUser = () => {
                           </button>
 
                           {/* Tombol Edit dan Delete hanya untuk non-superadmin */}
-                          {!isSuperAdmin() && (
+                          {!isAdmin() && (
                             <>
                               <button
                                 onClick={() => handleEdit(user)}

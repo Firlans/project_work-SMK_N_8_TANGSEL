@@ -9,7 +9,6 @@ const EditKonselor = ({ isOpen, onClose, guru, subjects, onSubmit }) => {
     tanggal_lahir: "",
     alamat: "",
     no_telp: "",
-    mata_pelajaran_id: "",
   });
 
   useEffect(() => {
@@ -22,7 +21,6 @@ const EditKonselor = ({ isOpen, onClose, guru, subjects, onSubmit }) => {
         tanggal_lahir: guru.tanggal_lahir,
         alamat: guru.alamat,
         no_telp: guru.no_telp,
-        mata_pelajaran_id: guru.mata_pelajaran_id,
       });
     }
   }, [guru]);
@@ -150,27 +148,6 @@ const EditKonselor = ({ isOpen, onClose, guru, subjects, onSubmit }) => {
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
               rows="2"
             />
-          </div>
-          <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Mata Pelajaran
-            </label>
-            <select
-              name="mata_pelajaran_id"
-              value={formData.mata_pelajaran_id}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-            >
-              <option value="">Pilih Mata Pelajaran</option>
-              {Object.entries(subjects)
-                .sort((a, b) => a[1].localeCompare(b[1]))
-                .map(([id, name]) => (
-                  <option key={id} value={id}>
-                    {name}
-                  </option>
-                ))}
-            </select>
           </div>
           <div className="col-span-2 mt-4 flex justify-end space-x-3">
             <button

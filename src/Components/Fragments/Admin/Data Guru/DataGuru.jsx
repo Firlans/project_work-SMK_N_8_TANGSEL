@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
+import { FaEdit, FaTrash, FaEye, FaTrashAlt } from "react-icons/fa";
 import axiosClient from "../../../../axiosClient";
 import EditGuru from "./EditGuru";
 import DetailGuru from "./DetailGuru";
@@ -201,11 +201,18 @@ const DataGuru = () => {
                           {!isSuperAdmin() && (
                             <>
                               <button
-                                onClick={() => handleEdit(user)}
+                                onClick={() => handleEdit(teacher)}
                                 className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
                                 aria-label="Edit user"
                               >
                                 <FaEdit className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(teacher)}
+                                className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                                aria-label="Delete user"
+                              >
+                                <FaTrash className="w-4 h-4" />
                               </button>
                             </>
                           )}
