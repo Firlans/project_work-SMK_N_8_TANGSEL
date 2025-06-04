@@ -44,6 +44,7 @@ import DataPelanggaranPage from "./Pages/admin/dataPelanggaranPage";
 import JadwalSiswaPage from "./Pages/siswa/jadwalSiswaPage";
 import KehadiranSiswaPage from "./Pages/siswa/kehadiranSiswaPage";
 import PelaporanSiswaPage from "./Pages/siswa/pelaporanSiswaPage";
+import PrestasiSiswaPage from "./Pages/siswa/prestasiSiswaPage";
 
 // Guru Pages
 import JadwalGuruPage from "./Pages/guru/jadwalGuruPage";
@@ -82,6 +83,7 @@ const siswaRoutes = [
   { path: "/dashboard-siswa/jadwal-siswa", element: <JadwalSiswaPage /> },
   { path: "/dashboard-siswa/kehadiran", element: <KehadiranSiswaPage /> },
   { path: "/dashboard-siswa/pelaporan", element: <PelaporanSiswaPage /> },
+  { path: "/dashboard-siswa/prestasi", element: <PrestasiSiswaPage />}
 ];
 
 const guruRoutes = [
