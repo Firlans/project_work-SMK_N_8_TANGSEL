@@ -41,10 +41,10 @@ class GuruController extends Controller
     {
         try {
             $guru = Guru::select('guru.*', 'mata_pelajaran.nama_pelajaran')
-                ->join('users', 'users.id', '=', 'guru.user_id')
-                ->join('privileges', 'privileges.id_user', '=', 'users.id')
-                ->join('jadwal', 'jadwal.id_guru', '=', 'guru.id')
-                ->join('mata_pelajaran', 'mata_pelajaran.id', '=', 'jadwal.id_mata_pelajaran')
+                ->leftJoin('users', 'users.id', '=', 'guru.user_id')
+                ->leftJoin('privileges', 'privileges.id_user', '=', 'users.id')
+                ->leftJoin('jadwal', 'jadwal.id_guru', '=', 'guru.id')
+                ->leftJoin('mata_pelajaran', 'mata_pelajaran.id', '=', 'jadwal.id_mata_pelajaran')
                 ->where('users.profile', 'guru')
                 ->where('privileges.is_guru', '=', true)
                 ->get();
