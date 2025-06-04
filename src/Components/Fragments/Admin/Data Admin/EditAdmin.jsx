@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const EditAdmin = ({ isOpen, onClose, guru, subjects, onSubmit }) => {
+const EditAdmin = ({ isOpen, onClose, admin, subjects, onSubmit }) => {
   const [formData, setFormData] = useState({
     id: "",
     nip: "",
@@ -9,23 +9,21 @@ const EditAdmin = ({ isOpen, onClose, guru, subjects, onSubmit }) => {
     tanggal_lahir: "",
     alamat: "",
     no_telp: "",
-    mata_pelajaran_id: "",
   });
 
   useEffect(() => {
-    if (guru) {
+    if (admin) {
       setFormData({
-        id: guru.id,
-        nip: guru.nip,
-        nama: guru.nama,
-        jenis_kelamin: guru.jenis_kelamin,
-        tanggal_lahir: guru.tanggal_lahir,
-        alamat: guru.alamat,
-        no_telp: guru.no_telp,
-        mata_pelajaran_id: guru.mata_pelajaran_id,
+        id: admin.id,
+        nip: admin.nip,
+        nama: admin.nama,
+        jenis_kelamin: admin.jenis_kelamin,
+        tanggal_lahir: admin.tanggal_lahir,
+        alamat: admin.alamat,
+        no_telp: admin.no_telp,
       });
     }
-  }, [guru]);
+  }, [admin]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,7 +44,7 @@ const EditAdmin = ({ isOpen, onClose, guru, subjects, onSubmit }) => {
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
       <div className="relative top-20 mx-auto p-5 border w-[32rem] shadow-lg rounded-md bg-white">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold">Edit Data Guru</h3>
+          <h3 className="text-xl font-bold">Edit Data admin</h3>
           <button
             onClick={onClose}
             className="text-gray-600 hover:text-gray-800"
@@ -150,27 +148,6 @@ const EditAdmin = ({ isOpen, onClose, guru, subjects, onSubmit }) => {
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
               rows="2"
             />
-          </div>
-          <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Mata Pelajaran
-            </label>
-            <select
-              name="mata_pelajaran_id"
-              value={formData.mata_pelajaran_id}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-            >
-              <option value="">Pilih Mata Pelajaran</option>
-              {Object.entries(subjects)
-                .sort((a, b) => a[1].localeCompare(b[1]))
-                .map(([id, name]) => (
-                  <option key={id} value={id}>
-                    {name}
-                  </option>
-                ))}
-            </select>
           </div>
           <div className="col-span-2 mt-4 flex justify-end space-x-3">
             <button

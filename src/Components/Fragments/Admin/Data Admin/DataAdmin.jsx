@@ -6,12 +6,10 @@ import EditAdmin from "./EditAdmin";
 import DetailAdmin from "../../../Layouts/DetailAdminLayouts";
 
 const DataAdmin = () => {
-  const [teachers, setTeachers] = useState([]);
-  const [subjects, setSubjects] = useState({});
-  const [selectedSubject, setSelectedSubject] = useState("all");
+  const [admin, setAdmin] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedGuru, setSelectedGuru] = useState(null);
+  const [selectedadmin, setSelectedadmin] = useState(null);
   const [message, setMessage] = useState({ text: "", type: "" });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -19,22 +17,9 @@ const DataAdmin = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Fetch teachers
-        const teachersResponse = await axiosClient.get("/konselor");
-        setTeachers(teachersResponse.data.data);
-        console.log("Data Admin:", teachersResponse.data.data);
-
-        // Fetch subjects
-        const subjectsResponse = await axiosClient.get("/mata-pelajaran");
-        // Convert array to object for easier lookup
-        const subjectsMap = subjectsResponse.data.data.reduce(
-          (acc, subject) => {
-            acc[subject.id] = subject.nama_pelajaran;
-            return acc;
-          },
-          {}
-        );
-        setSubjects(subjectsMap);
+        const adminRes = await axiosClient.get("/admin");
+        setAdmin(adminRes.data.data);
+        console.log("Data Admin:", adminRes.data.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -45,26 +30,8 @@ const DataAdmin = () => {
     fetchData();
   }, []);
 
-  // Mengurutkan Data Admin berdasarkan nama
-  const sortedTeachers = [...teachers].sort((a, b) =>
-    a.nama.localeCompare(b.nama)
-  );
-
-  // Filter teachers based on selected subject
-  const filteredTeachers =
-    selectedSubject === "all"
-      ? sortedTeachers
-      : sortedTeachers.filter(
-          (teacher) => teacher.mata_pelajaran_id === parseInt(selectedSubject)
-        );
-
-  // Sort subjects by name for dropdown
-  const sortedSubjects = Object.entries(subjects).sort((a, b) =>
-    a[1].localeCompare(b[1])
-  );
-
-  const handleEdit = (guru) => {
-    setSelectedGuru(guru);
+  const handleEdit = (admin) => {
+    setSelectedadmin(admin);
     setIsEditModalOpen(true);
   };
 
@@ -72,17 +39,17 @@ const DataAdmin = () => {
     try {
       console.log("Memulai proses update...", formData);
       const response = await axiosClient.put(
-        `/konselor/${formData.id}`,
+        `/admin/${formData.id}`,
         formData
       );
       console.log("Response dari server:", response.data);
 
       if (response.data.status === "success") {
         console.log("Update berhasil!");
-        const teachersResponse = await axiosClient.get("/admin");
-        setTeachers(teachersResponse.data.data);
+        const adminRes = await axiosClient.get("/admin");
+        setAdmin(adminRes.data.data);
         setIsEditModalOpen(false);
-        setSelectedGuru(null);
+        setSelectedadmin(null);
         setMessage({ text: "Data berhasil diupdate!", type: "success" });
       }
     } catch (error) {
@@ -93,8 +60,8 @@ const DataAdmin = () => {
     setTimeout(() => setMessage({ text: "", type: "" }), 3000);
   };
 
-  const handleDetail = (guru) => {
-    setSelectedGuru(guru);
+  const handleDetail = (admin) => {
+    setSelectedadmin(admin);
     setIsDetailModalOpen(true);
   };
 
@@ -131,30 +98,30 @@ const DataAdmin = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredTeachers.length > 0 ? (
-                filteredTeachers.map((teacher) => (
+              {admin.length > 0 ? (
+                admin.map((a) => (
                   <tr
-                    key={teacher.id}
+                    key={a.id}
                     className="hover:bg-gray-50 transition-colors"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {teacher.nama}
+                      {a.nama}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap space-x-2">
                       <button
-                        onClick={() => handleDetail(teacher)}
+                        onClick={() => handleDetail(a)}
                         className="text-blue-500 hover:text-blue-700"
                       >
                         <FaEye />
                       </button>
                       <button
-                        onClick={() => handleEdit(teacher)}
+                        onClick={() => handleEdit(a)}
                         className="text-yellow-500 hover:text-yellow-700"
                       >
                         <FaEdit />
                       </button>
                       <button
-                        onClick={() => handleDelete(teacher.id)}
+                        onClick={() => handleDelete(a.id)}
                         className="text-red-500 hover:text-red-700"
                       >
                         <FaTrash />
@@ -181,20 +148,18 @@ const DataAdmin = () => {
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
-          setSelectedGuru(null);
+          setSelectedadmin(null);
         }}
-        guru={selectedGuru}
-        subjects={subjects}
+        admin={selectedadmin}
         onSubmit={handleUpdate}
       />
       <DetailAdmin
         isOpen={isDetailModalOpen}
         onClose={() => {
           setIsDetailModalOpen(false);
-          setSelectedGuru(null);
+          setSelectedadmin(null);
         }}
-        guru={selectedGuru}
-        subjects={subjects}
+        admin={selectedadmin}
       />
     </div>
   );
