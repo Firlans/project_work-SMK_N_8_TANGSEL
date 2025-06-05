@@ -54,9 +54,6 @@ const DataUser = () => {
       return false;
     }
     const isAdmin = userPrivilege.is_admin === 1;
-    // console.log("userPrivilege:", userPrivilege);
-    // console.log("is_superadmin:", userPrivilege.is_superadmin);
-    // console.log("isSuperAdmin result:", isSuperAdmin);
     return isAdmin;
   };
 
@@ -120,11 +117,11 @@ const DataUser = () => {
                 onChange={(e) => setSelectedRole(e.target.value)}
                 className="border rounded px-3 py-2 text-sm sm:text-base w-full sm:w-auto"
               >
-                <option value="all">Semua Role</option>
-                <option value="admin">Admin</option>
+                <option value="all">Semua Profile</option>
+                {/* <option value="admin">Admin</option> */}
                 <option value="guru">Guru</option>
                 <option value="siswa">Siswa</option>
-                <option value="konselor">Konselor</option>
+                {/* <option value="konselor">Konselor</option> */}
               </select>
               {/* Sembunyikan tombol Tambah untuk superadmin */}
               {!isAdmin() && (
@@ -149,7 +146,7 @@ const DataUser = () => {
                       Nama Lengkap
                     </th>
                     <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
-                      Role
+                      Profile
                     </th>
                     <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
                       Aksi

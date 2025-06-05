@@ -53,18 +53,6 @@ const DetailUser = ({ user, onClose }) => {
               </>
             )}
           </div>
-          {userData.profile && (
-            <>
-              <div>
-                <label className="font-bold">Gender:</label>
-                <p>
-                  {userData.profile.jenis_kelamin === "L"
-                    ? "Laki-laki"
-                    : "Perempuan"}
-                </p>
-              </div>
-            </>
-          )}
         </div>
         <div className="mt-6 flex justify-end">
           <button

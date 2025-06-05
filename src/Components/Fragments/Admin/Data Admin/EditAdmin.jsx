@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const EditAdmin = ({ isOpen, onClose, admin, subjects, onSubmit }) => {
+const EditAdmin = ({ isOpen, onClose, admin, onSubmit }) => {
   const [formData, setFormData] = useState({
     id: "",
     nip: "",
