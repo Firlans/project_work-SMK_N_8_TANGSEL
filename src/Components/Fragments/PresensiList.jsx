@@ -1,77 +1,89 @@
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import axiosClient from "../../axiosClient";
-import { FaTrash } from "react-icons/fa6";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import { IoChevronBackSharp } from "react-icons/io5";
 import LoadingSpinner from "../Elements/Loading/LoadingSpinner";
 
 const statusOptions = ["Hadir", "Izin", "Sakit", "Alpha"];
 
 const PresensiList = () => {
-  const { idPertemuan } = useParams();
-  const [presensi, setPresensi] = useState([]);
+  const { idJadwal, idPertemuan } = useParams();
   const [siswaList, setSiswaList] = useState([]);
+  const [presensi, setPresensi] = useState([]);
   const [tanggalPertemuan, setTanggalPertemuan] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [editedData, setEditedData] = useState({});
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   const { namaKelas, namaMapel, namaPertemuan } = location.state || {};
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [resPresensi, resSiswa, resPertemuan] = await Promise.all([
+        const resJadwal = await axiosClient.get(`/jadwal/${idJadwal}`);
+        const idKelas = resJadwal.data.data.id_kelas;
+
+        const [resSiswa, resPresensi, resPertemuan] = await Promise.all([
+          axiosClient.get("/siswa"),
           axiosClient.get(`/absen/pertemuan/${idPertemuan}`),
-          axiosClient.get(`/siswa`),
           axiosClient.get(`/pertemuan/${idPertemuan}`),
         ]);
 
-        setPresensi(resPresensi.data.data);
-        setSiswaList(resSiswa.data.data);
-        const sortedPresensi = resPresensi.data.data.sort((a, b) => {
-          const namaA = getNamaSiswaFromList(
-            resSiswa.data.data,
-            a.id_siswa
-          ).toLowerCase();
-          const namaB = getNamaSiswaFromList(
-            resSiswa.data.data,
-            b.id_siswa
-          ).toLowerCase();
-          return namaA.localeCompare(namaB);
-        });
-        setPresensi(sortedPresensi);
-        setTanggalPertemuan(resPertemuan.data.data.tanggal);
-        console.log("Data presensi:", resPresensi.data.data);
-        console.log("Data siswa:", resSiswa.data.data);
+        const siswaKelas = resSiswa.data.data.filter(
+          (s) => s.id_kelas === idKelas
+        );
+        setSiswaList(siswaKelas);
 
-        setLoading
-      } catch (error) {
-        console.error("Gagal mengambil data presensi:", error);
+        const dataPresensi = resPresensi.data.data;
+        setTanggalPertemuan(resPertemuan.data.data.tanggal);
+
+        // Gabungkan data siswa dengan presensi (jika sudah ada)
+        const daftarGabungan = siswaKelas.map((siswa) => {
+          const existing = dataPresensi.find((p) => p.id_siswa === siswa.id);
+          return (
+            existing || {
+              id: null,
+              id_siswa: siswa.id,
+              status: null,
+              keterangan: null,
+            }
+          );
+        });
+
+        setPresensi(
+          daftarGabungan.sort((a, b) => {
+            const namaA = getNamaSiswaFromList(
+              siswaKelas,
+              a.id_siswa
+            ).toLowerCase();
+            const namaB = getNamaSiswaFromList(
+              siswaKelas,
+              b.id_siswa
+            ).toLowerCase();
+            return namaA.localeCompare(namaB);
+          })
+        );
+      } catch (err) {
+        console.error("Gagal memuat data:", err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [idPertemuan]);
+  }, [idJadwal, idPertemuan]);
 
   const getNamaSiswaFromList = (list, id) => {
     const siswa = list.find((s) => s.id === id);
     return siswa ? siswa.nama_lengkap : "";
   };
 
-  const getNamaSiswa = (id) => {
-    const siswa = siswaList.find((s) => s.id === id);
-    return siswa ? siswa.nama_lengkap : "-";
-  };
-
   const handleEditClick = (item) => {
-    setEditingId(item.id);
+    setEditingId(item.id_siswa);
     setEditedData({
-      status: item.status,
+      status: item.status || "",
       keterangan: item.keterangan || "",
     });
   };
@@ -82,72 +94,58 @@ const PresensiList = () => {
   };
 
   const handleSave = async (item) => {
+    const payload = {
+      id_siswa: item.id_siswa,
+      id_pertemuan: idPertemuan,
+      tanggal: tanggalPertemuan,
+      status: editedData.status.toLowerCase(),
+      keterangan: editedData.keterangan || "",
+    };
+
     try {
-      const payload = {
-        id_siswa: item.id_siswa,
-        status: editedData.status?.toLowerCase(), // backend expects lowercase
-        keterangan: editedData.keterangan || null,
-        tanggal: tanggalPertemuan,
-        id_pertemuan: idPertemuan,
-      };
+      if (item.id) {
+        await axiosClient.put(`/absen/${item.id}`, payload);
+      } else {
+        const res = await axiosClient.post("/absen", payload);
+        item.id = res.data.data.id;
+      }
 
-      await axiosClient.put(`/absen/${item.id}`, payload);
-
-      // Update local state
       setPresensi((prev) =>
         prev.map((p) =>
-          p.id === item.id
-            ? {
-                ...p,
-                status: editedData.status,
-                keterangan: editedData.keterangan,
-              }
+          p.id_siswa === item.id_siswa
+            ? { ...p, ...payload, id: item.id || p.id }
             : p
         )
       );
 
-      console.log("Perubahan berhasil disimpan.", payload);
-
       handleCancel();
     } catch (error) {
-      console.error("Gagal menyimpan perubahan:", {
-        message: error.message,
-        status: error.response?.status,
-        data: error.response?.data,
-        sentData: editedData,
-      });
-      alert("Gagal menyimpan perubahan.");
+      console.error("Gagal menyimpan presensi:", error);
+      alert("Gagal menyimpan presensi.");
     }
   };
 
   const handleDelete = async (item) => {
+    if (!item.id) return;
     try {
-      const payload = {
-        id_siswa: item.id_siswa,
+      await axiosClient.put(`/absen/${item.id}`, {
+        ...item,
         status: null,
         keterangan: null,
-        tanggal: tanggalPertemuan,
-        id_pertemuan: idPertemuan,
-      };
-
-      await axiosClient.put(`/absen/${item.id}`, payload);
+      });
 
       setPresensi((prev) =>
         prev.map((p) =>
           p.id === item.id ? { ...p, status: null, keterangan: null } : p
         )
       );
-
-      console.log("Status dan keterangan berhasil dihapus.");
-    } catch (error) {
-      console.error("Gagal menghapus status dan keterangan:", error);
+    } catch (err) {
+      console.error("Gagal menghapus presensi:", err);
       alert("Gagal menghapus.");
     }
   };
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="w-full bg-white p-4 sm:p-6 rounded-xl shadow-sm">
@@ -175,93 +173,83 @@ const PresensiList = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500">
-                  No.
+                <th className="px-3 py-2 text-sm text-left text-gray-500">
+                  No
                 </th>
-                <th className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500">
+                <th className="px-3 py-2 text-sm text-left text-gray-500">
                   Nama Siswa
                 </th>
-                <th className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500">
+                <th className="px-3 py-2 text-sm text-left text-gray-500">
                   Status
                 </th>
-                <th className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500">
+                <th className="px-3 py-2 text-sm text-left text-gray-500">
                   Keterangan
                 </th>
-                <th className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500">
+                <th className="px-3 py-2 text-sm text-center text-gray-500">
                   Aksi
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {presensi.map((item, index) => (
-                <tr
-                  key={item.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-3 sm:px-6 py-2 sm:py-4 text-center text-xs sm:text-sm">
-                    {index + 1}
+              {presensi.map((item, idx) => (
+                <tr key={item.id_siswa}>
+                  <td className="px-3 py-2 text-sm">{idx + 1}</td>
+                  <td className="px-3 py-2 text-sm">
+                    {getNamaSiswaFromList(siswaList, item.id_siswa)}
                   </td>
-                  <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
-                    {getNamaSiswa(item.id_siswa)}
-                  </td>
-                  <td className="px-3 sm:px-6 py-2 sm:py-4 text-center text-xs sm:text-sm">
-                    {editingId === item.id ? (
+                  <td className="px-3 py-2 text-sm">
+                    {editingId === item.id_siswa ? (
                       <select
-                        className="w-full sm:w-auto rounded px-2 py-1 text-xs sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         value={editedData.status || ""}
                         onChange={(e) =>
                           setEditedData((prev) => ({
                             ...prev,
-                            status: e.target.value || null,
+                            status: e.target.value,
                           }))
                         }
+                        className="border rounded px-2 py-1"
                       >
                         <option value="">Pilih Status</option>
-                        {statusOptions.map((opt) => (
-                          <option key={opt} value={opt}>
-                            {opt}
+                        {statusOptions.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
                           </option>
                         ))}
                       </select>
+                    ) : item.status ? (
+                      item.status.charAt(0).toUpperCase() + item.status.slice(1)
                     ) : (
-                      <span className="inline-block min-w-[80px]">
-                        {item.status
-                          ? item.status.charAt(0).toUpperCase() +
-                            item.status.slice(1)
-                          : "-"}
-                      </span>
+                      "-"
                     )}
                   </td>
-                  <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
-                    {editingId === item.id ? (
+                  <td className="px-3 py-2 text-sm">
+                    {editingId === item.id_siswa ? (
                       <input
                         type="text"
-                        className="w-full rounded px-2 py-1 text-xs sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         value={editedData.keterangan || ""}
                         onChange={(e) =>
                           setEditedData((prev) => ({
                             ...prev,
-                            keterangan: e.target.value || null,
+                            keterangan: e.target.value,
                           }))
                         }
+                        className="border rounded px-2 py-1 w-full"
                       />
                     ) : (
-                      <span className="line-clamp-2">
-                        {item.keterangan || "-"}
-                      </span>
+                      item.keterangan || "-"
                     )}
                   </td>
-                  <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
-                    {editingId === item.id ? (
-                      <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
+                  <td className="px-3 py-2 text-sm text-center">
+                    {editingId === item.id_siswa ? (
+                      <div className="flex gap-2 justify-center">
                         <button
-                          className="w-full sm:w-auto px-3 py-1 text-xs sm:text-sm bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                          className="bg-green-500 text-white px-2 py-1 rounded"
                           onClick={() => handleSave(item)}
                         >
                           Simpan
                         </button>
                         <button
-                          className="w-full sm:w-auto px-3 py-1 text-xs sm:text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                          className="bg-gray-300 px-2 py-1 rounded"
                           onClick={handleCancel}
                         >
                           Batal
@@ -270,30 +258,26 @@ const PresensiList = () => {
                     ) : (
                       <div className="flex gap-2 justify-center">
                         <button
-                          className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
                           onClick={() => handleEditClick(item)}
+                          className="text-yellow-500"
                         >
-                          <FaEdit className="w-4 h-4" />
+                          <FaEdit />
                         </button>
                         <button
-                          className="p-1 text-red-500 hover:text-red-700 transition-colors"
                           onClick={() => handleDelete(item)}
+                          className="text-red-500"
                         >
-                          <FaTrash className="w-4 h-4" />
+                          <FaTrash />
                         </button>
                       </div>
                     )}
                   </td>
                 </tr>
               ))}
-
               {presensi.length === 0 && (
                 <tr>
-                  <td
-                    colSpan="5"
-                    className="px-3 sm:px-6 py-4 text-center text-gray-500 text-xs sm:text-sm"
-                  >
-                    Tidak ada data presensi.
+                  <td colSpan="5" className="text-center text-gray-500 py-4">
+                    Tidak ada data siswa.
                   </td>
                 </tr>
               )}

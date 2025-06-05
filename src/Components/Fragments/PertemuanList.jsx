@@ -6,52 +6,54 @@ import { formatTanggal } from "../../utils/dateFormatter";
 import { IoChevronBackSharp } from "react-icons/io5";
 import LoadingSpinner from "../Elements/Loading/LoadingSpinner";
 import Cookies from "js-cookie";
+import FormPertemuan from "./Admin/Data Jadwal/FormPertemuan";
 
 const PertemuanList = () => {
   const { idJadwal } = useParams();
   const [pertemuan, setPertemuan] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshToggle, setRefreshToggle] = useState(false); // untuk trigger fetch ulang
+  const [selectedPertemuan, setSelectedPertemuan] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [info, setInfo] = useState({ namaKelas: "", namaMapel: "" });
   const navigate = useNavigate();
   const userRole = Cookies.get("userRole");
-  const [info, setInfo] = useState({ namaKelas: "", namaMapel: "" });
-  const [loading, setLoading] = useState(true);
+
+  const fetchPertemuan = async () => {
+    setLoading(true);
+    try {
+      const pertemuanRes = await axiosClient.get(
+        `/pertemuan/jadwal/${idJadwal}`
+      );
+      setPertemuan(pertemuanRes.data.data);
+
+      const jadwalRes = await axiosClient.get(`/jadwal/${idJadwal}`);
+      const jadwal = jadwalRes.data.data;
+
+      const [kelasRes, mapelRes] = await Promise.all([
+        axiosClient.get(`/kelas`),
+        axiosClient.get(`/mata-pelajaran`),
+      ]);
+      const kelas = kelasRes.data.data.find(
+        (item) => item.id === jadwal.id_kelas
+      );
+      const mapel = mapelRes.data.data.find(
+        (item) => item.id === jadwal.id_mata_pelajaran
+      );
+      setInfo({
+        namaKelas: kelas?.nama_kelas || "-",
+        namaMapel: mapel?.nama_pelajaran || "-",
+      });
+    } catch (error) {
+      console.error("Gagal mengambil data pertemuan:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchInfo = async () => {
-      try {
-        const pertemuanRes = await axiosClient.get(
-          `/pertemuan/jadwal/${idJadwal}`
-        );
-        setPertemuan(pertemuanRes.data.data);
-
-        const jadwalRes = await axiosClient.get(`/jadwal/${idJadwal}`);
-        const jadwal = jadwalRes.data.data;
-
-        // Fetch kelas dan mapel
-        const [kelasRes, mapelRes] = await Promise.all([
-          axiosClient.get(`/kelas`),
-          axiosClient.get(`/mata-pelajaran`),
-        ]);
-        const kelas = kelasRes.data.data.find(
-          (item) => item.id === jadwal.id_kelas
-        );
-        const mapel = mapelRes.data.data.find(
-          (item) => item.id === jadwal.id_mata_pelajaran
-        );
-        setInfo({
-          namaKelas: kelas?.nama_kelas,
-          namaMapel: mapel?.nama_pelajaran,
-        });
-        console.log("Data info:", info);
-        setLoading(false);
-      } catch (err) {
-        console.error("Gagal mengambil data info:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (idJadwal) fetchInfo();
-  }, [idJadwal]);
+    if (idJadwal) fetchPertemuan();
+  }, [idJadwal, refreshToggle]); // refresh tiap toggle berubah
 
   const handleLihatPresensi = (p) => {
     const basePath =
@@ -61,11 +63,35 @@ const PertemuanList = () => {
 
     navigate(`${basePath}/${idJadwal}/pertemuan/${p.id}/presensi`, {
       state: {
-        namaKelas: info.namaKelas || "-",
-        namaMapel: info.namaMapel || "-",
-        namaPertemuan: p.nama_pertemuan || "-",
+        namaKelas: info.namaKelas,
+        namaMapel: info.namaMapel,
+        namaPertemuan: p.nama_pertemuan,
       },
     });
+  };
+
+  const handleEdit = (item) => {
+    setSelectedPertemuan(item);
+    setShowForm(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Yakin ingin menghapus pertemuan ini?")) return;
+    setLoading(true);
+    try {
+      await axiosClient.delete(`/pertemuan/${id}`);
+      setRefreshToggle((prev) => !prev);
+    } catch (error) {
+      console.error("Gagal menghapus pertemuan:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFormSuccess = () => {
+    setRefreshToggle((prev) => !prev); // trigger refresh list
+    setShowForm(false);
+    setSelectedPertemuan(null);
   };
 
   if (loading) return <LoadingSpinner />;
@@ -103,6 +129,7 @@ const PertemuanList = () => {
           </button>
         </div>
       </div>
+
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -136,10 +163,16 @@ const PertemuanList = () => {
                       </button>
                       {userRole !== "guru" && (
                         <>
-                          <button className="text-yellow-600 hover:underline text-sm">
+                          <button
+                            onClick={() => handleEdit(p)}
+                            className="text-yellow-600 hover:underline text-sm"
+                          >
                             <FaEdit />
                           </button>
-                          <button className="text-red-600 hover:underline text-sm">
+                          <button
+                            onClick={() => handleDelete(p.id)}
+                            className="text-red-600 hover:underline text-sm"
+                          >
                             <FaTrash />
                           </button>
                         </>
@@ -150,14 +183,26 @@ const PertemuanList = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="px-4 py-4 text-center text-gray-500">
-                  Belum ada pertemuan.
+                <td colSpan="4" className="px-4 py-4 text-center text-gray-400">
+                  Tidak ada data pertemuan.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Modal Form */}
+      <FormPertemuan
+        isOpen={showForm}
+        onClose={() => {
+          setShowForm(false);
+          setSelectedPertemuan(null);
+        }}
+        data={selectedPertemuan}
+        idJadwal={idJadwal}
+        onSuccess={handleFormSuccess}
+      />
     </div>
   );
 };

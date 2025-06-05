@@ -75,15 +75,15 @@ const FormJadwal = ({
 
       onSuccess(response.data.data);
 
-      // ✅ Buat pertemuan otomatis jika tambah baru
-      if (!data?.id) {
-        await axiosClient.post("/pertemuan", {
-          id_jadwal: response.data.data.id,
-          nama_pertemuan: "Pertemuan 1",
-          tanggal: new Date().toISOString().split("T")[0],
-        });
-        console.log("Pertemuan otomatis berhasil dibuat");
-      }
+      // // ✅ Buat pertemuan otomatis jika tambah baru
+      // if (!data?.id) {
+      //   await axiosClient.post("/pertemuan", {
+      //     id_jadwal: response.data.data.id,
+      //     nama_pertemuan: "Pertemuan 1",
+      //     tanggal: new Date().toISOString().split("T")[0],
+      //   });
+      //   console.log("Pertemuan otomatis berhasil dibuat");
+      // }
     } catch (err) {
       if (err.response?.status === 422) {
         // Handle validation errors from backend
