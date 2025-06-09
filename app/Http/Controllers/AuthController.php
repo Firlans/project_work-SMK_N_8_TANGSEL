@@ -2,18 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Guru;
 use App\Models\Privilege;
+use App\Models\Siswa;
 use App\Models\User;
+use App\Traits\ApiResponseHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use function GuzzleHttp\json_encode;
 
 
 
 class AuthController extends Controller
 {
+    use ApiResponseHandler;
+
     // User registration
     public function register(Request $request)
     {
@@ -57,7 +63,7 @@ class AuthController extends Controller
             $user = auth()->user();
             $privilege = Privilege::where('id_user', $user->id)->first();
 
-            $token = JWTAuth::claims(['role' => $user->role])->fromUser($user);
+            $token = JWTAuth::claims(['profile' => $user->profile])->fromUser($user);
 
             return response()->json([
                 'status' => 'success',
@@ -72,6 +78,115 @@ class AuthController extends Controller
         } catch (JWTException $e) {
             return response()->json(['error' => 'Could not create token'], 500);
         }
+    }
+
+    public function loginByNISN(Request $request)
+    {
+        try {
+            $request->validate([
+                'nisn' => 'required|string',
+                'password' => 'required|string'
+            ]);
+
+            $siswa = Siswa::where('nisn', '=', $request->nisn)->first();
+
+            if (!$siswa) {
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'invalid credential',
+                ], 401);
+            }
+
+            $user = User::find($siswa->user_id);
+            if (!Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'invalid credential',
+                ], 401);
+            }
+            $user->load('privileges');
+
+            $token = JWTAuth::claims(['profile' => $user->profile])->fromUser($user);
+
+            if (!$token) {
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'invalid credential',
+                ], 401);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Login berhasil',
+                'data' => [
+                    'user' => $user->only(['id', 'name', 'email', 'prifile', 'is_active', 'email_verified_at', 'created_at', 'updated_at']),
+                    'privilege' => $user->privileges,
+                    'token' => $token
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Could not create token'], 500);
+        }
+    }
+
+    public function loginByNIP(Request $request)
+    {
+        try {
+            $request->validate([
+                'nip' => 'required|string',
+                'password' => 'required|string'
+            ]);
+
+            $guru = Guru::where('nip', '=', $request->nip)->first();
+
+            if (!$guru) {
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'invalid credential',
+                ], 401);
+            }
+
+            $user = User::find($guru->user_id);
+            if (!Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'invalid credential',
+                ], 401);
+            }
+            $user->load('privileges');
+
+            $token = JWTAuth::claims(['profile' => $user->profile])->fromUser($user);
+
+            if (!$token) {
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'invalid credential',
+                ], 401);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Login berhasil',
+                'data' => [
+                    'user' => $user->only(['id', 'name', 'email', 'prifile', 'is_active', 'email_verified_at', 'created_at', 'updated_at']),
+                    'privilege' => $user->privileges,
+                    'token' => $token
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Could not create token'], 500);
+        }
+    }
+
+    public function loginOrangTua(Request $request)
+    {
+        try {
+
+        } catch (\Exception $e) {
+
+            return response()->json(['error' => 'Could not create token'], 500);
+        }
+
     }
 
     // Get authenticated user

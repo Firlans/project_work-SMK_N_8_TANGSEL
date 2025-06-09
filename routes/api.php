@@ -25,6 +25,9 @@ use App\Http\Middleware\SiswaMiddleware;
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::post('login/nisn', [AuthController::class, 'loginByNisn']);
+Route::post('login/nip', [AuthController::class, 'loginByNIP']);
+Route::post('login/orang-tua', [AuthController::class, 'loginOrangTua']);
 Route::middleware([JwtMiddleware::class])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::middleware([RoleMiddleware::class])->group(function () {
