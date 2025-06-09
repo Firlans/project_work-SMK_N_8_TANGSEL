@@ -130,7 +130,7 @@ class PertemuanController extends Controller
             }
             $pertemuan->delete();
             \Log::info('delete info'. $pertemuan);
-            return $this->handleDeleted('Pertemuan');
+            return $this->handleDeleted('Pertemuan', $id);
         }catch (\Exception $e) {
             return $this->handleError($e, 'deletePertemuan');
         }
