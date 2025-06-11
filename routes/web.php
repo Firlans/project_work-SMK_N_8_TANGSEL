@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function(){
     return view('BroadcastTesting');
 });
-Broadcast::routes([
-    'middleware' => [JwtMiddleware::class],
-]);
+
 Route::post('/send-email/{name}', function($name){
     $to = 'firlansyah54321@gmail.com';
     $send = Mail::to($to)->send(new Email($name));

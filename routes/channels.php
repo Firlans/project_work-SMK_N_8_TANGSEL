@@ -7,6 +7,5 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('room.{roomId}', function ($user, $roomId) {
-    // validasi jika user boleh join room ini
     return true; // sesuaikan dengan logicmu
-});
+}, ['guards' => ['api']]);
