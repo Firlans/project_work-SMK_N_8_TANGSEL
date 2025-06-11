@@ -8,9 +8,10 @@ import Cookies from "js-cookie";
 const FormLogin = ({ role }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    email: "",
+    identifier: "",
     password: "",
   });
+  const [loginType, setLoginType] = useState("email");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -21,28 +22,41 @@ const FormLogin = ({ role }) => {
     }));
   };
 
+  const handleLoginTypeChange = (event) => {
+    setLoginType(event.target.value);
+    setFormData({ ...formData, identifier: "" }); // Kosongin input kalau ganti tipe
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
     setError("");
     setIsLoading(true);
 
-    if (!formData.email || !formData.password) {
-      setError("Email dan password harus diisi!");
+    if (!formData.identifier || !formData.password) {
+      setError("Semua field harus diisi!");
       setIsLoading(false);
       return;
     }
 
     try {
-      const response = await axiosClient.post("/login", {
-        email: formData.email,
-        password: formData.password,
-      });
+      let endpoint = "";
+      let payload = { password: formData.password };
 
-      // Setelah mendapatkan response
+      if (loginType === "email") {
+        endpoint = "/login";
+        payload.email = formData.identifier;
+      } else if (loginType === "nisn") {
+        endpoint = "/login/nisn";
+        payload.nisn = formData.identifier;
+      } else if (loginType === "nip") {
+        endpoint = "/login/nip";
+        payload.nip = formData.identifier;
+      }
+
+      const response = await axiosClient.post(endpoint, payload);
+
       const { token, privilege } = response.data.data;
-      console.log("Received privilege:", privilege);
 
-      // Batasan role yang diizinkan per halaman login
       const allowedRoles = {
         siswa: ["is_siswa"],
         guru: ["is_guru"],
@@ -51,8 +65,6 @@ const FormLogin = ({ role }) => {
       };
 
       const allowedPrivileges = allowedRoles[role];
-
-      // Cek apakah user punya privilege yang sesuai dengan halaman login
       const hasAccess = allowedPrivileges?.some((key) => privilege[key] === 1);
 
       if (!hasAccess) {
@@ -61,45 +73,29 @@ const FormLogin = ({ role }) => {
         return;
       }
 
-      // Sebelum menyimpan ke cookies
-      Cookies.set("userPrivilege", JSON.stringify(privilege), {
-        expires: 1,
-        secure: false,
-        sameSite: "Strict",
-      });
-      console.log("Saved privilege to cookies:", JSON.stringify(privilege));
+      Cookies.set("userPrivilege", JSON.stringify(privilege), { expires: 1 });
+      Cookies.set("token", token, { expires: 1 });
+      Cookies.set("userRole", role, { expires: 1 });
 
-      // Simpan token & role ke cookie
-      Cookies.set("token", token, {
-        expires: 1,
-        secure: false, // Set to true jika sudah di deploy dengan HTTPS
-        sameSite: "Strict",
-      });
-
-      Cookies.set("userRole", role, {
-        expires: 1,
-        secure: false, // Set to true jika sudah di deploy dengan HTTPS
-        sameSite: "Strict",
-      });
-
-      // Set token untuk axios
       axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      // Arahkan ke dashboard yang sesuai
       if (privilege.is_superadmin === 1 && role === "admin") {
         navigate("/dashboard-admin");
       } else {
         navigate(`/dashboard-${role}`);
       }
     } catch (error) {
-      console.error("Login gagal:", error.response?.data);
+      const message = error.response?.data?.message?.toLowerCase();
 
-      const errorMessage =
-        error.response?.data?.error === "Invalid credentials"
-          ? "Email atau password salah"
-          : error.response?.data?.error || "Terjadi kesalahan, coba lagi.";
+      if (message?.includes("invalid credential")) {
+        let fieldType = "Email";
+        if (loginType === "nisn") fieldType = "NISN";
+        if (loginType === "nip") fieldType = "NIP";
 
-      setError(errorMessage);
+        setError(`${fieldType} atau password salah`);
+      } else {
+        setError(message || "Terjadi kesalahan, coba lagi.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -118,29 +114,100 @@ const FormLogin = ({ role }) => {
 
       {error && <p className="text-red-500">{error}</p>}
 
+      {(role === "siswa" || role === "guru") && (
+        <div className="flex flex-col gap-2 mb-4">
+          <label className="text-sm text-slate-500 font-medium">
+            Login dengan:
+          </label>
+
+          <div className="relative w-full h-10 bg-gray-200 rounded-full flex items-center px-1 shadow-inner">
+            {/* Sliding indicator */}
+            <div
+              className={`absolute top-1 left-1 w-[calc(50%-0.25rem)] h-8 bg-yellow-600 rounded-full transition-all duration-300
+        ${loginType === "email" ? "translate-x-0" : "translate-x-full"}
+        ring-2 ring-yellow-700 ring-offset-1`}
+            />
+
+            {/* Email Button */}
+            <button
+              type="button"
+              onClick={() => setLoginType("email")}
+              className={`relative z-10 w-1/2 h-8 rounded-full text-sm font-semibold transition-all duration-300
+        focus:outline-none
+        ${
+          loginType === "email"
+            ? "text-white"
+            : "text-gray-700 hover:text-yellow-700"
+        }`}
+            >
+              Email
+            </button>
+
+            {/* NISN / NIP Button */}
+            <button
+              type="button"
+              onClick={() => setLoginType(role === "siswa" ? "nisn" : "nip")}
+              className={`relative z-10 w-1/2 h-8 rounded-full text-sm font-semibold transition-all duration-300
+        focus:outline-none
+        ${
+          loginType !== "email"
+            ? "text-white"
+            : "text-gray-700 hover:text-yellow-700"
+        }`}
+            >
+              {role === "siswa" ? "NISN" : "NIP"}
+            </button>
+          </div>
+        </div>
+      )}
+
       <InputForm
-        label="Email"
-        type="email"
-        placeholder="Email"
-        name="email"
-        value={formData.email}
+        label={
+          loginType === "email"
+            ? "Email"
+            : loginType === "nisn"
+            ? "NISN"
+            : "NIP"
+        }
+        type="text"
+        placeholder={`Masukkan ${
+          loginType === "email"
+            ? "Email"
+            : loginType === "nisn"
+            ? "NISN"
+            : "NIP"
+        }`}
+        name="identifier"
+        value={formData.identifier}
         onChange={handleChange}
       />
+
       <InputForm
         label="Password"
         type="password"
-        placeholder="*****"
+        placeholder="******"
         name="password"
         value={formData.password}
         onChange={handleChange}
       />
-      <Button
-        type="submit"
-        className="bg-yellow-600 text-white"
-        disabled={isLoading}
-      >
-        {isLoading ? "Logging in..." : "Login"}
-      </Button>
+
+      <div className="flex justify-between items-center">
+        <Button
+          type="button"
+          onClick={() => navigate("/")}
+          className="bg-gray-200 text-gray-800 hover:bg-gray-300"
+        >
+          Kembali
+        </Button>
+
+        <Button
+          type="submit"
+          className="bg-yellow-600 text-white"
+          disabled={isLoading}
+        >
+          {isLoading ? "Logging in..." : "Login"}
+        </Button>
+      </div>
     </form>
   );
 };
