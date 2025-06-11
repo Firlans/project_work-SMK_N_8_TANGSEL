@@ -6,6 +6,7 @@ use App\Http\Controllers\AbsenController;
 use App\Http\Controllers\ChatRoomController;
 use App\Http\Controllers\ConselorController;
 use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KelasController;
@@ -154,3 +155,7 @@ Route::get('/chat-room/access-code/{id_user}', [ChatRoomController::class, 'getC
 Route::post('/chat-room', [ChatRoomController::class, 'createChatRoom']);
 Route::put('/chat-room/{id}', [ChatRoomController::class, 'updateChatRoom']);
 Route::delete('/chat-room/{id}', [ChatRoomController::class, 'deleteChatRoom']);
+
+// route file
+Route::get('/images/prestasi/{nama_foto}',[FileController::class, 'getBuktiPrestesi']);
+Route::get('/images/pelanggaran/{nama_foto}',[FileController::class, 'getBuktiPelanggaran']);
