@@ -11,6 +11,7 @@ class JwtMiddleware
     public function handle($request, Closure $next)
     {
         try {
+            \Log::info('masuk'.json_encode($request->all()));
             $user = JWTAuth::parseToken()->authenticate();
         } catch (Exception $e) {
             if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){

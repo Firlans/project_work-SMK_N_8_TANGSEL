@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AccessParent;
 use App\Models\Guru;
 use App\Models\Privilege;
 use App\Models\Siswa;
@@ -9,6 +10,7 @@ use App\Models\User;
 use App\Traits\ApiResponseHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -178,13 +180,111 @@ class AuthController extends Controller
         }
     }
 
-    public function loginOrangTua(Request $request)
+    public function loginOrangTuaByNoTelp(Request $request)
     {
         try {
+            if (!$request->has(['nisn', 'no_telp'])) {
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'invalid credential',
+                ], 401);
+            }
+            \Log::info('info '. json_encode($request->has(['nisn', 'no_telp'])));
+            $siswa = Siswa::select('siswa.*')
+            ->leftJoin('wali_murid', 'wali_murid.id_siswa', '=', 'siswa.id')
+            // ->where('siswa.nisn', '=', $request->nisn)
+            ->where('wali_murid.no_telp', '=', $request->no_telp)
+            ->first();
 
+            if(!$siswa){
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'invalid credential',
+                ], 401);
+            }
+
+            $user = User::find($siswa->user_id);
+
+            if(!$user){
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'invalid credential',
+                ], 401);
+            }
+            $user->load('privileges');
+
+            $token = JWTAuth::claims(['profile' => $user->profile])->fromUser($user);
+
+            if (!$token) {
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'invalid credential',
+                ], 401);
+            }
+            $host = env('APP_URL', 'http://localhost:8000');
+            $link = "{$host}/login/orang-tua?token={$token}";
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Akses di kirim via Whatsapp'
+            ]);
         } catch (\Exception $e) {
-
             return response()->json(['error' => 'Could not create token'], 500);
+        }
+
+    }
+    public function loginOrangTuaByEmail(Request $request)
+    {
+        try {
+            if (!$request->has(['email', 'nisn'])) {
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'invalid credential',
+                ], 401);
+            }
+            \Log::info('info '. json_encode($request->has(['nisn', 'email'])));
+            $siswa = Siswa::select('siswa.*', 'wali_murid.nama_lengkap')
+            ->leftJoin('wali_murid', 'wali_murid.id_siswa', '=', 'siswa.id')
+            // ->where('siswa.nisn', '=', $request->nisn)
+            ->where('wali_murid.email', '=', $request->email)
+            ->first();
+
+            if(!$siswa){
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'invalid credential',
+                ], 401);
+            }
+
+            $user = User::find($siswa->user_id);
+
+            if(!$user){
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'invalid credential',
+                ], 401);
+            }
+            $user->load('privileges');
+
+            $token = JWTAuth::claims(['profile' => $user->profile])->fromUser($user);
+
+            if (!$token) {
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'invalid credential',
+                ], 401);
+            }
+            $url = env('FRONTEND_URL', 'http://localhost');
+            $link = "{$url}/login/orang-tua?token={$token}";
+
+            $send = Mail::to($request->email)->send(new AccessParent($link, $siswa->nama_lengkap));
+            \Log::info('terkirim'. json_encode($send));
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Akses di kirim via Email'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => "Could not create token $e"], 500);
         }
 
     }
