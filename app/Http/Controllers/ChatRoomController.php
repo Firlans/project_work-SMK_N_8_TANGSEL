@@ -193,8 +193,8 @@ class ChatRoomController extends Controller
     private function validation($data, $id = null)
     {
         $validator = Validator::make($data, [
-            'id_siswa' => 'nullable|exists:users,id',
-            'id_guru' => 'required|exists:users,id',
+            'id_user_siswa' => 'nullable|exists:users,id',
+            'id_user_guru' => 'required|exists:users,id',
             'name' => 'nullable|string|max:255',
             'access_code' => 'nullable|string|max:255|unique:chat_rooms,access_code' . ($id ? ',' . $id : ''),
             'is_private' => 'boolean',

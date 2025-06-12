@@ -16,8 +16,8 @@ class ChatRoom extends Model
 
     protected $fillable = [
         'name',
-        'id_siswa',
-        'id_guru',
+        'id_user_siswa',
+        'id_user_guru',
         'access_code',
         'status',
         'is_private'
