@@ -8,7 +8,7 @@ export const siswaMenuItems = [
   { id: "kehadiran", label: "Presensi Siswa", icon: <FaUserCheck /> },
   { id: "prestasi", label: "Prestasi Siswa", icon: <FiAward /> },
   { id: "pelaporan", label: "Lapor Pelanggaran", icon: <FaExclamationCircle /> },
-  { id: "bk", label: "Konsultasi BK", icon: <FaComments /> },
+  { id: "bk", label: "Bimbingan Konseling", icon: <FaComments /> },
 ];
 
 export const siswaPageRoutes = {
@@ -17,5 +17,8 @@ export const siswaPageRoutes = {
   kehadiran: "/dashboard-siswa/kehadiran",
   prestasi: "/dashboard-siswa/prestasi",
   pelaporan: "/dashboard-siswa/pelaporan",
-  bk: "/dashboard-siswa/bk",
+  bk: "/dashboard-siswa/konseling",
+
+  "bk-public": "/dashboard-siswa/konseling/public",
+  "bk-private": "/dashboard-siswa/konseling/private",
 };

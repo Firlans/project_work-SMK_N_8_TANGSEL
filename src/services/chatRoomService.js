@@ -23,3 +23,21 @@ export const createChatRoom = async (roomData) => {
     throw new Error("Failed to create chat room");
   }
 };
+
+export const updateChatRoom = async (id, roomData) => {
+  try {
+    const res = await axiosClient.put(`/chat-room/${id}`, roomData);
+    return res.data;
+  } catch (error) {
+    throw new Error("Failed to update chat room");
+  }
+};
+
+export const deleteChatRoom = async (id) => {
+  try {
+    const res = await axiosClient.delete(`/chat-room/${id}`); // <--- INI SUDAH BENAR
+    return res.data;
+  } catch (error) {
+    throw new Error("Failed to delete chat room");
+  }
+}
