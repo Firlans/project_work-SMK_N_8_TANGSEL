@@ -114,7 +114,7 @@ const FormLogin = ({ role }) => {
 
       {error && <p className="text-red-500">{error}</p>}
 
-      {(role === "siswa" || role === "guru") && (
+      {["siswa", "guru", "admin", "konselor"].includes(role) && (
         <div className="flex flex-col gap-2 mb-4">
           <label className="text-sm text-slate-500 font-medium">
             Login dengan:
