@@ -10,5 +10,9 @@ export const konselorMenuItems = [
 export const konselorPageRoutes = {
   profile: "/dashboard-konselor",
   konseling: "/dashboard-konselor/konseling",
+
+  "konseling-public": "/dashboard-konselor/konseling/public",
+  "konseling-private": "/dashboard-konselor/konseling/private",
+
   pelaporan: "/dashboard-konselor/pelaporan",
 };

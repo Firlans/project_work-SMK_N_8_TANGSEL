@@ -45,6 +45,8 @@ import JadwalSiswaPage from "./Pages/siswa/jadwalSiswaPage";
 import KehadiranSiswaPage from "./Pages/siswa/kehadiranSiswaPage";
 import PelaporanSiswaPage from "./Pages/siswa/pelaporanSiswaPage";
 import PrestasiSiswaPage from "./Pages/siswa/prestasiSiswaPage";
+import KonselingSiswaPage from "./Pages/siswa/konselingSiswaPage";
+import KonselingSiswaPublicPage from "./Pages/siswa/konselingSIswaPublicPage";
 
 // Guru Pages
 import JadwalGuruPage from "./Pages/guru/jadwalGuruPage";
@@ -54,6 +56,9 @@ import PresensiGuruPage from "./Pages/guru/PresensiGuruPage";
 
 // Konselor Pages
 import PelaporanKonselorPage from "./Pages/konselor/pelaporanKonselorPage";
+import KonselingPage from "./Pages/konselor/konselingPage";
+import KoselingPuclicPage from "./Pages/konselor/konselingPublicPage";
+import KonselingPrivatePage from "./Pages/konselor/konselingPrivatePage";
 
 const adminDataRoutes = [
   { path: "/dashboard-admin/data-user", element: <DataUserPage /> },
@@ -83,7 +88,16 @@ const siswaRoutes = [
   { path: "/dashboard-siswa/jadwal-siswa", element: <JadwalSiswaPage /> },
   { path: "/dashboard-siswa/kehadiran", element: <KehadiranSiswaPage /> },
   { path: "/dashboard-siswa/pelaporan", element: <PelaporanSiswaPage /> },
-  { path: "/dashboard-siswa/prestasi", element: <PrestasiSiswaPage />}
+  { path: "/dashboard-siswa/prestasi", element: <PrestasiSiswaPage /> },
+  { path: "/dashboard-siswa/konseling", element: <KonselingSiswaPage /> },
+  {
+    path: "/dashboard-siswa/konseling/public",
+    element: <KonselingSiswaPublicPage />,
+  },
+  {
+    path: "/dashboard-siswa/konseling/private",
+    element: <KonselingPrivatePage />,
+  },
 ];
 
 const guruRoutes = [
@@ -101,6 +115,15 @@ const guruRoutes = [
 
 const konselorRoutes = [
   { path: "/dashboard-konselor/pelaporan", element: <PelaporanKonselorPage /> },
+  { path: "/dashboard-konselor/konseling", element: <KonselingPage /> },
+  {
+    path: "/dashboard-konselor/konseling/public",
+    element: <KoselingPuclicPage />,
+  },
+  {
+    path: "/dashboard-konselor/konseling/private",
+    element: <KonselingPrivatePage />,
+  },
 ];
 
 const router = createBrowserRouter([
