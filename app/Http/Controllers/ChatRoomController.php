@@ -19,7 +19,6 @@ class ChatRoomController extends Controller
             if ($validationResult !== true) {
                 return $validationResult; // Return validation error response
             }
-
             // Create a new chat room
             $chatRoom = ChatRoom::create($data);
 
@@ -127,20 +126,20 @@ class ChatRoomController extends Controller
         }
     }
 
-    public function getChatRoomsBySiswa($id_siswa)
+    public function getChatRoomsBySiswa($id_user_siswa)
     {
         try {
             if (
-                empty($id_siswa) ||
-                $id_siswa === null ||
-                $id_siswa === "null" ||
-                $id_siswa === "undefined" ||
-                !is_numeric($id_siswa)
+                empty($id_user_siswa) ||
+                $id_user_siswa === null ||
+                $id_user_siswa === "null" ||
+                $id_user_siswa === "undefined" ||
+                !is_numeric($id_user_siswa)
             ) {
-                return $this->invalidParameter("chat room by id siswa = {$id_siswa}");
+                return $this->invalidParameter("chat room by id siswa = {$id_user_siswa}");
             }
 
-            $chatRooms = ChatRoom::where('id_siswa', '=', $id_siswa)->get();
+            $chatRooms = ChatRoom::where('id_user_siswa', '=', $id_user_siswa)->get();
 
             return $this->handleReturnData($chatRooms, 'chat room');
         } catch (\Exception $e) {
@@ -161,7 +160,7 @@ class ChatRoomController extends Controller
                 return $this->invalidParameter("chat room by id conselor = {$id_conselor}");
             }
 
-            $chatRooms = ChatRoom::where('id_guru', '=', $id_conselor)->get();
+            $chatRooms = ChatRoom::where('id_user_guru', '=', $id_conselor)->get();
 
             return $this->handleReturnData($chatRooms, 'chat room');
         } catch (\Exception $e) {
@@ -207,14 +206,14 @@ class ChatRoomController extends Controller
             ], 422);
         }
 
-        $is_conselor = User::where('id', $data['id_guru'])
+        $is_conselor = User::where('id', $data['id_user_guru'])
             ->whereHas('privileges', function ($query) {
                 $query->where('is_conselor', true);
             })
             ->exists();
 
         if (!$is_conselor) {
-            return $this->handleNotFoundData($data['id_guru'], 'Conselor');
+            return $this->handleNotFoundData($data['id_user_guru'], 'Conselor');
         }
 
 

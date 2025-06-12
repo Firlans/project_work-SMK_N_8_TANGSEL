@@ -55,11 +55,11 @@ return new class extends Migration {
         });
 
         Schema::table('chat_rooms', function (Blueprint $table) {
-            $table->foreign('id_siswa')
+            $table->foreign('id_user_siswa')
                 ->references('id')
                 ->on('users')
                 ->onDelete('cascade');
-            $table->foreign('id_guru')
+            $table->foreign('id_user_guru')
                 ->references('id')
                 ->on('users')
                 ->onDelete('cascade');
@@ -83,8 +83,8 @@ return new class extends Migration {
         });
 
         Schema::table('chat_rooms', function (Blueprint $table) {
-            $table->dropForeign(['id_siswa']);
-            $table->dropForeign(['id_guru']);
+            $table->dropForeign(['id_user_siswa']);
+            $table->dropForeign(['id_user_guru']);
         });
 
         Schema::table('kehadiran', function (Blueprint $table) {
