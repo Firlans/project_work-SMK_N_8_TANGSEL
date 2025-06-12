@@ -1,36 +1,38 @@
-const ChatRoomCard = ({ room }) => {
-  return (
-    <div className="p-5 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer group">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-xl font-semibold text-gray-800 group-hover:text-yellow-600 transition">
-          {room.name || "Tanpa Nama"}
-        </h3>
-        <span
-          className={`text-xs px-2 py-1 rounded-full font-medium ${
-            room.status === "Open"
-              ? "bg-green-100 text-green-600"
-              : "bg-gray-200 text-gray-600"
-          }`}
-        >
-          {room.status}
-        </span>
-      </div>
+import { useState } from "react";
 
-      <div className="text-sm text-gray-500">
-        <p>
-          Tipe:{" "}
-          {room.is_private ? (
-            <span className="text-red-500 font-medium">Private</span>
-          ) : (
-            <span className="text-green-600 font-medium">Public</span>
-          )}
-        </p>
-        {room.id_siswa && (
-          <p className="mt-1 text-gray-400 text-xs">
-            ID Siswa: {room.id_siswa}
-          </p>
-        )}
-      </div>
+const ChatRoomCard = ({ room, onEdit, onDelete }) => {
+  const [showActions, setShowActions] = useState(false);
+
+  return (
+    <div
+      className="p-4 border rounded-lg shadow hover:shadow-md bg-white relative"
+      onMouseEnter={() => setShowActions(true)}
+      onMouseLeave={() => setShowActions(false)}
+    >
+      <h3 className="text-lg font-bold text-gray-800">
+        {room.name || "Tanpa Nama"}
+      </h3>
+      {/* <p className="text-sm text-gray-600">
+        Status: {room.status === "Open" ? "🟢 Open" : "🔴 Closed"}
+      </p> */}
+      <p>Siswa: {room.id_user_siswa}</p>
+
+      {showActions && (
+        <div className="absolute top-2 right-2 flex gap-2">
+          <button
+            className="text-sm text-blue-600 hover:underline"
+            onClick={() => onEdit(room)}
+          >
+            Edit
+          </button>
+          <button
+            className="text-sm text-red-600 hover:underline"
+            onClick={() => onDelete(room)}
+          >
+            Hapus
+          </button>
+        </div>
+      )}
     </div>
   );
 };

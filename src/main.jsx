@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import Modal from "react-modal";
 import "./index.css";
 
 import {
@@ -47,6 +48,7 @@ import PelaporanSiswaPage from "./Pages/siswa/pelaporanSiswaPage";
 import PrestasiSiswaPage from "./Pages/siswa/prestasiSiswaPage";
 import KonselingSiswaPage from "./Pages/siswa/konselingSiswaPage";
 import KonselingSiswaPublicPage from "./Pages/siswa/konselingSIswaPublicPage";
+import KonselingSiswaPrivatePage from "./Pages/siswa/konselingSiswaPrivatePage";
 
 // Guru Pages
 import JadwalGuruPage from "./Pages/guru/jadwalGuruPage";
@@ -96,7 +98,7 @@ const siswaRoutes = [
   },
   {
     path: "/dashboard-siswa/konseling/private",
-    element: <KonselingPrivatePage />,
+    element: <KonselingSiswaPrivatePage />,
   },
 ];
 
@@ -172,6 +174,8 @@ const router = createBrowserRouter([
   // Catch all unknown routes
   { path: "*", element: <Navigate to="/" replace /> },
 ]);
+
+Modal.setAppElement("#root");
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

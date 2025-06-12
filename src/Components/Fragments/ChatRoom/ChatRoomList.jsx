@@ -1,38 +1,59 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   fetchChatRoomsByConselor,
   fetchChatRoomsBySiswa,
+  deleteChatRoom,
 } from "../../../services/chatRoomService";
 import ChatRoomCard from "./ChatRoomCard";
 
-const ChatRoomList = ({ role, idUser, isPrivate = false, refreshKey }) => {
+const ChatRoomList = ({
+  role,
+  idUser,
+  isPrivate = false,
+  refreshKey,
+  onEdit,
+  onDeleted,
+}) => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadRooms = async () => {
-      try {
-        let data = [];
+  const loadRooms = useCallback(async () => {
+    setLoading(true);
+    try {
+      let data = [];
 
-        if (role === "conselor") {
-          data = await fetchChatRoomsByConselor(idUser);
-        } else if (role === "siswa") {
-          data = await fetchChatRoomsBySiswa(idUser);
-        }
-
-        const filtered = data.filter(
-          (room) => Boolean(room.is_private) === isPrivate
-        );
-        setRooms(filtered);
-      } catch (err) {
-        console.error("Gagal load chat room:", err);
-      } finally {
-        setLoading(false);
+      if (role === "conselor") {
+        data = await fetchChatRoomsByConselor(idUser);
+      } else if (role === "siswa") {
+        data = await fetchChatRoomsBySiswa(idUser);
       }
-    };
 
+      const filtered = data.filter(
+        (room) => Boolean(room.is_private) === isPrivate
+      );
+      setRooms(filtered);
+    } catch (err) {
+      console.error("Gagal load chat room:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [role, idUser, isPrivate]);
+
+  useEffect(() => {
     loadRooms();
-  }, [role, idUser, isPrivate, refreshKey]); // refreshKey ditambahkan
+  }, [loadRooms, refreshKey]);
+
+  const handleDelete = async (room) => {
+    const confirm = window.confirm("Yakin ingin menghapus chat room ini?");
+    if (!confirm) return;
+    try {
+      await deleteChatRoom(room.id);
+      onDeleted?.(); // kasih tahu parent buat refresh
+    } catch (err) {
+      console.error("Gagal hapus", err);
+      alert("Gagal hapus");
+    }
+  };
 
   if (loading) return <p className="text-center">Loading chat rooms...</p>;
 
@@ -44,9 +65,14 @@ const ChatRoomList = ({ role, idUser, isPrivate = false, refreshKey }) => {
     );
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="flex flex-col gap-4">
       {rooms.map((room) => (
-        <ChatRoomCard key={room.id} room={room} />
+        <ChatRoomCard
+          key={room.id}
+          room={room}
+          onEdit={onEdit}
+          onDelete={handleDelete}
+        />
       ))}
     </div>
   );
