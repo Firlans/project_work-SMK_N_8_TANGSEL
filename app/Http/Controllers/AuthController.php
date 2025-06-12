@@ -52,7 +52,11 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         try {
-            if (!$token = JWTAuth::attempt($credentials)) {
+            $token = JWTAuth::attempt($credentials);
+            
+            if (!$token) {
+                \Log::warning('Gagal login, credentials salah atau user tidak ditemukan.', $credentials);
+                
                 return response()->json(
                     [
                         'status' => 'fail',
@@ -61,7 +65,6 @@ class AuthController extends Controller
                     401
                 );
             }
-
             $user = auth()->user();
             $privilege = Privilege::where('id_user', $user->id)->first();
 
