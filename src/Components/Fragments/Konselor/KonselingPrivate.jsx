@@ -1,6 +1,8 @@
 import Cookies from "js-cookie";
-import ChatRoomList from "../ChatRoom/ChatRoomList";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ChatRoomList from "../ChatRoom/ChatRoomList";
+import ChatRoomEditForm from "../ChatRoom/ChatRoomEditForm";
 import { IoChevronBackSharp } from "react-icons/io5";
 
 const KonselingPrivate = () => {
@@ -8,8 +10,19 @@ const KonselingPrivate = () => {
   const privilege = JSON.parse(Cookies.get("userPrivilege") || "{}");
   const idConselor = privilege?.user_id || privilege?.id;
 
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editRoom, setEditRoom] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleRoomUpdated = () => {
+    setRefreshKey((k) => k + 1);
+    setShowEditModal(false);
+    setEditRoom(null);
+  };
+
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      {/* Tombol Kembali */}
       <div className="mb-6 flex items-center">
         <button
           onClick={() => navigate(-1)}
@@ -20,11 +33,31 @@ const KonselingPrivate = () => {
         </button>
       </div>
 
+      {/* Header */}
       <h1 className="text-2xl font-bold text-gray-800 mb-4">
         Daftar Chat Room Private
       </h1>
 
-      <ChatRoomList idConselor={idConselor} isPrivate />
+      {/* Daftar Chat Room */}
+      <ChatRoomList
+        role="conselor"
+        idUser={idConselor}
+        isPrivate={true}
+        refreshKey={refreshKey}
+        onEdit={(room) => {
+          setEditRoom(room);
+          setShowEditModal(true);
+        }}
+        onDeleted={() => setRefreshKey((k) => k + 1)}
+      />
+
+      {/* Modal Edit Chat Room */}
+      <ChatRoomEditForm
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        room={editRoom}
+        onUpdated={handleRoomUpdated}
+      />
     </div>
   );
 };
