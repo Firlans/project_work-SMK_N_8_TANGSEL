@@ -35,9 +35,19 @@ export const updateChatRoom = async (id, roomData) => {
 
 export const deleteChatRoom = async (id) => {
   try {
-    const res = await axiosClient.delete(`/chat-room/${id}`); // <--- INI SUDAH BENAR
+    const res = await axiosClient.delete(`/chat-room/${id}`);
     return res.data;
   } catch (error) {
     throw new Error("Failed to delete chat room");
   }
 }
+
+export const getChatMessages = async (roomId) => {
+  const res = await axiosClient.get(`/chat/room/${roomId}`);
+  return res.data;
+};
+
+export const sendMessage = async (data) => {
+  const res = await axiosClient.post("/chat/send", data);
+  return res.data;
+};
