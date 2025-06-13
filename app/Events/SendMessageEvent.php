@@ -33,7 +33,8 @@ class SendMessageEvent implements ShouldBroadcast
     public function broadcastWith(){
         return [
             'message'=> $this->message,
-            'sender' => $this->sender
+            'sender' => $this->sender,
+            'roomId' => $this->roomId
         ];
     }
 
