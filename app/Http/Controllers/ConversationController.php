@@ -109,7 +109,8 @@ class ConversationController extends Controller
                 return $this->handleNotFoundData($id_chat_room, 'chat room', 'id');
             }
 
-            $messages = ChatDetail::orderBy('created_at', 'desc')->paginate(20);
+            $messages = ChatDetail::where('id_chat_room', '=', $id_chat_room)
+            ->orderBy('created_at', 'desc')->paginate(20);
 
             return $this->handleReturnData([
                 'data' => $messages->items(),
