@@ -27,12 +27,12 @@ const KonselingSiswaPublic = () => {
   };
 
   return (
-    <div className="px-4 py-6 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      {/* Tombol Kembali */}
+    <div className="px-4 py-6 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      {/* Back Button */}
       <div className="mb-6 flex items-center">
         <button
           onClick={() => navigate(-1)}
-          className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm hover:bg-blue-700 transition"
         >
           <IoChevronBackSharp size={18} />
           <span>Kembali</span>
@@ -41,8 +41,8 @@ const KonselingSiswaPublic = () => {
 
       {/* Header dan Tombol Buat Chat Room */}
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">
-          Daftar Chat Room Public
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
+          Daftar Chat Room Private
         </h1>
         <button
           onClick={() => setShowCreateModal(true)}
@@ -52,7 +52,7 @@ const KonselingSiswaPublic = () => {
         </button>
       </div>
 
-      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6">
+      <div className="bg-white shadow-lg rounded-xl p-6">
         <ChatRoomList
           role="siswa"
           idUser={idSiswa}

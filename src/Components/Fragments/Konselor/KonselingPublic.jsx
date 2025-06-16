@@ -21,40 +21,45 @@ const KonselingPublic = () => {
   };
 
   return (
-    <div className="px-4 py-6 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div className="px-4 py-6 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      {/* Back Button */}
       <div className="mb-6 flex items-center">
         <button
           onClick={() => navigate(-1)}
-          className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm hover:bg-blue-700 transition"
         >
           <IoChevronBackSharp size={18} />
           <span>Kembali</span>
         </button>
       </div>
 
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">
+      {/* Heading */}
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
         Daftar Chat Room Publik
       </h1>
 
-      <ChatRoomList
-        role="conselor"
-        idUser={idConselor}
-        isPrivate={false}
-        refreshKey={refreshKey}
-        onEdit={(room) => {
-          setEditRoom(room);
-          setShowEditModal(true);
-        }}
-        onDeleted={() => setRefreshKey((k) => k + 1)}
-      />
+      {/* List */}
+      <div className="bg-white shadow-lg rounded-xl p-6">
+        <ChatRoomList
+          role="conselor"
+          idUser={idConselor}
+          isPrivate={false}
+          refreshKey={refreshKey}
+          onEdit={(room) => {
+            setEditRoom(room);
+            setShowEditModal(true);
+          }}
+          onDeleted={() => setRefreshKey((k) => k + 1)}
+        />
 
-      {/* Modal Edit Chat Room */}
-      <ChatRoomEditForm
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        room={editRoom}
-        onUpdated={handleRoomUpdated}
-      />
+        {/* Modal */}
+        <ChatRoomEditForm
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          room={editRoom}
+          onUpdated={handleRoomUpdated}
+        />
+      </div>
     </div>
   );
 };

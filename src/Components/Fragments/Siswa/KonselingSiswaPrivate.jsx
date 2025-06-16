@@ -27,12 +27,12 @@ const KonselingSiswaPrivate = () => {
   };
 
   return (
-    <div className="px-4 py-6 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      {/* Tombol Kembali */}
+    <div className="px-4 py-6 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      {/* Back Button */}
       <div className="mb-6 flex items-center">
         <button
           onClick={() => navigate(-1)}
-          className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm hover:bg-blue-700 transition"
         >
           <IoChevronBackSharp size={18} />
           <span>Kembali</span>
@@ -41,7 +41,7 @@ const KonselingSiswaPrivate = () => {
 
       {/* Header dan Tombol Buat Chat Room */}
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
           Daftar Chat Room Private
         </h1>
         <button
