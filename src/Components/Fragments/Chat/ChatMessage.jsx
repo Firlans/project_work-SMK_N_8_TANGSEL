@@ -3,8 +3,27 @@ const ChatMessage = ({ message, userId }) => {
 
   return (
     <div className={`my-2 flex ${isMine ? "justify-end" : "justify-start"}`}>
-      <div className={`px-4 py-2 rounded-lg ${isMine ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}>
-        {message.message}
+      <div
+        className={`px-4 py-2.5 max-w-[75%] shadow-sm
+          ${
+            isMine
+              ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl rounded-tr-sm"
+              : "bg-white text-gray-700 rounded-2xl rounded-tl-sm border border-gray-100"
+          }`}
+      >
+        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+          {message.message}
+        </p>
+        <span
+          className={`text-xs mt-1 block ${
+            isMine ? "text-blue-100" : "text-gray-400"
+          }`}
+        >
+          {new Date(message.created_at).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </span>
       </div>
     </div>
   );
