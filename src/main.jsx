@@ -63,6 +63,8 @@ import KonselingPage from "./Pages/konselor/konselingPage";
 import KoselingPuclicPage from "./Pages/konselor/konselingPublicPage";
 import KonselingPrivatePage from "./Pages/konselor/konselingPrivatePage";
 import KonselorPublicChatPage from "./Pages/konselor/konselorPublicChatPage";
+import SiswaPrivateChatPage from "./Pages/siswa/siswaPrivateChatPage";
+import KonselorPrivateChatPage from "./Pages/konselor/konselorPrivateChatPage";
 
 const adminDataRoutes = [
   { path: "/dashboard-admin/data-user", element: <DataUserPage /> },
@@ -106,6 +108,10 @@ const siswaRoutes = [
     path: "/dashboard-siswa/konseling/public/chat-room/:id",
     element: <SiswaPublicChatPage />,
   },
+  {
+    path: "/dashboard-siswa/konseling/private/chat-room/:id",
+    element: <SiswaPrivateChatPage />,
+  },
 ];
 
 const guruRoutes = [
@@ -135,6 +141,10 @@ const konselorRoutes = [
   {
     path: "/dashboard-konselor/konseling/public/chat-room/:id",
     element: <KonselorPublicChatPage />,
+  },
+  {
+    path: "/dashboard-konselor/konseling/private/chat-room/:id",
+    element: <KonselorPrivateChatPage />,
   },
 ];
 
