@@ -2,8 +2,11 @@ import { useEffect, useState, useCallback } from "react";
 import {
   fetchChatRoomsByConselor,
   fetchChatRoomsBySiswa,
+  fetchChatRoomByAccessCode,
   deleteChatRoom,
+  fetchLastMessage,
 } from "../../../services/chatRoomService";
+import { fetchAllStudents } from "../../../services/chatRoomService";
 import ChatRoomCard from "./ChatRoomCard";
 
 const ChatRoomList = ({
@@ -20,18 +23,47 @@ const ChatRoomList = ({
   const loadRooms = useCallback(async () => {
     setLoading(true);
     try {
-      let data = [];
+      let rawRooms = [];
 
       if (role === "conselor") {
-        data = await fetchChatRoomsByConselor(idUser);
+        const all = await fetchChatRoomsByConselor(idUser);
+        rawRooms = all.filter((r) => Boolean(r.is_private) === isPrivate);
       } else if (role === "siswa") {
-        data = await fetchChatRoomsBySiswa(idUser);
+        if (isPrivate) {
+          const accessCode = localStorage.getItem("chat_access_code");
+          if (!accessCode) {
+            console.warn("No access code found in localStorage.");
+            return setRooms([]);
+          }
+          const result = await fetchChatRoomByAccessCode(accessCode);
+          rawRooms = result?.data ? [result.data] : [];
+        } else {
+          const all = await fetchChatRoomsBySiswa(idUser);
+          rawRooms = all.filter((r) => Boolean(r.is_private) === false);
+        }
       }
 
-      const filtered = data.filter(
-        (room) => Boolean(room.is_private) === isPrivate
+      // Ambil semua siswa
+      const siswaList = await fetchAllStudents();
+      console.log("Siswa:", JSON.stringify(siswaList, null, 2));
+
+      // Enrich setiap room dengan pesan terakhir + nama siswa
+      const enrichedRooms = await Promise.all(
+        rawRooms.map(async (room) => {
+          const lastMessage = await fetchLastMessage(room.id);
+
+          // Temukan nama siswa berdasarkan user_id
+          const siswa = siswaList.find((s) => s.user_id === room.id_user_siswa);
+
+          return {
+            ...room,
+            lastMessage,
+            nama_siswa: siswa?.nama_lengkap ?? null, // null kalau gak ketemu
+          };
+        })
       );
-      setRooms(filtered);
+
+      setRooms(enrichedRooms);
     } catch (err) {
       console.error("Gagal load chat room:", err);
     } finally {
@@ -48,7 +80,7 @@ const ChatRoomList = ({
     if (!confirm) return;
     try {
       await deleteChatRoom(room.id);
-      onDeleted?.(); // kasih tahu parent buat refresh
+      onDeleted?.();
     } catch (err) {
       console.error("Gagal hapus", err);
       alert("Gagal hapus");
@@ -65,7 +97,7 @@ const ChatRoomList = ({
     );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       {rooms.map((room) => (
         <ChatRoomCard
           key={room.id}

@@ -42,7 +42,7 @@ const KonselingSiswaPublic = () => {
       {/* Header dan Tombol Buat Chat Room */}
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
-          Daftar Chat Room Private
+          Daftar Chat Room Public
         </h1>
         <button
           onClick={() => setShowCreateModal(true)}

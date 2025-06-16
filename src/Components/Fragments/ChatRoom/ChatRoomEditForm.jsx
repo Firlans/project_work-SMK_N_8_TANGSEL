@@ -4,15 +4,14 @@ import { updateChatRoom } from "../../../services/chatRoomService";
 
 const ChatRoomEditForm = ({ isOpen, onClose, room, onUpdated }) => {
   const [name, setName] = useState("");
-  const [isOpenRoom, setIsOpenRoom] = useState(1);
+  const [status, setStatus] = useState("Open");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (room) {
       setName(room.name || "");
-      setIsOpenRoom(room.is_open ? 1 : 0);
+      setStatus(room.status || "Open");
     }
-    console.log("Modal render, isOpen:", isOpen, "room:", room);
   }, [room]);
 
   const handleSubmit = async (e) => {
@@ -23,15 +22,15 @@ const ChatRoomEditForm = ({ isOpen, onClose, room, onUpdated }) => {
     try {
       await updateChatRoom(room.id, {
         name,
-        is_open: isOpenRoom,
+        status,
         id_user_guru: room.id_user_guru,
         id_user_siswa: room.id_user_siswa,
         is_private: room.is_private,
         access_code: room.access_code || "",
       });
 
-      onUpdated?.(); // refresh list
-      onClose(); // tutup modal
+      onUpdated?.();
+      onClose();
     } catch (err) {
       console.error("Gagal update chat room", err);
       alert("Gagal update");
@@ -55,19 +54,19 @@ const ChatRoomEditForm = ({ isOpen, onClose, room, onUpdated }) => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg"
-            required
+            disabled
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium">Status</label>
           <select
-            value={isOpenRoom}
-            onChange={(e) => setIsOpenRoom(Number(e.target.value))}
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg"
           >
-            <option value={1}>Open</option>
-            <option value={0}>Closed</option>
+            <option value="Open">Open</option>
+            <option value="Closed">Closed</option>
           </select>
         </div>
 

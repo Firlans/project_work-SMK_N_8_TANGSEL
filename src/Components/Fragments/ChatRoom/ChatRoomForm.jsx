@@ -15,50 +15,62 @@ const ChatRoomForm = ({
   const user = JSON.parse(Cookies.get("userPrivilege") || "{}");
   const idSiswa = user?.user_id || user?.id;
 
-  const [name, setName] = useState("");
-  const [selectedConselor, setSelectedConselor] = useState("");
-  const [accessCode, setAccessCode] = useState("");
-  const [conselors, setConselors] = useState([]);
+  const [roomName, setRoomName] = useState("");
+  const [selectedConselorId, setSelectedConselorId] = useState("");
+  const [counselors, setCounselors] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
 
-    const loadConselors = async () => {
+    const loadCounselors = async () => {
       try {
         const res = await fetchAllConselors();
-        setConselors(res.data);
+        setCounselors(res.data);
       } catch (err) {
         console.error("Gagal ambil konselor:", err);
       }
     };
 
-    loadConselors();
+    loadCounselors();
   }, [isOpen]);
+
+  const generateAccessCode = (length = 10) => {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    return Array.from({ length }, () =>
+      chars.charAt(Math.floor(Math.random() * chars.length))
+    ).join("");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!selectedConselor) return alert("Pilih konselor dulu!");
-    if (isPrivate && !accessCode) return alert("Masukkan access code!");
+    if (!roomName || !selectedConselorId) {
+      return alert("Isi semua form terlebih dahulu!");
+    }
 
     setLoading(true);
-    try {
-      const payload = {
-        name,
-        id_user_guru: selectedConselor,
-        is_private: isPrivate ? 1 : 0,
-        ...(isPrivate
-          ? { access_code: accessCode }
-          : { id_user_siswa: idSiswa }),
-      };
+    const accessCode = generateAccessCode();
+    if (isPrivate) {
+      localStorage.setItem("chat_access_code", accessCode);
+    }
 
+    const payload = {
+      name: roomName,
+      id_user_guru: selectedConselorId,
+      is_private: isPrivate,
+      ...(isPrivate
+        ? { access_code: accessCode }
+        : { id_user_siswa: idSiswa, access_code: accessCode }),
+    };
+
+    try {
       const res = await createChatRoom(payload);
       onRoomCreated?.(res.data);
       onClose();
     } catch (err) {
-      console.error("Gagal buat chat room", err);
-      alert("Gagal buat chat room");
+      console.error("Gagal buat chat room:", err);
+      alert("Gagal membuat chat room. Coba lagi nanti.");
     } finally {
       setLoading(false);
     }
@@ -80,42 +92,30 @@ const ChatRoomForm = ({
         <div>
           <label className="block text-sm font-medium">Nama Chat Room</label>
           <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={roomName}
+            onChange={(e) => setRoomName(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg"
             placeholder="Contoh: Konseling Pribadi"
+            required
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium">Pilih Konselor</label>
           <select
-            value={selectedConselor}
-            onChange={(e) => setSelectedConselor(e.target.value)}
+            value={selectedConselorId}
+            onChange={(e) => setSelectedConselorId(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg"
             required
           >
             <option value="">-- Pilih Konselor --</option>
-            {conselors.map((c) => (
+            {counselors.map((c) => (
               <option key={c.user_id} value={c.user_id}>
                 {c.nama}
               </option>
             ))}
           </select>
         </div>
-
-        {isPrivate && (
-          <div>
-            <label className="block text-sm font-medium">Access Code</label>
-            <input
-              value={accessCode}
-              onChange={(e) => setAccessCode(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg"
-              placeholder="Contoh: abcd1234"
-              required
-            />
-          </div>
-        )}
 
         <div className="flex justify-end gap-2">
           <button
