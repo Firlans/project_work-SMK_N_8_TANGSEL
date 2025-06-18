@@ -17,16 +17,32 @@ const AdminLayout = ({ children, defaultActivePage = "profile" }) => {
 
   return (
     <div className="flex min-h-screen bg-gray-50 relative">
-      <Sidebar
-        title="Dashboard Admin"
-        menuItems={adminMenuItems}
-        setActivePage={handleNavigation}
-        activePage={activePage}
-      />
-      <div className="flex-1 flex flex-col w-full lg:ml-0">
+      <div className="hidden lg:block w-64 flex-shrink-0">
+        {" "}
+        {/* Sidebar placeholder */}
+        <Sidebar
+          title="Dashboard Admin"
+          menuItems={adminMenuItems}
+          setActivePage={handleNavigation}
+          activePage={activePage}
+        />
+      </div>
+      <div className="lg:hidden">
+        {" "}
+        {/* Mobile sidebar */}
+        <Sidebar
+          title="Dashboard Admin"
+          menuItems={adminMenuItems}
+          setActivePage={handleNavigation}
+          activePage={activePage}
+        />
+      </div>
+      <main className="flex-1 flex flex-col min-w-0">
+        {" "}
+        {/* Added min-w-0 */}
         <Header />
         <div className="p-6 flex-1 overflow-auto">{children}</div>
-      </div>
+      </main>
     </div>
   );
 };
