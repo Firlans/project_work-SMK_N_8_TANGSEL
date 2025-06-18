@@ -9,120 +9,132 @@ import ChatInput from "./ChatInput";
 import ChatRoomHeader from "./ChatRoomHeader";
 import echo from "../../../utils/echo";
 import Cookies from "js-cookie";
+import { decryptMessage, encryptMessage } from "../../../utils/encryption";
+
+// Dekripsi aman (untuk pesan lama)
+const safeDecryptMessage = (msg, isPrivate) => {
+  if (!isPrivate) return msg.message;
+  try {
+    if (!msg.encrypted_message) return msg.message;
+    return decryptMessage(msg.encrypted_message);
+  } catch {
+    return msg.message;
+  }
+};
+
+// Ambil pesan dari real-time event
+const getMessageFromRealtimePayload = (e, isPrivate) => {
+  const msg = e.message;
+
+  if (!msg) return "";
+
+  const isObject =
+    typeof msg === "object" && (msg.encrypt_text || msg.plain_text);
+
+  if (isObject) {
+    if (isPrivate) {
+      try {
+        return decryptMessage(msg.encrypt_text);
+      } catch {
+        return msg.plain_text || "";
+      }
+    } else {
+      return msg.plain_text || "";
+    }
+  }
+
+  if (typeof msg === "string") return msg;
+
+  return "";
+};
 
 const ChatRoomDetail = ({ isPrivate = false }) => {
   const { id } = useParams();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
   const bottomRef = useRef(null);
   const user = JSON.parse(Cookies.get("userPrivilege") || "{}");
   const userId = user?.user_id || user?.id;
 
-  // Fungsi scroll ke bawah dengan debounce
   const scrollToBottom = useCallback(() => {
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 50);
-    return () => clearTimeout(timer);
   }, []);
 
-  // Fungsi untuk memuat pesan
+  // Ambil riwayat chat dari backend
   const fetchMessages = useCallback(async () => {
     if (!id) return;
-
     setLoading(true);
     setError(null);
 
     try {
-      const res = await getChatMessages(id, page);
+      const res = await getChatMessages(id, 1);
       const sorted = res.data.data
         .filter((msg) => msg.id_chat_room === parseInt(id))
-        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
+        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+        .map((msg) => ({
+          ...msg,
+          message: safeDecryptMessage(msg, isPrivate),
+        }));
       setMessages(sorted);
     } catch (err) {
-      console.error("❌ Gagal mengambil pesan:", err);
-      setError("Gagal memuat pesan. Silakan coba lagi.");
+      console.error("Gagal ambil pesan:", err);
+      setError("Gagal memuat pesan.");
     } finally {
       setLoading(false);
       scrollToBottom();
     }
-  }, [id, page, scrollToBottom]);
+  }, [id, isPrivate, scrollToBottom]);
 
-  // Setup websocket listener
+  // Real-time listener (Laravel Echo)
   useEffect(() => {
     if (!id) return;
-
     const channel = echo.private(`room.${id}`);
+    console.log("Subscribed to room:", `room.${id}`);
 
     channel.listen("SendMessageEvent", (e) => {
-      console.log("Pesan Terkirim:", JSON.stringify(e, null, 2));
+      console.log("Pesan real-time masuk:", e);
 
       const newMessage = {
         id: `realtime-${Date.now()}`,
-        message: e.message,
-        id_sender: e.sender.id,
+        id_sender: e.sender?.id,
         id_chat_room: e.roomId,
         created_at: new Date().toISOString(),
         sender: e.sender,
         pending: false,
+        message: getMessageFromRealtimePayload(e, isPrivate),
       };
 
       setMessages((prev) => {
-        // Cek duplikasi dengan lebih detail
         const isDuplicate = prev.some((msg) => {
-          const isDuplicateContent = msg.message === e.message;
-          const isSameSender = msg.id_sender === e.sender.id;
-          const isRecent =
-            Math.abs(new Date(msg.created_at) - new Date()) < 3000; // 3 detik
-          const isPendingMessage = msg.pending === true;
-
-          const duplicateCheck = {
-            content: isDuplicateContent,
-            sender: isSameSender,
-            recent: isRecent,
-            pending: isPendingMessage,
-          };
-
-          return (
-            isDuplicateContent && isSameSender && (isRecent || isPendingMessage)
+          const isSameSender = msg.id_sender === newMessage.id_sender;
+          const isSameMessage = msg.message === newMessage.message;
+          const timeDiff = Math.abs(
+            new Date(msg.created_at) - new Date(newMessage.created_at)
           );
+          return isSameSender && isSameMessage && timeDiff < 5000;
         });
-
-        if (isDuplicate) {
-          console.log("Duplicate message detected, skipping...");
-          return prev;
-        }
-
-        return [...prev, newMessage];
+        return isDuplicate ? prev : [...prev, newMessage];
       });
+
+      scrollToBottom();
     });
 
-    // Cleanup listener
     return () => {
-      console.log(`Cleaning up listener for room ${id}`);
       channel.stopListening("SendMessageEvent");
       echo.leave(`room.${id}`);
     };
-  }, [id]);
+  }, [id, isPrivate, scrollToBottom]);
 
-  // Load initial messages
-  useEffect(() => {
-    fetchMessages();
-  }, [fetchMessages]);
-
-  // Auto scroll when new messages arrive
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, scrollToBottom]);
-
-  // Handle send message dengan optimistic update
+  // Kirim pesan ke backend
   const handleSend = async (text) => {
     if (!text.trim()) return;
 
     const tempId = `tmp-${Date.now()}`;
+    const encrypted = isPrivate ? encryptMessage(text) : "";
+
     const tempMessage = {
       id: tempId,
       tempId,
@@ -134,28 +146,42 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
       pending: true,
     };
 
-    // Optimistic update
     setMessages((prev) => [...prev, tempMessage]);
     scrollToBottom();
 
     try {
-      const response = await sendMessage({
+      const payload = {
         id_chat_room: parseInt(id),
-        message: text,
         id_sender: userId,
         is_read: false,
-      });
+      };
 
-      // Update temp message with real data
-      if (response?.data) {
+      if (isPrivate) {
+        payload.message = "";
+        payload.encrypted_message = encrypted;
+      } else {
+        payload.message = text;
+      }
+
+      const res = await sendMessage(payload);
+
+      if (res?.data) {
         setMessages((prev) =>
           prev.map((msg) =>
-            msg.tempId === tempId ? { ...response.data, pending: false } : msg
+            msg.tempId === tempId
+              ? {
+                  ...res.data,
+                  tempId,
+                  pending: false,
+                  message: text,
+                  sender: user,
+                }
+              : msg
           )
         );
       }
     } catch (err) {
-      console.error("❌ Gagal kirim pesan:", err);
+      console.error("Gagal kirim pesan:", err);
       setMessages((prev) =>
         prev.map((msg) =>
           msg.tempId === tempId ? { ...msg, error: true } : msg
@@ -163,6 +189,15 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
       );
     }
   };
+
+  // Load awal
+  useEffect(() => {
+    fetchMessages();
+  }, [fetchMessages]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
 
   return (
     <div className="w-full max-w-4xl mx-auto h-[90vh] p-4 md:p-6 flex flex-col">

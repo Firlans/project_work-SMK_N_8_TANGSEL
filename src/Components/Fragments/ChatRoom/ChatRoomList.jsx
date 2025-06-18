@@ -43,9 +43,7 @@ const ChatRoomList = ({
         }
       }
 
-      // Ambil semua siswa
       const siswaList = await fetchAllStudents();
-      console.log("Siswa:", JSON.stringify(siswaList, null, 2));
 
       // Enrich setiap room dengan pesan terakhir + nama siswa
       const enrichedRooms = await Promise.all(
@@ -58,7 +56,7 @@ const ChatRoomList = ({
           return {
             ...room,
             lastMessage,
-            nama_siswa: siswa?.nama_lengkap ?? null, // null kalau gak ketemu
+            nama_siswa: siswa?.nama_lengkap ?? null,
           };
         })
       );
