@@ -7,142 +7,54 @@ import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import Cookies from "js-cookie";
 
 const DataSiswa = () => {
-  const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState([]);
   const [kelas, setKelas] = useState({});
   const [selectedKelas, setSelectedKelas] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [userPrivilege, setUserPrivilege] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState({ text: "", type: "" });
+  const [selectedSiswa, setSelectedSiswa] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedSiswa, setSelectedSiswa] = useState(null);
-  const [message, setMessage] = useState({ text: "", type: "" });
-  const [userPrivilege, setUserPrivilege] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+
+  useEffect(() => {
+    fetchData();
+    const privilegeData = Cookies.get("userPrivilege");
+    if (privilegeData) {
+      try {
+        setUserPrivilege(JSON.parse(privilegeData));
+      } catch (err) {
+        console.error("Failed to parse privilege:", err);
+      }
+    }
+  }, []);
+
+  const isSuperAdmin = () => userPrivilege?.is_superadmin === 1;
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      // Fetch students
-      const studentsResponse = await axiosClient.get("/siswa");
-      setStudents(studentsResponse.data.data);
-      console.log("[FetchData] Students:", studentsResponse.data.data);
-
-      // Fetch kelas and store the full kelas objects
-      const kelasResponse = await axiosClient.get("/kelas");
+      const [siswaRes, kelasRes] = await Promise.all([
+        axiosClient.get("/siswa"),
+        axiosClient.get("/kelas"),
+      ]);
+      setStudents(siswaRes.data.data);
       const kelasMap = {};
-      kelasResponse.data.data.forEach((kelas) => {
-        kelasMap[kelas.id] = kelas;
-      });
+      kelasRes.data.data.forEach((k) => (kelasMap[k.id] = k));
       setKelas(kelasMap);
-      // console.log("[FetchData] Kelas Map:", kelasMap);
-    } catch (error) {
-      console.error("[FetchData] Error:", error);
+    } catch (err) {
+      console.error("Fetch error:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    // Ambil dan parse privilege dari cookies
-    const privilegeData = Cookies.get("userPrivilege");
-    console.log("Cookie privilege data:", privilegeData);
-
-    if (privilegeData) {
-      try {
-        const parsedPrivilege = JSON.parse(privilegeData);
-        console.log("Parsed privilege:", parsedPrivilege);
-        setUserPrivilege(parsedPrivilege);
-      } catch (error) {
-        console.error("Error parsing privilege:", error);
-      }
-    }
-
-    // Panggil fetchUsers
-    fetchData();
-  }, []);
-
-  // Fungsi untuk mengecek apakah user adalah superadmin
-  const isSuperAdmin = () => {
-    if (!userPrivilege) {
-      console.log("userPrivilege is null");
-      return false;
-    }
-    const isSuperAdmin = userPrivilege.is_superadmin === 1;
-    return isSuperAdmin;
-  };
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
-  // Sort students by name with nama_lengkap atau nis
-  const sortedStudents = [...students]
-    .filter(
-      (student) =>
-        student.nama_lengkap
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        student.nis.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (!a || !b || !sortConfig.key) return 0;
-      const aValue = a[sortConfig.key]?.toString().toLowerCase() || "";
-      const bValue = b[sortConfig.key]?.toString().toLowerCase() || "";
-      if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
-      return 0;
-    });
-
-  // console.log("[Sorting] Sorted Students:", sortedStudents);
-
-  // Filter students based on selected kelas with id_kelas
-  const filteredStudents =
-    selectedKelas === "all"
-      ? sortedStudents
-      : sortedStudents.filter(
-          (student) => student && student.id_kelas === parseInt(selectedKelas)
-        );
-  // console.log("[Filtering] Filtered Students:", filteredStudents);
-  // console.log("[Filtering] Selected Kelas:", selectedKelas);
-
-  // Sort kelas by nama_kelas
-  const sortedKelas = Object.values(kelas).sort((a, b) => {
-    if (!a || !b) return 0;
-    return a.nama_kelas.localeCompare(b.nama_kelas);
-  });
-  // console.log("[Sorting] Sorted Kelas:", sortedKelas);
-
-  const studentsPerPage = 25;
-  const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
-  const paginatedStudents = filteredStudents.slice(
-    (currentPage - 1) * studentsPerPage,
-    currentPage * studentsPerPage
-  );
-
   const handleEdit = (siswa) => {
-    console.log("[Edit] Selected Siswa:", siswa);
     setSelectedSiswa(siswa);
     setIsEditModalOpen(true);
-  };
-
-  const handleUpdate = async (formData) => {
-    console.log("[Update] Form Data:", formData);
-    try {
-      const response = await axiosClient.put(`/siswa/${formData.id}`, formData);
-      console.log("[Update] Response:", response.data);
-      if (response.data.status === "success") {
-        const studentsResponse = await axiosClient.get("/siswa");
-        setStudents(studentsResponse.data.data);
-        setIsEditModalOpen(false);
-        setSelectedSiswa(null);
-        setMessage({ text: "Data berhasil diupdate!", type: "success" });
-      }
-    } catch (error) {
-      console.error("[Update] Error:", error);
-      setMessage({ text: "Gagal mengupdate data!", type: "error" });
-    }
-    setTimeout(() => setMessage({ text: "", type: "" }), 3000);
   };
 
   const handleDetail = (siswa) => {
@@ -150,75 +62,101 @@ const DataSiswa = () => {
     setIsDetailModalOpen(true);
   };
 
+  const handleUpdate = async (formData) => {
+    try {
+      const res = await axiosClient.put(`/siswa/${formData.id}`, formData);
+      if (res.data.status === "success") {
+        await fetchData();
+        setIsEditModalOpen(false);
+        setMessage({ text: "Data berhasil diperbarui!", type: "success" });
+      }
+    } catch (err) {
+      setMessage({ text: "Gagal memperbarui data.", type: "error" });
+    }
+    setTimeout(() => setMessage({ text: "", type: "" }), 3000);
+  };
+
+  // Filter & sort
+  const filtered = students
+    .filter(
+      (s) =>
+        s.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.nis.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .filter(
+      (s) => selectedKelas === "all" || s.id_kelas === parseInt(selectedKelas)
+    );
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (!sortConfig.key) return 0;
+    const aVal = a[sortConfig.key]?.toString().toLowerCase() ?? "";
+    const bVal = b[sortConfig.key]?.toString().toLowerCase() ?? "";
+    return sortConfig.direction === "asc"
+      ? aVal.localeCompare(bVal)
+      : bVal.localeCompare(aVal);
+  });
+
+  const itemsPerPage = 20;
+  const totalPages = Math.ceil(sorted.length / itemsPerPage);
+  const paginated = sorted.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  if (loading) return <LoadingSpinner />;
+
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
+    <div className="bg-white p-6 rounded-xl shadow-md">
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Data Siswa</h2>
+
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <input
+            type="text"
+            placeholder="Cari NIS / Nama"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border p-2 rounded-md w-full md:w-1/2"
+          />
+
+          <select
+            value={selectedKelas}
+            onChange={(e) => setSelectedKelas(e.target.value)}
+            className="border p-2 rounded-md w-full md:w-1/4"
+          >
+            <option value="all">Semua Kelas</option>
+            {Object.values(kelas)
+              .sort((a, b) => a.nama_kelas.localeCompare(b.nama_kelas))
+              .map((k) => (
+                <option key={k.id} value={k.id}>
+                  {k.nama_kelas}
+                </option>
+              ))}
+          </select>
+        </div>
+      </div>
+
       {message.text && (
         <div
-          className={`mb-4 p-4 rounded ${
+          className={`p-3 mb-4 rounded-md ${
             message.type === "success"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
           }`}
         >
           {message.text}
         </div>
       )}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Data Siswa</h2>
-        <div className="w-64">
-          <select
-            className="w-full p-2 border rounded-md"
-            value={selectedKelas}
-            onChange={(e) => setSelectedKelas(e.target.value)}
-          >
-            <option value="all">Semua Kelas</option>
-            {sortedKelas.map((kelas) => (
-              <option key={kelas.id} value={kelas.id}>
-                {kelas.nama_kelas}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div className="flex justify-between items-center mb-4">
-        <input
-          type="text"
-          placeholder="Cari NIS atau Nama"
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setCurrentPage(1);
-          }}
-          className="border p-2 rounded-md w-1/2"
-        />
-        <div>
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 border rounded mr-2 disabled:opacity-50"
-          >
-            Prev
-          </button>
-          <span>
-            Halaman {currentPage} dari {totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded ml-2 disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full table-auto">
           <thead>
-            <tr className="bg-gray-50">
+            <tr className="bg-gray-100 text-left text-sm text-gray-600">
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                className="p-3 cursor-pointer"
                 onClick={() =>
                   setSortConfig((prev) => ({
                     key: "nis",
@@ -232,7 +170,7 @@ const DataSiswa = () => {
                 NIS
               </th>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                className="p-3 cursor-pointer"
                 onClick={() =>
                   setSortConfig((prev) => ({
                     key: "nama_lengkap",
@@ -243,45 +181,34 @@ const DataSiswa = () => {
                   }))
                 }
               >
-                Nama Siswa
+                Nama Lengkap
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Kelas
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Aksi
-              </th>
+              <th className="p-3">Kelas</th>
+              <th className="p-3">Aksi</th>
             </tr>
           </thead>
-
-          <tbody className="divide-y divide-gray-200">
-            {paginatedStudents.length > 0 ? (
-              paginatedStudents.map((student) => (
-                <tr
-                  key={student.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">{student.nis}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {student.nama_lengkap}
+          <tbody>
+            {paginated.length > 0 ? (
+              paginated.map((siswa) => (
+                <tr key={siswa.id} className="border-b hover:bg-gray-50">
+                  <td className="p-3">{siswa.nis}</td>
+                  <td className="p-3">{siswa.nama_lengkap}</td>
+                  <td className="p-3">
+                    {kelas[siswa.id_kelas]?.nama_kelas || "-"}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {kelas[student.id_kelas]?.nama_kelas || "-"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap space-x-2">
+                  <td className="p-3 flex gap-2 items-center">
                     <button
-                      onClick={() => handleDetail(student)}
+                      onClick={() => handleDetail(siswa)}
                       className="text-blue-500 hover:text-blue-700"
                     >
                       <FaEye />
                     </button>
                     {!isSuperAdmin() && (
                       <button
-                        onClick={() => handleEdit(student)}
-                        className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
-                        aria-label="Edit user"
+                        onClick={() => handleEdit(siswa)}
+                        className="text-yellow-500 hover:text-yellow-700"
                       >
-                        <FaEdit className="w-4 h-4" />
+                        <FaEdit />
                       </button>
                     )}
                   </td>
@@ -289,14 +216,38 @@ const DataSiswa = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
-                  Tidak ada Data Siswa
+                <td colSpan="4" className="p-4 text-center text-gray-500">
+                  Tidak ada data siswa.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6 gap-2">
+          {[...Array(totalPages)].map((_, index) => {
+            const page = index + 1;
+            return (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 rounded ${
+                  currentPage === page
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-700"
+                } hover:bg-blue-600 hover:text-white transition-colors`}
+              >
+                {page}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Modal */}
       <EditSiswa
         isOpen={isEditModalOpen}
         onClose={() => {
