@@ -169,8 +169,6 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
   };
 
   // Handle submit
-  // Handle submit
-  // Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -179,15 +177,14 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
     }
 
     try {
-      // Pastikan privilege untuk guru disertakan semua yang dicentang
       const guruPrivileges =
         formData.profile === "guru"
           ? {
               is_superadmin: false,
               is_admin: privileges.is_admin,
-              is_guru: true, // guru selalu true
-              is_siswa: false, // guru tidak bisa jadi siswa
-              is_conselor: privileges.is_conselor, // sesuai checkbox
+              is_guru: true,
+              is_siswa: false,
+              is_conselor: privileges.is_conselor,
             }
           : {
               is_superadmin: false,
@@ -197,20 +194,29 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
               is_conselor: false,
             };
 
+      // Buat salinan data yang akan dikirim
       const dataToSubmit = {
         ...formData,
         privileges: guruPrivileges,
       };
 
-      console.log("Data privileges yang akan dikirim:", guruPrivileges);
-      console.log("Data lengkap yang akan dikirim:", dataToSubmit);
+      if (mode === "edit" && formData.profile === "siswa") {
+        // Jika NISN tidak berubah, hapus dari data yang dikirim
+        if (user.siswa?.nisn === formData.data.nisn) {
+          delete dataToSubmit.data.nisn;
+        }
+        // Jika NIS tidak berubah, hapus dari data yang dikirim
+        if (user.siswa?.nis === formData.data.nis) {
+          delete dataToSubmit.data.nis;
+        }
+      }
+
+      console.log("Data yang akan dikirim:", dataToSubmit);
 
       let response;
       if (mode === "create") {
-        console.log("Membuat user baru...");
         response = await axiosClient.post("/user", dataToSubmit);
       } else {
-        console.log("Mengupdate user dengan ID:", user.id);
         response = await axiosClient.put(`/user/${user.id}`, dataToSubmit);
       }
 
