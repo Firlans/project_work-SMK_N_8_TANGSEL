@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa";
 import { SiGoogleclassroom } from "react-icons/si";
 import { GrSchedules } from "react-icons/gr";
-import { MdOutlineReport } from "react-icons/md";
+import { MdFamilyRestroom, MdOutlineReport } from "react-icons/md";
 import { FiAward } from "react-icons/fi";
 
 export const adminMenuItems = [
@@ -17,6 +17,7 @@ export const adminMenuItems = [
   { id: "teachers", label: "Data Guru", icon: <FaChalkboardTeacher /> },
   { id: "counselor", label: "Data Konselor", icon: <FaChalkboardTeacher /> },
   { id: "students", label: "Data Siswa", icon: <FaUserGraduate /> },
+  { id: "parents", label: "Data Wali Murid", icon: <MdFamilyRestroom /> },
   { id: "classes", label: "Data Kelas", icon: <SiGoogleclassroom /> },
   { id: "subjects", label: "Mata Pelajaran", icon: <FaBookOpen /> },
   {
@@ -32,6 +33,7 @@ export const adminPageRoutes = {
   profile: "/dashboard-admin",
   users: "/dashboard-admin/data-user",
   students: "/dashboard-admin/data-siswa",
+  parents: "/dashboard-admin/data-wali-murid",
   teachers: "/dashboard-admin/data-guru",
   counselor: "/dashboard-admin/data-konselor",
   admin: "/dashboard-admin/data-admin",

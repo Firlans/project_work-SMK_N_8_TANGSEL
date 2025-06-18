@@ -40,6 +40,7 @@ import DataPertemuanPage from "./Pages/admin/dataPertemuanPage";
 import DataPresensiPage from "./Pages/admin/dataPresensiPage";
 import DataPrestasiPage from "./Pages/admin/dataPrestasiPage";
 import DataPelanggaranPage from "./Pages/admin/dataPelanggaranPage";
+import DataWaliMuridPage from "./Pages/admin/dataWaliMuridPage";
 
 // Siswa Pages
 import JadwalSiswaPage from "./Pages/siswa/jadwalSiswaPage";
@@ -72,6 +73,7 @@ const adminDataRoutes = [
   { path: "/dashboard-admin/data-guru", element: <DataGuruPage /> },
   { path: "/dashboard-admin/data-konselor", element: <DataKonselorPage /> },
   { path: "/dashboard-admin/data-siswa", element: <DataSiswaPage /> },
+  { path: "/dashboard-admin/data-wali-murid", element: <DataWaliMuridPage /> },
   { path: "/dashboard-admin/data-kelas", element: <DataKelasPage /> },
   { path: "/dashboard-admin/data-mapel", element: <DataMapelPage /> },
   { path: "/dashboard-admin/data-jadwal", element: <DataJadwalPage /> },
