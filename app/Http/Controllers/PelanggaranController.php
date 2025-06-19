@@ -48,12 +48,6 @@ class PelanggaranController extends Controller
     {
         try {
             $pelanggaran = Pelanggaran::where('terlapor', $id)->get();
-            if ($pelanggaran->isEmpty()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Pelanggaran not found'
-                ], 404);
-            }
             return response()->json([
                 'status' => 'success',
                 'message' => 'Pelanggaran retrieved successfully',
@@ -67,12 +61,6 @@ class PelanggaranController extends Controller
     {
         try {
             $pelanggaran = Pelanggaran::where('pelapor', $id)->get();
-            if ($pelanggaran->isEmpty()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Pelanggaran not found'
-                ], 404);
-            }
             return response()->json([
                 'status' => 'success',
                 'message' => 'Pelanggaran retrieved successfully',
