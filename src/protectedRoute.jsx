@@ -1,26 +1,31 @@
 import { Navigate, Outlet } from "react-router-dom";
-import axiosClient from "./axiosClient";
 import Cookies from "js-cookie";
+import axiosClient from "./axiosClient";
 import { isTokenExpired } from "./utils/jwt";
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const token = Cookies.get("token");
-  const role = Cookies.get("userRole"); // Simpan role saat login
+  const role = Cookies.get("userRole");
+  const asSiswa = Cookies.get("as_siswa") === "true";
 
   if (!token || isTokenExpired(token)) {
-    // Jika token tidak ada atau sudah expired, hapus token dan role dari cookies
     Cookies.remove("token");
     Cookies.remove("userRole");
-    return <Navigate to="/unauthorized" replace />; // Redirect ke halaman login jika belum login
+    Cookies.remove("as_siswa");
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  // Orang tua boleh masuk jika ke route siswa dan as_siswa true
+  if (role === "orang_tua" && asSiswa && allowedRoles.includes("siswa")) {
+    axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    return <Outlet />;
   }
 
   if (!allowedRoles.includes(role)) {
-    return <Navigate to="/unauthorized" replace />; // Redirect jika role tidak sesuai
+    return <Navigate to="/unauthorized" replace />;
   }
 
-  // Set token ke axios (jaga-jaga jika hilang saat refresh)
   axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
   return <Outlet />;
 };
 

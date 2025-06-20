@@ -66,6 +66,8 @@ import KonselingPrivatePage from "./Pages/konselor/konselingPrivatePage";
 import KonselorPublicChatPage from "./Pages/konselor/konselorPublicChatPage";
 import SiswaPrivateChatPage from "./Pages/siswa/siswaPrivateChatPage";
 import KonselorPrivateChatPage from "./Pages/konselor/konselorPrivateChatPage";
+import OrangTuaForm from "./Pages/orang_tua/OrangTuaForm";
+import OrangTuaRedirect from "./Pages/orang_tua/OrangTuaRedirect";
 
 const adminDataRoutes = [
   { path: "/dashboard-admin/data-user", element: <DataUserPage /> },
@@ -158,6 +160,8 @@ const router = createBrowserRouter([
   { path: "/login-admin", element: <LoginAdmin /> },
   { path: "/login-konselor", element: <LoginKonselor /> },
   { path: "/unauthorized", element: <Unauthorized /> },
+  { path: "/login-wali-murid", element: <OrangTuaForm /> },
+  { path: "/login/orang-tua", element: <OrangTuaRedirect /> },
 
   // Protected Dashboards with nested routes
   {
