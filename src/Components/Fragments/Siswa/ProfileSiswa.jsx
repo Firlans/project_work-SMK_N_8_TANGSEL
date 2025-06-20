@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import Button from "../../Elements/Button/index.jsx";
 import { formatTanggal } from "../../../utils/dateFormatter.js";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner.jsx";
+import useReadOnlyRole from "../../../hooks/useReadOnlyRole.js";
+import Cookies from "js-cookie";
 
 const ProfileSiswa = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -14,6 +16,7 @@ const ProfileSiswa = () => {
     message: "",
     type: "",
   });
+  const isReadOnly = useReadOnlyRole();
 
   // Fetch data profil dari backend saat pertama kali komponen dimuat
   useEffect(() => {
@@ -22,6 +25,14 @@ const ProfileSiswa = () => {
         const response = await axiosClient.get("/profile"); // Sesuaikan endpoint backend
         console.log("Data Profile:", response.data);
         setProfileData(response.data); // Simpan data dari backend
+        // SET COOKIES user_id dan id_siswa AGAR BISA DIPAKAI KOMPONEN LAIN
+        const profile = response.data.data;
+        if (profile?.user_id) {
+          Cookies.set("user_id", profile.user_id, { path: "/" });
+        }
+        if (profile?.id) {
+          Cookies.set("id_siswa", profile.id, { path: "/" });
+        }
         setLoading(false);
       } catch (error) {
         if (
@@ -40,6 +51,7 @@ const ProfileSiswa = () => {
   }, []);
 
   const handleEdit = () => {
+    if (isReadOnly) return;
     if (profileData && profileData.data) {
       console.log("HANDLE EDIT, profileData.data:", profileData.data);
       setEditedData({ ...profileData.data });
@@ -129,14 +141,15 @@ const ProfileSiswa = () => {
           <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
             Profile Siswa
           </h2>
-          {!isEditing ? (
+          {!isEditing && !isReadOnly && (
             <Button
               onClick={handleEdit}
               className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
             >
               Edit Profile
             </Button>
-          ) : (
+          )}
+          {isEditing && (
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <Button
                 onClick={() => {
@@ -147,12 +160,15 @@ const ProfileSiswa = () => {
               >
                 Cancel
               </Button>
-              <Button
-                onClick={handleSave}
-                className="w-full sm:w-auto px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200"
-              >
-                Save
-              </Button>
+              {/* Tombol save hanya untuk siswa, bukan wali murid */}
+              {!isReadOnly && (
+                <Button
+                  onClick={handleSave}
+                  className="w-full sm:w-auto px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200"
+                >
+                  Save
+                </Button>
+              )}
             </div>
           )}
         </div>
@@ -201,6 +217,12 @@ const ProfileSiswa = () => {
             />
           </div>
         </div>
+        {/* Pesan info jika read only */}
+        {isReadOnly && (
+          <div className="mt-4 text-sm text-gray-500">
+            Anda login sebagai wali murid, hanya dapat melihat data.
+          </div>
+        )}
       </div>
     </div>
   );
