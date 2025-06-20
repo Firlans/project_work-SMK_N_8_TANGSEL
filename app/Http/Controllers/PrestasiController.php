@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\Email;
 use App\Models\Prestasi;
-use App\Models\Siswa;
 use App\Traits\ApiResponseHandler;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use function PHPUnit\Framework\isNumeric;
 
 class PrestasiController extends Controller
 {
@@ -96,6 +93,41 @@ class PrestasiController extends Controller
 
             $prestasi = Prestasi::create($data);
 
+            if (isset($data['status']) && $data['status'] === 'disetujui') {
+                $siswa = Prestasi::select(
+                    'siswa.nama_lengkap',
+                    'users.email',
+                    'wali_murid.email as email_orang_tua',
+                    'wali_murid.nama_lengkap as nama_orang_tua'
+                )
+                    ->leftJoin('siswa', 'siswa.id', '=', 'prestasi.siswa_id')
+                    ->leftJoin('wali_murid', 'wali_murid.id_siswa', '=', 'siswa.id')
+                    ->leftJoin('users', 'users.id', '=', 'siswa.user_id')
+                    ->where('prestasi.id', $prestasi->id)
+                    ->first();
+
+                if ($siswa) {
+                    $parentName = $siswa->nama_orang_tua ?? 'Orang Tua/Wali';
+                    $studentName = $siswa->nama_lengkap ?? '-';
+                    $achievementDate = $prestasi->created_at->format('Y-m-d');
+                    $achievementTitle = $prestasi->nama_prestasi ?? '-';
+                    $description = $prestasi->deskripsi ?? '-';
+
+                    Mail::to($siswa->email)
+                        ->cc($siswa->email_orang_tua)
+                        ->send(new \App\Mail\Prestasi(
+                            $parentName,
+                            $studentName,
+                            $achievementDate,
+                            $achievementTitle,
+                            $description
+                        ));
+
+                } else {
+                    \Log::warning("Data siswa tidak ditemukan untuk prestasi ID: {$prestasi->id}");
+                }
+            }
+
             return $this->handleCreated($prestasi, 'Prestasi');
         } catch (\Exception $e) {
             return $this->handleError($e, 'createPrestasi');
@@ -128,16 +160,39 @@ class PrestasiController extends Controller
             }
 
             $prestasi->update($data);
-            if ($data['status'] === 'disetujui') {
-
-                $siswa = Prestasi::select('siswa.nama_lengkap', 'users.email')
+            if (isset($data['status']) && $data['status'] === 'disetujui') {
+                $siswa = Prestasi::select([
+                    'siswa.nama_lengkap',
+                    'users.email',
+                    'wali_murid.email as email_orang_tua',
+                    'wali_murid.nama_lengkap as nama_orang_tua'
+                ])
                     ->leftJoin('siswa', 'siswa.id', '=', 'prestasi.siswa_id')
+                    ->leftJoin('wali_murid', 'wali_murid.id_siswa', '=', 'siswa.id')
                     ->leftJoin('users', 'users.id', '=', 'siswa.user_id')
-                    ->where('siswa.id', '=', $prestasi->siswa_id)
+                    ->where('prestasi.id', $prestasi->id)
                     ->first();
 
-                \Log::info('email tujuan : ' . json_encode($siswa));
-                $send = Mail::to($siswa->email)->send(new Email($siswa->nama_lengkap));
+                if ($siswa) {
+                    $parentName = $siswa->nama_orang_tua ?? 'Orang Tua/Wali';
+                    $studentName = $siswa->nama_lengkap ?? '-';
+                    $achievementDate = $prestasi->created_at->format('Y-m-d');
+                    $achievementTitle = $prestasi->nama_prestasi ?? '-';
+                    $description = $prestasi->deskripsi ?? '-';
+
+                    \Mail::to($siswa->email)
+                        ->cc($siswa->email_orang_tua)
+                        ->send(new \App\Mail\Prestasi(
+                            $parentName,
+                            $studentName,
+                            $achievementDate,
+                            $achievementTitle,
+                            $description
+                        ));
+
+                } else {
+                    \Log::warning("Data siswa tidak ditemukan untuk prestasi ID: {$prestasi->id}");
+                }
             }
             return $this->handleUpdated($prestasi, 'Prestasi');
         } catch (\Exception $e) {

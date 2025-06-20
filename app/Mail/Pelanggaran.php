@@ -16,7 +16,6 @@ class Pelanggaran extends Mailable
     public string $parentName;
     public string $studentName;
     public string $violationDate;
-    public string $violationType;
     public string $description;
 
     /**
@@ -27,7 +26,6 @@ class Pelanggaran extends Mailable
         $this->parentName = $parentName;
         $this->studentName = $studentName;
         $this->violationDate = $violationDate;
-        $this->violationType = $violationType;
         $this->description = $description;
     }
 
@@ -47,12 +45,11 @@ class Pelanggaran extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.Pelanggaran',
+            view: 'mails.Pelanggaran',
             with: [
                 'parentName' => $this->parentName,
                 'studentName' => $this->studentName,
                 'violationDate' => $this->violationDate,
-                'violationType' => $this->violationType,
                 'description' => $this->description,
             ],
         );

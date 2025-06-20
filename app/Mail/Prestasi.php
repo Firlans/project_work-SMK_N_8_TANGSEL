@@ -16,7 +16,6 @@ class Prestasi extends Mailable
     public string $parentName;
     public string $studentName;
     public string $achievementDate;
-    public string $achievementType;
     public string $achievementTitle;
     public string $description;
 
@@ -27,14 +26,12 @@ class Prestasi extends Mailable
         string $parentName,
         string $studentName,
         string $achievementDate,
-        string $achievementType,
         string $achievementTitle,
         string $description
     ) {
         $this->parentName = $parentName;
         $this->studentName = $studentName;
         $this->achievementDate = $achievementDate;
-        $this->achievementType = $achievementType;
         $this->achievementTitle = $achievementTitle;
         $this->description = $description;
     }
@@ -55,12 +52,11 @@ class Prestasi extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.Prestasi',
+            view: 'mails.Prestasi',
             with: [
                 'parentName' => $this->parentName,
                 'studentName' => $this->studentName,
                 'achievementDate' => $this->achievementDate,
-                'achievementType' => $this->achievementType,
                 'achievementTitle' => $this->achievementTitle,
                 'description' => $this->description,
             ],

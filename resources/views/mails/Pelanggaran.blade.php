@@ -49,8 +49,7 @@
         </p>
 
         <div class="violation-details">
-            <p><strong>Jenis Pelanggaran:</strong> {{ $violationType }}</p>
-            <p><strong>Deskripsi:</strong> {{ $description }}</p>
+            <p><strong>Deskripsi Pelanggaran:</strong> {{ $description }}</p>
         </div>
 
         <p>

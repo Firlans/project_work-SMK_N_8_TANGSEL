@@ -46,8 +46,7 @@
 
         <p>
             Dengan bangga kami informasikan bahwa siswa atas nama <strong>{{ $studentName }}</strong> 
-            telah meraih prestasi dalam bidang <strong>{{ $achievementType }}</strong> 
-            pada tanggal <strong>{{ \Carbon\Carbon::parse($achievementDate)->translatedFormat('d F Y') }}</strong>.
+            telah meraih prestasi pada tanggal <strong>{{ \Carbon\Carbon::parse($achievementDate)->translatedFormat('d F Y') }}</strong>.
         </p>
 
         <div class="achievement-details">

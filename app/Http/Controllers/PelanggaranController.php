@@ -109,7 +109,7 @@ class PelanggaranController extends Controller
 
             // Handle both form-data and raw JSON
             $data = $request->isJson() ? $request->json()->all() : $request->all();
-            $data = array_filter($data, function($key) {
+            $data = array_filter($data, function ($key) {
                 return !in_array($key, ['bukti_gambar', '_method']);
             }, ARRAY_FILTER_USE_KEY);
 
@@ -132,6 +132,37 @@ class PelanggaranController extends Controller
 
             // Update pelanggaran
             $pelanggaran->update($data);
+
+            if (isset($data['status']) && $data['status'] === 'proses') {
+                $siswa = Pelanggaran::select()
+                    ->leftJoin('siswa', 'siswa.id', '=', 'pelanggaran.terlapor')
+                    ->leftJoin('wali_murid', 'wali_murid.id_siswa', '=', 'siswa.id')
+                    ->leftJoin('users', 'users.id', '=', 'siswa.user_id')
+                    ->where('pelanggaran.id', $pelanggaran->id)
+                    ->first([
+                        'siswa.nama_lengkap',
+                        'users.email',
+                        'wali_murid.email as email_orang_tua',
+                        'wali_murid.nama_lengkap as nama_orang_tua'
+                    ]);
+                if ($siswa) {
+                    $parentName = $siswa->nama_orang_tua ?? 'Orang Tua/Wali';
+                    $studentName = $siswa->nama_lengkap ?? '-';
+                    $violationDate = $pelanggaran->created_at->format('Y-m-d');
+                    $violationTitle = $pelanggaran->nama_pelanggaran ?? '-';
+                    $description = $pelanggaran->deskripsi ?? '-';
+
+                    \Mail::to($siswa->email)
+                        ->cc($siswa->email_orang_tua)
+                        ->send(new \App\Mail\Pelanggaran(
+                            $parentName,
+                            $studentName,
+                            $violationDate,
+                            $violationTitle,
+                            $description
+                        ));
+                }
+            }
 
             return response()->json([
                 'status' => 'success',
