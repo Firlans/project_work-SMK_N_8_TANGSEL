@@ -3,10 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { siswaMenuItems, siswaPageRoutes } from "../../configs/siswaNavigation";
 import Sidebar from "../Elements/Sidebar/Sidebar";
 import Header from "../Elements/Header/Index";
+import useReadOnlyRole from "../../hooks/useReadOnlyRole";
 
 const SiswaLayout = ({ children, defaultActivePage = "profile" }) => {
   const navigate = useNavigate();
   const [activePage, setActivePage] = useState(defaultActivePage);
+  const isReadOnly = useReadOnlyRole();
+
+  // Filter menu jika read only (wali murid)
+  const filteredMenu = isReadOnly
+    ? siswaMenuItems.filter((item) => item.id !== "bk")
+    : siswaMenuItems;
 
   const handleNavigation = (pageId) => {
     const route = siswaPageRoutes[pageId];
@@ -19,7 +26,7 @@ const SiswaLayout = ({ children, defaultActivePage = "profile" }) => {
     <div className="flex min-h-screen bg-gray-50 relative">
       <Sidebar
         title="Dashboard Siswa"
-        menuItems={siswaMenuItems}
+        menuItems={filteredMenu}
         setActivePage={handleNavigation}
         activePage={activePage}
       />

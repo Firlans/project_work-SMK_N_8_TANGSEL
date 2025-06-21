@@ -7,6 +7,7 @@ import { FaPlus, FaTrash } from "react-icons/fa6";
 import Badge from "../../Elements/Badges/Index";
 import { FaEdit } from "react-icons/fa";
 import { formatTanggal } from "../../../utils/dateFormatter";
+import useReadOnlyRole from "../../../hooks/useReadOnlyRole";
 
 const PelanggaranSiswa = () => {
   const [dataPelapor, setDataPelapor] = useState([]);
@@ -14,30 +15,38 @@ const PelanggaranSiswa = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState(null);
+  const isReadOnly = useReadOnlyRole();
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const cookie = Cookies.get("userPrivilege");
-      if (!cookie) throw new Error("User tidak ditemukan di cookie");
+      let id_user, id_siswa;
 
-      const parsed = JSON.parse(cookie);
-      const id_user = parsed.id_user;
+      if (isReadOnly) {
+        // Ambil dari cookies yang sudah diset di ProfileSiswa
+        id_user = Cookies.get("user_id");
+        id_siswa = Cookies.get("id_siswa");
+        if (!id_user || !id_siswa) {
+          throw new Error("User atau siswa tidak ditemukan di cookie");
+        }
+      } else {
+        // Mode siswa biasa
+        const cookie = Cookies.get("userPrivilege");
+        if (!cookie) throw new Error("User tidak ditemukan di cookie");
+        const parsed = JSON.parse(cookie);
+        id_user = parsed.id_user;
 
-      // Ambil semua siswa
-      const siswaRes = await axiosClient.get("/siswa");
-      const semuaSiswa = siswaRes.data.data;
-
-      // Cari siswa yang punya user_id === id_user
-      const siswaLogin = semuaSiswa.find((s) => s.user_id === id_user);
-
-      if (!siswaLogin) {
-        console.error("Siswa terkait user tidak ditemukan");
-        setLoading(false);
-        return;
+        // Ambil semua siswa
+        const siswaRes = await axiosClient.get("/siswa");
+        const semuaSiswa = siswaRes.data.data;
+        const siswaLogin = semuaSiswa.find((s) => s.user_id === id_user);
+        if (!siswaLogin) {
+          console.error("Siswa terkait user tidak ditemukan");
+          setLoading(false);
+          return;
+        }
+        id_siswa = siswaLogin.id;
       }
-
-      const id_siswa = siswaLogin.id;
 
       // Fetch pelanggaran pelapor (berdasarkan id_user)
       const pelaporRes = await axiosClient.get(
@@ -128,15 +137,17 @@ const PelanggaranSiswa = () => {
               <h2 className="text-2xl font-bold text-gray-800">
                 Pelanggaran yang Dilaporkan
               </h2>
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
-                onClick={() => {
-                  setSelected(null);
-                  setShowModal(true);
-                }}
-              >
-                <FaPlus /> Tambah Pelanggaran
-              </button>
+              {!isReadOnly && (
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+                  onClick={() => {
+                    setSelected(null);
+                    setShowModal(true);
+                  }}
+                >
+                  <FaPlus /> Tambah Pelanggaran
+                </button>
+              )}
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -149,7 +160,7 @@ const PelanggaranSiswa = () => {
                     <th className="px-6 py-3">Bukti</th>
                     <th className="px-6 py-3">Deskripsi</th>
                     <th className="px-6 py-3">Status</th>
-                    <th className="px-6 py-3">Aksi</th>
+                    {!isReadOnly && <th className="px-6 py-3">Aksi</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -187,25 +198,27 @@ const PelanggaranSiswa = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <Badge status={item.status} />
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                        <div className="flex gap-2 justify-center">
-                          <button
-                            onClick={() => {
-                              setSelected(item);
-                              setShowModal(true);
-                            }}
-                            className="text-yellow-500 hover:text-yellow-700"
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(item.id)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
+                      {!isReadOnly && (
+                        <td className="px-6 py-4 whitespace-nowrap space-x-2">
+                          <div className="flex gap-2 justify-center">
+                            <button
+                              onClick={() => {
+                                setSelected(item);
+                                setShowModal(true);
+                              }}
+                              className="text-yellow-500 hover:text-yellow-700"
+                            >
+                              <FaEdit />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <FaTrash />
+                            </button>
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -265,6 +278,12 @@ const PelanggaranSiswa = () => {
                   ))}
                 </tbody>
               </table>
+              {/* Info read only */}
+              {isReadOnly && (
+                <div className="mt-4 text-sm text-gray-500">
+                  Anda login sebagai wali murid, hanya dapat melihat data.
+                </div>
+              )}
             </div>
           </div>
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import FooterLogin from "../Elements/Footer/FooterLogin";
 // import FooterLogin from "../Elements/Footer/FooterLogin";
 
 const LandingLayout = () => {
@@ -45,6 +46,7 @@ const LandingLayout = () => {
               Login Admin
             </Link>
           </div>
+          <FooterLogin />
         </div>
       </div>
     </div>
