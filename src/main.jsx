@@ -68,6 +68,7 @@ import SiswaPrivateChatPage from "./Pages/siswa/siswaPrivateChatPage";
 import KonselorPrivateChatPage from "./Pages/konselor/konselorPrivateChatPage";
 import OrangTuaForm from "./Pages/orang_tua/OrangTuaForm";
 import OrangTuaRedirect from "./Pages/orang_tua/OrangTuaRedirect";
+import { ProfileProvider } from "./contexts/ProfileProvider";
 
 const adminDataRoutes = [
   { path: "/dashboard-admin/data-user", element: <DataUserPage /> },
@@ -205,6 +206,8 @@ Modal.setAppElement("#root");
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <ProfileProvider>
+      <RouterProvider router={router} />
+    </ProfileProvider>
   </StrictMode>
 );
