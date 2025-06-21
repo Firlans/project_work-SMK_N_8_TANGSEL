@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 
 import ProtectedRoute from "./protectedRoute";
+import { ProfileProvider } from "./contexts/ProfileProvider";
 
 // Pages
 import LandingPage from "./Pages/landingPage";
@@ -68,7 +69,7 @@ import SiswaPrivateChatPage from "./Pages/siswa/siswaPrivateChatPage";
 import KonselorPrivateChatPage from "./Pages/konselor/konselorPrivateChatPage";
 import OrangTuaForm from "./Pages/orang_tua/OrangTuaForm";
 import OrangTuaRedirect from "./Pages/orang_tua/OrangTuaRedirect";
-import { ProfileProvider } from "./contexts/ProfileProvider";
+import { ThemeProvider } from "./contexts/ThemeProvider";
 
 const adminDataRoutes = [
   { path: "/dashboard-admin/data-user", element: <DataUserPage /> },
@@ -206,8 +207,10 @@ Modal.setAppElement("#root");
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <ProfileProvider>
-      <RouterProvider router={router} />
-    </ProfileProvider>
+    <ThemeProvider>
+      <ProfileProvider>
+        <RouterProvider router={router} />
+      </ProfileProvider>
+    </ThemeProvider>
   </StrictMode>
 );

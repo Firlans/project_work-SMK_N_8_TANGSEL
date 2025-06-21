@@ -27,35 +27,36 @@ const Sidebar = ({
 
   return (
     <>
-      {/* Mobile Toggle Button */}
       <aside
         className={`fixed lg:sticky top-0 left-0 z-50 w-64 h-screen 
-  bg-white border-r shadow-lg transform transition-transform duration-300 ease-in-out 
-  ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-  lg:translate-x-0 lg:block`}
+    bg-white dark:bg-gray-900 
+    border-r border-gray-200 dark:border-gray-700 
+    shadow-lg transform transition-transform duration-300 ease-in-out 
+    ${isOpen ? "translate-x-0" : "-translate-x-full"} 
+    lg:translate-x-0 lg:block`}
       >
-        <div className="p-4 border-b">
-          <h2 className="text-xl text-center font-bold truncate">{title}</h2>
+        {/* HEADER */}
+        <div className="p-4 border-b bg-blue-50 dark:bg-gray-800">
+          <h2 className="text-xl text-center font-bold text-blue-900 dark:text-slate-50">
+            {title}
+          </h2>
           {profile && (
-            <div className="mt-2 text-sm text-gray-700 space-y-0.5">
+            <div className="mt-2 text-sm text-gray-700 dark:text-gray-300 space-y-0.5">
               <div className="text-center font-semibold truncate">
                 {profile.nama_lengkap || profile.nama}
               </div>
-              {profile.nis && (
-                <div className="text-center">{profile.nis}</div>
-              )}
+              {profile.nis && <div className="text-center">NIS. {profile.nis}</div>}
               {profile.kelas?.nama_kelas && (
-                <div className="text-center">
-                  {profile.kelas?.nama_kelas}
-                </div>
+                <div className="text-center">{profile.kelas?.nama_kelas}</div>
               )}
               {profile.nip && (
-                <div className="text-center">NIP: {profile.nip}</div>
+                <div className="text-center">NIP. {profile.nip}</div>
               )}
             </div>
           )}
         </div>
 
+        {/* MENU */}
         <nav className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2">
           {menuItems.map((item) => (
             <button
@@ -64,11 +65,10 @@ const Sidebar = ({
                 setActivePage(item.id);
                 if (window.innerWidth < 1024) setIsOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition
-              ${
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-300 ${
                 activePage === item.id
-                  ? "bg-blue-500 text-white"
-                  : "text-gray-600 hover:bg-gray-100"
+                  ? "bg-blue-800 text-white shadow-sm"
+                  : "text-gray-700 hover:bg-blue-100 hover:text-slate-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
               }`}
             >
               <span className="text-lg">{item.icon}</span>
@@ -78,10 +78,10 @@ const Sidebar = ({
         </nav>
       </aside>
 
-      {/* Mobile Overlay */}
+      {/* MOBILE OVERLAY */}
       <div
         className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-20 transition-opacity duration-300 lg:hidden 
-  ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         onClick={() => setIsOpen(false)}
       />
     </>
