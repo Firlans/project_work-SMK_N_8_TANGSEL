@@ -47,7 +47,7 @@ const Header = () => {
           <div className="ml-4">
             <Button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-1 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200 whitespace-nowrap"
+              className="flex items-center gap-2 px-1 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 whitespace-nowrap"
             >
               <TbLogout2 className="text-lg" />
               <span>Logout</span>
