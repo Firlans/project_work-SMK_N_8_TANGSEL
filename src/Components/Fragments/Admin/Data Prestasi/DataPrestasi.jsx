@@ -5,6 +5,11 @@ import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import Badge from "../../../Elements/Badges/Index";
 import ModalPrestasi from "./FormPrestasi";
 import Cookies from "js-cookie";
+import ImagePreview from "../../../Elements/Image Pop Up/ImagePreview";
+import { FaEye } from "react-icons/fa6";
+
+const getBuktiPelanggaranURL = (filename) =>
+  axiosClient.defaults.baseURL + "/images/prestasi/" + filename;
 
 const DataPrestasi = () => {
   const [loading, setLoading] = useState(true);
@@ -12,6 +17,7 @@ const DataPrestasi = () => {
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState(null);
   const [userPrivilege, setUserPrivilege] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -35,7 +41,6 @@ const DataPrestasi = () => {
   };
 
   useEffect(() => {
-    // Ambil dan parse privilege dari cookies
     const privilegeData = Cookies.get("userPrivilege");
     console.log("Cookie privilege data:", privilegeData);
 
@@ -135,12 +140,21 @@ const DataPrestasi = () => {
                       <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
                         {item.nama_siswa_id}
                       </td>
-                      <td className="px-3 sm:px-6 py-2 sm:py-4">
-                        <img
-                        // src={item.foto}
-                        // alt=""
-                        // className="h-16 w-16 object-cover rounded"
-                        />
+                      <td className="px-6 py-4">
+                        {item.nama_foto ? (
+                          <button
+                            onClick={() =>
+                              setPreviewImage(
+                                getBuktiPelanggaranURL(item.nama_foto)
+                              )
+                            }
+                            className="text-blue-600 hover:underline"
+                          >
+                            <FaEye />
+                          </button>
+                        ) : (
+                          "-"
+                        )}
                       </td>
                       <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
                         <div className="max-w-xs sm:max-w-sm line-clamp-2">
@@ -197,6 +211,11 @@ const DataPrestasi = () => {
               initialData={selected}
             />
           )}
+          <ImagePreview
+            isOpen={!!previewImage}
+            onClose={() => setPreviewImage(null)}
+            imageUrl={previewImage}
+          />
         </>
       )}
     </div>

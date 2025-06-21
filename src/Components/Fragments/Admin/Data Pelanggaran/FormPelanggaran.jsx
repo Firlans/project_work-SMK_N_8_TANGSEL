@@ -1,135 +1,60 @@
-import { useEffect, useState } from "react";
+import { usePelanggaranForm } from "./usePelanggaranForm";
 import axiosClient from "../../../../axiosClient";
-import Cookies from "js-cookie";
 
 const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
-  const [formData, setFormData] = useState({
-    pelapor: "",
-    terlapor: "",
-    nama_pelanggaran: "",
-    deskripsi: "",
-    nama_foto: null,
-    status: "pengajuan",
-  });
-  const [previewImage, setPreviewImage] = useState(null);
-  const [siswaList, setSiswaList] = useState([]);
-  const [userPrivilege, setUserPrivilege] = useState(null);
+  const {
+    formData,
+    handleChange,
+    previewImage,
+    siswaList,
+    userPrivilege,
+    getUserRole,
+    isEdit,
+  } = usePelanggaranForm(initialData, isOpen);
 
-  const isEdit = Boolean(initialData);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  useEffect(() => {
-    const privilegeData = Cookies.get("userPrivilege");
-    if (privilegeData) {
-      try {
-        const parsedPrivilege = JSON.parse(privilegeData);
-        setUserPrivilege(parsedPrivilege);
-        if (!initialData) {
-          setFormData((prev) => ({
-            ...prev,
-            pelapor: parsedPrivilege.id_user,
-          }));
-        }
-      } catch (error) {
-        console.error("Error parsing privilege:", error);
-      }
+    if (!userPrivilege?.id_user) {
+      alert("Pelapor tidak ditemukan. Silakan login ulang.");
+      return;
     }
-  }, [initialData]);
 
-  useEffect(() => {
-    const fetchSiswa = async () => {
-      try {
-        const res = await axiosClient.get("/siswa");
-        const sortedSiswa = res.data.data.sort((a, b) =>
-          a.nama_lengkap.localeCompare(b.nama_lengkap)
-        );
-        setSiswaList(sortedSiswa);
-      } catch (err) {
-        console.error("Gagal mengambil data siswa:", err);
-      }
-    };
+    const form = new FormData();
+    form.append("pelapor", isEdit ? formData.pelapor : userPrivilege?.id_user);
+    form.append("terlapor", formData.terlapor);
+    form.append("nama_pelanggaran", formData.nama_pelanggaran);
+    form.append("deskripsi", formData.deskripsi);
+    form.append("status", formData.status || "pengajuan");
 
-    if (isOpen) {
-      fetchSiswa();
+    if (formData.nama_foto) {
+      form.append("bukti_gambar", formData.nama_foto);
+    }
+
+    try {
       if (initialData) {
-        setFormData(initialData);
-        if (initialData.nama_foto) {
-          setPreviewImage(
-            `http://localhost:8000/storage/pelanggaran/${initialData.nama_foto}`
-          );
-        }
+        await axiosClient.post(
+          `/pelanggaran/${initialData.id}?_method=PUT`,
+          form,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
       } else {
-        setFormData({
-          pelapor: userPrivilege?.id_user || "",
-          terlapor: "",
-          nama_pelanggaran: "",
-          deskripsi: "",
-          nama_foto: null,
-          status: "pengajuan",
+        await axiosClient.post("/pelanggaran", form, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
-        setPreviewImage(null);
       }
-    }
-  }, [isOpen, initialData]);
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "nama_foto") {
-      setFormData({ ...formData, [name]: files[0] });
-      setPreviewImage(URL.createObjectURL(files[0]));
-    } else {
-      setFormData({ ...formData, [name]: value });
+      onSuccess();
+    } catch (err) {
+      console.error("Gagal simpan pelanggaran:", err);
     }
   };
-
- const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  if (!userPrivilege?.id_user) {
-    alert("Pelapor tidak ditemukan. Silakan login ulang.");
-    return;
-  }
-
-  const submitData = new FormData();
-  submitData.append("pelapor", isEdit ? formData.pelapor : userPrivilege?.id_user);
-  submitData.append("terlapor", formData.terlapor);
-  submitData.append("nama_pelanggaran", formData.nama_pelanggaran);
-  submitData.append("deskripsi", formData.deskripsi);
-  submitData.append("status", formData.status || "pengajuan");
-
-  if (formData.nama_foto) {
-    submitData.append("bukti_gambar", formData.nama_foto);
-  }
-
-  try {
-    if (initialData) {
-      await axiosClient.post(`/pelanggaran/${initialData.id}?_method=PUT`, submitData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-    } else {
-      await axiosClient.post("/pelanggaran", submitData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-    }
-    onSuccess();
-  } catch (err) {
-    console.error("Gagal simpan pelanggaran:", err);
-  }
-};
-
-
-  const getUserRole = () => {
-    if (!userPrivilege) return null;
-    if (userPrivilege.is_superadmin === 1) return "superadmin";
-    if (userPrivilege.is_admin === 1) return "admin";
-    if (userPrivilege.is_conselor === 1) return "conselor";
-    if (userPrivilege.is_guru === 1) return "guru";
-    if (userPrivilege.is_siswa === 1) return "siswa";
-    return null;
-  };
-
-  const userRole = getUserRole();
 
   if (!isOpen) return null;
+
+  const role = getUserRole();
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
@@ -138,24 +63,27 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
           {isEdit ? "Edit Pelanggaran" : "Tambah Pelanggaran"}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Terlapor */}
           <div>
             <label className="block text-sm">Terlapor</label>
             <select
               name="terlapor"
               value={formData.terlapor}
               onChange={handleChange}
+              disabled={isEdit}
               required
               className="w-full border px-3 py-2 rounded"
             >
               <option value="">-- Pilih Siswa --</option>
-              {siswaList.map((siswa) => (
-                <option key={siswa.id} value={siswa.id}>
-                  {siswa.nama_lengkap}
+              {siswaList.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.nama_lengkap}
                 </option>
               ))}
             </select>
           </div>
 
+          {/* Jenis Pelanggaran */}
           <div>
             <label className="block text-sm">Jenis Pelanggaran</label>
             <input
@@ -163,11 +91,13 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
               name="nama_pelanggaran"
               value={formData.nama_pelanggaran}
               onChange={handleChange}
+              disabled={isEdit}
               required
               className="w-full border px-3 py-2 rounded"
             />
           </div>
 
+          {/* Deskripsi */}
           <div>
             <label className="block text-sm">Deskripsi</label>
             <textarea
@@ -179,6 +109,7 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
             />
           </div>
 
+          {/* Upload */}
           <div>
             <label className="block text-sm">Bukti Foto</label>
             <input
@@ -197,7 +128,8 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
             )}
           </div>
 
-          {(userRole === "admin" || userRole === "conselor") && (
+          {/* Status untuk admin/conselor */}
+          {(role === "admin" || role === "conselor") && (
             <div>
               <label className="block text-sm">Status</label>
               <select

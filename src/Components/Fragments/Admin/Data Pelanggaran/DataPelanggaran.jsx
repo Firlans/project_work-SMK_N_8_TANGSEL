@@ -6,6 +6,11 @@ import ModalPelanggaran from "./FormPelanggaran";
 import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import Cookies from "js-cookie";
+import ImagePreview from "../../../Elements/Image Pop Up/ImagePreview";
+import { FaEye } from "react-icons/fa6";
+
+const getBuktiPelanggaranURL = (filename) =>
+  axiosClient.defaults.baseURL + "/images/pelanggaran/" + filename;
 
 const DataPelanggaran = () => {
   const [loading, setLoading] = useState(true);
@@ -13,8 +18,8 @@ const DataPelanggaran = () => {
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState(null);
   const [userPrivilege, setUserPrivilege] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
 
-  // Fungsi untuk mengecek role user
   const checkUserRole = () => {
     if (!userPrivilege) return null;
     if (userPrivilege.is_superadmin === 1) return "superadmin";
@@ -29,19 +34,16 @@ const DataPelanggaran = () => {
     try {
       const userRole = checkUserRole();
       const res = await axiosClient.get("/pelanggaran");
-      console.log("Raw data pelanggaran:", res.data.data);
 
       let filteredData = res.data.data;
 
-      // Filter data untuk guru dan siswa
       if (
         (userRole === "guru" || userRole === "siswa") &&
         userPrivilege?.id_user
       ) {
-        filteredData = res.data.data.filter(
+        filteredData = filteredData.filter(
           (item) => item.pelapor === userPrivilege.id_user
         );
-        console.log("Filtered data for user:", filteredData);
       }
 
       const pelanggaranWithNama = await Promise.all(
@@ -54,7 +56,6 @@ const DataPelanggaran = () => {
         })
       );
 
-      console.log("Final data with names:", pelanggaranWithNama);
       setData(pelanggaranWithNama);
     } catch (err) {
       console.error("Gagal mengambil pelanggaran:", err);
@@ -91,27 +92,19 @@ const DataPelanggaran = () => {
     }
   };
 
-  // Fungsi untuk mengecek apakah user bisa edit/delete
   const canModifyData = (item) => {
-    const userRole = checkUserRole();
-
-    // Admin dan konselor bisa modify semua data
-    if (userRole === "admin" || userRole === "conselor") return true;
-
-    // Guru dan siswa hanya bisa modify data mereka
+    const role = checkUserRole();
+    if (role === "admin" || role === "conselor") return true;
     if (
-      (userRole === "guru" || userRole === "siswa") &&
+      (role === "guru" || role === "siswa") &&
       item.pelapor === userPrivilege?.id_user
     )
       return true;
-
     return false;
   };
 
-  // Fungsi untuk mengecek apakah user bisa menambah data
   const canAddData = () => {
-    const userRole = checkUserRole();
-    return userRole !== "superadmin"; // Semua role bisa tambah data kecuali superadmin
+    return checkUserRole() !== "superadmin";
   };
 
   return (
@@ -136,6 +129,7 @@ const DataPelanggaran = () => {
               </button>
             )}
           </div>
+
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50">
@@ -156,63 +150,60 @@ const DataPelanggaran = () => {
                     key={item.id}
                     className="hover:bg-gray-50 transition-colors"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      {idx + 1}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {item.nama_terlapor}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 text-center">{idx + 1}</td>
+                    <td className="px-6 py-4">{item.nama_terlapor}</td>
+                    <td className="px-6 py-4">
                       {formatTanggal(item.created_at)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {item.nama_pelanggaran}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4">{item.nama_pelanggaran}</td>
+                    <td className="px-6 py-4">
                       {item.nama_foto ? (
-                        <img
-                          src={`http://localhost:8000/storage/pelanggaran/${item.nama_foto}`}
-                          alt="Bukti"
-                          className="w-20 h-20 object-cover rounded"
-                        />
+                        <button
+                          onClick={() =>
+                            setPreviewImage(
+                              getBuktiPelanggaranURL(item.nama_foto)
+                            )
+                          }
+                          className="text-blue-600 hover:underline"
+                        >
+                          <FaEye />
+                        </button>
                       ) : (
                         "-"
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {item.deskripsi}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
+
+                    <td className="px-6 py-4">{item.deskripsi}</td>
+                    <td className="px-6 py-4 text-center">
                       <Badge status={item.status} />
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                      <div className="flex gap-2 justify-center">
-                        {canModifyData(item) && (
-                          <>
-                            <button
-                              onClick={() => {
-                                setSelected(item);
-                                setShowModal(true);
-                              }}
-                              className="text-yellow-500 hover:text-yellow-700"
-                            >
-                              <FaEdit />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(item.id)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <FaTrash />
-                            </button>
-                          </>
-                        )}
-                      </div>
+                    <td className="px-6 py-4 text-center">
+                      {canModifyData(item) && (
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() => {
+                              setSelected(item);
+                              setShowModal(true);
+                            }}
+                            className="text-yellow-500 hover:text-yellow-700"
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
           {showModal && (
             <ModalPelanggaran
               isOpen={showModal}
@@ -227,7 +218,12 @@ const DataPelanggaran = () => {
               initialData={selected}
               userPrivilege={userPrivilege}
             />
-          )}{" "}
+          )}
+          <ImagePreview
+            isOpen={!!previewImage}
+            onClose={() => setPreviewImage(null)}
+            imageUrl={previewImage}
+          />
         </>
       )}
     </div>
