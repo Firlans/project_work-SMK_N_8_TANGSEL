@@ -7,17 +7,21 @@ import { IoChevronBackSharp } from "react-icons/io5";
 import LoadingSpinner from "../Elements/Loading/LoadingSpinner";
 import Cookies from "js-cookie";
 import FormPertemuan from "./Admin/Data Jadwal/FormPertemuan";
+import { exportPresensiPDF } from "../../utils/exportPresensi";
+import ExportLoadingModal from "../Elements/Loading/ExportLoadingModal";
+import { PiExportBold } from "react-icons/pi";
 
 const PertemuanList = () => {
   const { idJadwal } = useParams();
   const [pertemuan, setPertemuan] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [refreshToggle, setRefreshToggle] = useState(false); // untuk trigger fetch ulang
+  const [refreshToggle, setRefreshToggle] = useState(false);
   const [selectedPertemuan, setSelectedPertemuan] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [info, setInfo] = useState({ namaKelas: "", namaMapel: "" });
   const navigate = useNavigate();
   const userRole = Cookies.get("userRole");
+  const [exportProgress, setExportProgress] = useState(null);
 
   const fetchPertemuan = async () => {
     setLoading(true);
@@ -53,7 +57,7 @@ const PertemuanList = () => {
 
   useEffect(() => {
     if (idJadwal) fetchPertemuan();
-  }, [idJadwal, refreshToggle]); // refresh tiap toggle berubah
+  }, [idJadwal, refreshToggle]);
 
   const handleLihatPresensi = (p) => {
     const basePath =
@@ -89,9 +93,27 @@ const PertemuanList = () => {
   };
 
   const handleFormSuccess = () => {
-    setRefreshToggle((prev) => !prev); // trigger refresh list
+    setRefreshToggle((prev) => !prev);
     setShowForm(false);
     setSelectedPertemuan(null);
+  };
+
+  const handleExportAllPresensi = async () => {
+    setExportProgress("Memulai export...");
+    try {
+      await exportPresensiPDF({
+        axiosClient,
+        idJadwal,
+        pertemuan,
+        info,
+        setExportProgress,
+      });
+    } catch (err) {
+      alert("Gagal export presensi.");
+      console.error("Export gagal:", err);
+    } finally {
+      setExportProgress(null);
+    }
   };
 
   if (loading) return <LoadingSpinner />;
@@ -108,24 +130,35 @@ const PertemuanList = () => {
             <strong>{info.namaKelas}</strong>
           </p>
         </div>
-        <div className="flex gap-2 mt-4 sm:mt-0 ">
+        <div className="flex flex-wrap gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
           {userRole !== "guru" && (
             <button
               onClick={() => {
                 setSelectedPertemuan(null);
                 setShowForm(true);
               }}
-              className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+              className="flex-1 sm:flex-none min-w-[150px] bg-blue-500 text-white px-3 py-2 sm:px-4 rounded flex items-center justify-center gap-2 text-sm sm:text-base transition hover:bg-blue-600"
             >
               <FaPlus />
-              Tambah Pertemuan
+              <span className="hidden xs:inline">Tambah Pertemuan</span>
+              <span className="inline xs:hidden">Tambah</span>
             </button>
           )}
           <button
-            onClick={() => navigate(-1)}
-            className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+            onClick={handleExportAllPresensi}
+            disabled={!!exportProgress}
+            className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700 text-sm font-semibold transition
+              ${exportProgress ? "opacity-60 cursor-not-allowed" : ""}`}
           >
-            <IoChevronBackSharp /> Kembali
+            <PiExportBold size={18} />
+            {exportProgress ? "Mengekspor..." : "Export Presensi (PDF)"}
+          </button>
+          <button
+            onClick={() => navigate(-1)}
+            className="flex-1 sm:flex-none min-w-[120px] bg-blue-500 text-white px-3 py-2 sm:px-4 rounded flex items-center justify-center gap-2 text-sm sm:text-base transition hover:bg-blue-600"
+          >
+            <IoChevronBackSharp />
+            <span className="inline xs:hidden">Kembali</span>
           </button>
         </div>
       </div>
@@ -203,6 +236,8 @@ const PertemuanList = () => {
         idJadwal={idJadwal}
         onSuccess={handleFormSuccess}
       />
+
+      {exportProgress && <ExportLoadingModal progress={exportProgress} />}
     </div>
   );
 };

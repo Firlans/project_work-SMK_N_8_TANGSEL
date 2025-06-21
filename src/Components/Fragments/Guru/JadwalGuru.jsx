@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import axiosClient from "../../../axiosClient";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 import { useNavigate } from "react-router-dom";
+import { exportJadwalPDF } from "../../../utils/exportJadwal";
+import ExportLoadingModal from "../../Elements/Loading/ExportLoadingModal";
+import { PiExportBold } from "react-icons/pi";
+import { FaEye } from "react-icons/fa";
 
 const hariMap = {
   1: "Senin",
@@ -20,11 +24,21 @@ const JadwalGuru = () => {
   const [mapelMap, setMapelMap] = useState({});
   const [guruMapelMap, setGuruMapelMap] = useState({});
   const [loading, setLoading] = useState(true);
+  const [exportProgress, setExportProgress] = useState(null);
+  const [profileGuru, setProfileGuru] = useState({
+    nama_lengkap: "",
+    nip: "",
+    mapel: "",
+  });
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
         const profileRes = await axiosClient.get("/profile");
+        setProfileGuru({
+          nama_lengkap: profileRes.data.data.nama,
+          nip: profileRes.data.data.nip,
+        });
         const idGuru = profileRes.data.data.id;
 
         const [jadwalRes, waktuRes, kelasRes, guruRes, mapelRes] =
@@ -92,13 +106,55 @@ const JadwalGuru = () => {
     navigate(`/dashboard-guru/jadwal-guru/${jadwalId}/pertemuan`);
   };
 
+  const handleExport = async () => {
+    if (!profileGuru) return;
+
+    const getData = (hariId) => {
+      const rows = getDataByHari(hariId);
+      return rows.map((row) => ({
+        waktu: row.waktu,
+        mapel: row.mapel,
+        guru: row.kelas,
+      }));
+    };
+
+    try {
+      setExportProgress("Memulai export...");
+      exportJadwalPDF({
+        profile: {
+          nama_lengkap: profileGuru.nama_lengkap,
+          nip: profileGuru.nip,
+        },
+        hariMap,
+        getDataByHari: getData,
+        role: "guru",
+        setExportProgress,
+      });
+      console.log("Export selesai.");
+    } catch (err) {
+      console.error("Export gagal:", err);
+      alert("Export PDF gagal, cek konsol untuk detail.");
+    } finally {
+      setExportProgress(null);
+    }
+  };
+
   return (
     <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-6 sm:py-8 space-y-6">
       {/* Judul Halaman */}
-      <div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
           JADWAL GURU
         </h3>
+        <button
+          onClick={handleExport}
+          disabled={!!exportProgress}
+          className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700 text-sm font-semibold transition
+    ${exportProgress ? "opacity-60 cursor-not-allowed" : ""}`}
+        >
+          <PiExportBold size={18} />
+          {exportProgress ? "Mengekspor..." : "Export Jadwal (PDF)"}
+        </button>
       </div>
 
       {loading ? (
@@ -119,45 +175,42 @@ const JadwalGuru = () => {
               </h2>
 
               {/* Table Responsive */}
-              <div className="overflow-x-auto">
-                <table className="min-w-full table-auto divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+              <div className="overflow-x-auto w-full">
+                <table className="min-w-full table-fixed divide-y divide-gray-200">
+                  <thead className="bg-gray-100">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500">
+                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 whitespace-nowrap w-2/12 min-w-[100px]">
                         Waktu
                       </th>
-                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500">
+                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 whitespace-nowrap w-4/12 min-w-[140px]">
                         Mata Pelajaran
                       </th>
-                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500">
+                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 whitespace-nowrap w-4/12 min-w-[140px]">
                         Guru
                       </th>
-                      <th className="px-4 py-3 text-center text-xs sm:text-sm font-semibold text-gray-500">
-                        Aksi
+                      <th className="px-4 py-3 text-center text-xs sm:text-sm font-semibold text-gray-600 whitespace-nowrap w-2/12 min-w-[90px]">
+                        Presensi
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white divide-y divide-gray-100">
                     {rows.map((row, index) => (
-                      <tr
-                        key={index}
-                        className="hover:bg-gray-50 transition-colors"
-                      >
-                        <td className="px-4 py-3 text-sm text-gray-800 whitespace-nowrap">
+                      <tr key={index} className="hover:bg-gray-50 transition">
+                        <td className="px-4 py-3 text-sm text-gray-800 whitespace-nowrap w-2/12 min-w-[100px]">
                           {row.waktu}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800 truncate">
+                        <td className="px-4 py-3 text-sm text-gray-800 whitespace-nowrap w-4/12 min-w-[140px]">
                           {row.kelas}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-800 truncate">
+                        <td className="px-4 py-3 text-sm text-gray-800 whitespace-nowrap w-4/12 min-w-[140px]">
                           {row.mapel}
                         </td>
-                        <td className="px-4 py-3 text-center">
+                        <td className="px-4 py-3 text-center w-2/12 min-w-[90px]">
                           <button
                             onClick={() => handleLihatPertemuan(row.id)}
-                            className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                            className="text-blue-600 hover:underline text-sm"
                           >
-                            Presensi
+                            <FaEye size={16} />
                           </button>
                         </td>
                       </tr>
@@ -169,6 +222,7 @@ const JadwalGuru = () => {
           );
         })
       )}
+      {exportProgress && <ExportLoadingModal progress={exportProgress} />}
     </div>
   );
 };

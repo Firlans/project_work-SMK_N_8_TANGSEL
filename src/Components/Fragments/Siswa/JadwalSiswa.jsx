@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../../../axiosClient";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import { exportJadwalPDF } from "../../../utils/exportJadwal";
+import ExportLoadingModal from "../../Elements/Loading/ExportLoadingModal";
+import { PiExportBold } from "react-icons/pi";
 
 const hariMap = {
   1: "Senin",
@@ -18,11 +21,24 @@ const JadwalSiswa = () => {
   const [guruLookup, setGuruLookup] = useState({});
   const [mapelLookup, setMapelLookup] = useState({});
   const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState({
+    nama_lengkap: "",
+    nisn: "",
+    nis: "",
+    kelas: "",
+  });
+  const [exportProgress, setExportProgress] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const { data: profileData } = await axiosClient.get("/profile");
+        setProfile({
+          nama_lengkap: profileData.data.nama_lengkap,
+          nisn: profileData.data.nisn,
+          nis: profileData.data.nis,
+          kelas: profileData.data.kelas.nama_kelas,
+        });
         const idSiswa = profileData.data.id;
 
         const [jadwalRes, waktuRes, guruRes, mapelRes] = await Promise.all([
@@ -76,10 +92,43 @@ const JadwalSiswa = () => {
       .filter(Boolean);
   };
 
+  const handleExport = async () => {
+    try {
+      setExportProgress("Memulai export...");
+      exportJadwalPDF({
+        profile,
+        hariMap,
+        getDataByHari,
+        setExportProgress,
+      });
+      console.log("Export selesai.");
+    } catch (err) {
+      console.error("Export gagal:", err);
+      alert("Export PDF gagal, cek konsol untuk detail.");
+    } finally {
+      setExportProgress(null);
+    }
+  };
+
   if (loading) return <LoadingSpinner />;
 
   return (
     <div className="space-y-6 sm:space-y-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
+          JADWAL SISWA
+        </h3>
+        <button
+          onClick={handleExport}
+          disabled={!!exportProgress}
+          className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700 text-sm font-semibold transition
+            ${exportProgress ? "opacity-60 cursor-not-allowed" : ""}`}
+        >
+          <PiExportBold size={18} />
+          {exportProgress ? "Mengekspor..." : "Export Jadwal (PDF)"}
+        </button>
+      </div>
+
       {Object.entries(hariMap).map(([idHari, namaHari]) => {
         const rows = getDataByHari(Number(idHari));
         if (rows.length === 0) return null;
@@ -132,6 +181,7 @@ const JadwalSiswa = () => {
           </div>
         );
       })}
+      {exportProgress && <ExportLoadingModal progress={exportProgress} />}
     </div>
   );
 };
