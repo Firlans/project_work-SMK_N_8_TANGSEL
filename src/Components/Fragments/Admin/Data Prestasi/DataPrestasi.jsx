@@ -8,7 +8,7 @@ import Cookies from "js-cookie";
 import ImagePreview from "../../../Elements/Image Pop Up/ImagePreview";
 import { FaEye } from "react-icons/fa6";
 
-const getBuktiPelanggaranURL = (filename) =>
+const getBuktiPrestasiURL = (filename) =>
   axiosClient.defaults.baseURL + "/images/prestasi/" + filename;
 
 const DataPrestasi = () => {
@@ -145,7 +145,7 @@ const DataPrestasi = () => {
                           <button
                             onClick={() =>
                               setPreviewImage(
-                                getBuktiPelanggaranURL(item.nama_foto)
+                                getBuktiPrestasiURL(item.nama_foto)
                               )
                             }
                             className="text-blue-600 hover:underline"

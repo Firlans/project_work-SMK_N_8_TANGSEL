@@ -3,11 +3,15 @@ import Cookies from "js-cookie";
 import axiosClient from "../../../axiosClient";
 import ModalPelanggaran from "../Admin/Data Pelanggaran/FormPelanggaran";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
-import { FaPlus, FaTrash } from "react-icons/fa6";
+import { FaEye, FaPlus, FaTrash } from "react-icons/fa6";
 import Badge from "../../Elements/Badges/Index";
 import { FaEdit } from "react-icons/fa";
 import { formatTanggal } from "../../../utils/dateFormatter";
 import useReadOnlyRole from "../../../hooks/useReadOnlyRole";
+import ImagePreview from "../../Elements/Image Pop Up/ImagePreview";
+
+const getBuktiPelanggaranURL = (filename) =>
+  axiosClient.defaults.baseURL + "/images/pelanggaran/" + filename;
 
 const PelanggaranSiswa = () => {
   const [dataPelapor, setDataPelapor] = useState([]);
@@ -16,6 +20,7 @@ const PelanggaranSiswa = () => {
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState(null);
   const isReadOnly = useReadOnlyRole();
+  const [previewImage, setPreviewImage] = useState(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -181,13 +186,18 @@ const PelanggaranSiswa = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         {item.nama_pelanggaran}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4">
                         {item.nama_foto ? (
-                          <img
-                            src={`http://localhost:8000/storage/pelanggaran/${item.nama_foto}`}
-                            alt="Bukti"
-                            className="w-20 h-20 object-cover rounded"
-                          />
+                          <button
+                            onClick={() =>
+                              setPreviewImage(
+                                getBuktiPrestasiURL(item.nama_foto)
+                              )
+                            }
+                            className="text-blue-600 hover:underline"
+                          >
+                            <FaEye />
+                          </button>
                         ) : (
                           "-"
                         )}
@@ -257,13 +267,18 @@ const PelanggaranSiswa = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         {item.nama_pelanggaran}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4">
                         {item.nama_foto ? (
-                          <img
-                            src={`http://localhost:8000/storage/pelanggaran/${item.nama_foto}`}
-                            alt="Bukti"
-                            className="w-20 h-20 object-cover rounded"
-                          />
+                          <button
+                            onClick={() =>
+                              setPreviewImage(
+                                getBuktiPelanggaranURL(item.nama_foto)
+                              )
+                            }
+                            className="text-blue-600 hover:underline"
+                          >
+                            <FaEye />
+                          </button>
                         ) : (
                           "-"
                         )}
@@ -301,6 +316,11 @@ const PelanggaranSiswa = () => {
               initialData={selected}
             />
           )}
+          <ImagePreview
+            isOpen={!!previewImage}
+            onClose={() => setPreviewImage(null)}
+            imageUrl={previewImage}
+          />
         </>
       )}
     </div>

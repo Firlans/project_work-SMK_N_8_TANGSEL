@@ -2,11 +2,17 @@ import { useEffect, useState } from "react";
 import axiosClient from "../../../axiosClient";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 import Badge from "../../Elements/Badges/Index";
+import { FaEye } from "react-icons/fa";
+import ImagePreview from "../../Elements/Image Pop Up/ImagePreview";
+
+const getBuktiPrestasiURL = (filename) =>
+  axiosClient.defaults.baseURL + "/images/prestasi/" + filename;
 
 const PrestasiSiswa = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [namaSiswa, setNamaSiswa] = useState("");
+  const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,12 +76,19 @@ const PrestasiSiswa = () => {
                   <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
                     {namaSiswa}
                   </td>
-                  <td className="px-3 sm:px-6 py-2 sm:py-4">
-                    <img
-                    // src={item.foto}
-                    // alt=""
-                    // className="h-16 w-16 object-cover rounded"
-                    />
+                  <td className="px-6 py-4">
+                    {item.nama_foto ? (
+                      <button
+                        onClick={() =>
+                          setPreviewImage(getBuktiPrestasiURL(item.nama_foto))
+                        }
+                        className="text-blue-600 hover:underline"
+                      >
+                        <FaEye />
+                      </button>
+                    ) : (
+                      "-"
+                    )}
                   </td>
                   <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
                     <div className="max-w-xs sm:max-w-sm line-clamp-2">
@@ -91,6 +104,11 @@ const PrestasiSiswa = () => {
           </table>
         </div>
       </div>
+      <ImagePreview
+        isOpen={!!previewImage}
+        onClose={() => setPreviewImage(null)}
+        imageUrl={previewImage}
+      />
     </div>
   );
 };
