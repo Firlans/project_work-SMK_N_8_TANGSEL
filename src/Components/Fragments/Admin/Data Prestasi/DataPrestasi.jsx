@@ -77,19 +77,19 @@ const DataPrestasi = () => {
   };
 
   return (
-    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
+    <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-colors duration-300">
       {loading ? (
         <LoadingSpinner />
       ) : (
         <>
-          {/* Header Section with Responsive Layout */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+          {/* Header Section */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6 transition-all duration-300">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
               Daftar Prestasi
             </h2>
             {!isSuperAdmin() && (
               <button
-                className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors"
+                className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2  flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
                 onClick={() => {
                   setSelected(null);
                   setShowModal(true);
@@ -100,47 +100,48 @@ const DataPrestasi = () => {
             )}
           </div>
 
-          {/* Table Container with Horizontal Scroll */}
+          {/* Table */}
           <div className="-mx-4 sm:mx-0 overflow-x-auto">
             <div className="inline-block min-w-full align-middle">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
+                <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
                   <tr>
-                    <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
-                      No
-                    </th>
-                    <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
-                      Nama Siswa
-                    </th>
-                    <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
-                      Foto
-                    </th>
-                    <th className="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
-                      Deskripsi
-                    </th>
-                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
-                      Status
-                    </th>
-                    {!isSuperAdmin() && (
-                      <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500">
-                        Aksi
-                      </th>
-                    )}
+                    {[
+                      "No",
+                      "Nama Siswa",
+                      "Foto",
+                      "Deskripsi",
+                      "Status",
+                      !isSuperAdmin() && "Aksi",
+                    ]
+                      .filter(Boolean)
+                      .map((text, i) => (
+                        <th
+                          key={i}
+                          className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium ${
+                            text === "Status" || text === "Aksi"
+                              ? "text-center"
+                              : "text-left"
+                          } text-gray-500 dark:text-gray-300 transition-colors`}
+                        >
+                          {text}
+                        </th>
+                      ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
                   {data.map((item, index) => (
                     <tr
                       key={item.id}
-                      className="hover:bg-gray-50 transition-colors"
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
                     >
-                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
                         {index + 1}
                       </td>
-                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
                         {item.nama_siswa_id}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 text-gray-800 dark:text-gray-100">
                         {item.nama_foto ? (
                           <button
                             onClick={() =>
@@ -148,7 +149,7 @@ const DataPrestasi = () => {
                                 getBuktiPrestasiURL(item.nama_foto)
                               )
                             }
-                            className="text-blue-600 hover:underline"
+                            className="text-blue-600 dark:text-blue-400 hover:underline"
                           >
                             <FaEye />
                           </button>
@@ -156,7 +157,7 @@ const DataPrestasi = () => {
                           "-"
                         )}
                       </td>
-                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
                         <div className="max-w-xs sm:max-w-sm line-clamp-2">
                           {item.deskripsi}
                         </div>
@@ -164,31 +165,29 @@ const DataPrestasi = () => {
                       <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
                         <Badge status={item.status} />
                       </td>
-                      <td className="px-3 sm:px-6 py-2 sm:py-4">
-                        <div className="flex gap-2 justify-center">
-                          {!isSuperAdmin() && (
-                            <>
-                              <button
-                                onClick={() => {
-                                  setSelected(item);
-                                  setShowModal(true);
-                                }}
-                                className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
-                                aria-label="Edit prestasi"
-                              >
-                                <FaEdit className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(item.id)}
-                                className="p-1 text-red-500 hover:text-red-700 transition-colors"
-                                aria-label="Hapus prestasi"
-                              >
-                                <FaTrash className="w-4 h-4" />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
+                      {!isSuperAdmin() && (
+                        <td className="px-3 sm:px-6 py-2 sm:py-4">
+                          <div className="flex gap-2 justify-center">
+                            <button
+                              onClick={() => {
+                                setSelected(item);
+                                setShowModal(true);
+                              }}
+                              className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
+                              aria-label="Edit prestasi"
+                            >
+                              <FaEdit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item.id)}
+                              className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+                              aria-label="Hapus prestasi"
+                            >
+                              <FaTrash className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -196,7 +195,7 @@ const DataPrestasi = () => {
             </div>
           </div>
 
-          {/* Modal */}
+          {/* Modals */}
           {showModal && (
             <ModalPrestasi
               isOpen={showModal}
@@ -211,6 +210,7 @@ const DataPrestasi = () => {
               initialData={selected}
             />
           )}
+
           <ImagePreview
             isOpen={!!previewImage}
             onClose={() => setPreviewImage(null)}

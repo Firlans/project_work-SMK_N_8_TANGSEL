@@ -35,7 +35,7 @@ const FormPertemuan = ({ isOpen, onClose, data, idJadwal, onSuccess }) => {
           id_jadwal: idJadwal,
         });
       }
-      onSuccess(); // trigger refresh dari parent
+      onSuccess();
       onClose();
     } catch (err) {
       console.error("Gagal menyimpan pertemuan:", err);
@@ -48,14 +48,16 @@ const FormPertemuan = ({ isOpen, onClose, data, idJadwal, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
-        <h2 className="text-xl font-semibold mb-4">
+      <div className="bg-white dark:bg-gray-900 rounded-lg p-6 w-full max-w-md shadow-lg transition-colors duration-300">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white transition-colors duration-300">
           {data ? "Edit Pertemuan" : "Tambah Pertemuan"}
         </h2>
 
         <form onSubmit={handleEditSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium">Nama Pertemuan</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-300">
+              Nama Pertemuan
+            </label>
             <input
               type="text"
               name="nama_pertemuan"
@@ -63,12 +65,14 @@ const FormPertemuan = ({ isOpen, onClose, data, idJadwal, onSuccess }) => {
               onChange={(e) =>
                 setEditForm({ ...editForm, nama_pertemuan: e.target.value })
               }
-              className="w-full border px-3 py-2 rounded mt-1"
+              className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded mt-1 transition-all duration-300"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium">Tanggal</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-300">
+              Tanggal
+            </label>
             <input
               type="date"
               name="tanggal"
@@ -76,23 +80,21 @@ const FormPertemuan = ({ isOpen, onClose, data, idJadwal, onSuccess }) => {
               onChange={(e) =>
                 setEditForm({ ...editForm, tanggal: e.target.value })
               }
-              className="w-full border px-3 py-2 rounded mt-1"
+              className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded mt-1 transition-all duration-300"
               required
             />
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-300 rounded"
-              disabled={loading}
+              className="px-4 py-2 bg-gray-300 dark:bg-zinc-600 text-gray-800 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-zinc-500 transition-colors"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded"
-              disabled={loading}
+              className="px-4 py-2 bg-amber-500 dark:bg-zinc-800 text-white dark:text-white rounded-lg hover:bg-amber-600 dark:hover:bg-zinc-500 transition-colors"
             >
               {loading ? "Menyimpan..." : "Simpan"}
             </button>

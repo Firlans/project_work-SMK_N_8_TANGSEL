@@ -190,9 +190,6 @@ const ProfileSiswa = () => {
               <div className="flex flex-col">
                 <span className="text-sm text-gray-500 dark:text-gray-300 flex items-center gap-1">
                   Alamat{" "}
-                  <span title="Editable" className="ml-1 text-amber-500">
-                    ✏️
-                  </span>
                 </span>
                 <textarea
                   value={editedData.alamat}
@@ -206,7 +203,7 @@ const ProfileSiswa = () => {
                   style={{ outline: "none" }}
                 />
                 <span className="text-xs text-amber-600 mt-1">
-                  * Field ini dapat diedit
+                  * Ganti Alamat
                 </span>
               </div>
             ) : (

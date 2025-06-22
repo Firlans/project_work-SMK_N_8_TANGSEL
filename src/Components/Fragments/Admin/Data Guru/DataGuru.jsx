@@ -1,4 +1,3 @@
-// import tetap sama kaya punyamu
 import { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import axiosClient from "../../../../axiosClient";
@@ -19,7 +18,7 @@ const DataGuru = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userPrivilege, setUserPrivilege] = useState(null);
 
-  // ⬇️ pagination & sort
+  // pagination & sort
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const [sortField, setSortField] = useState("nama");
@@ -134,14 +133,14 @@ const DataGuru = () => {
   );
 
   return (
-    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm">
+    <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-all duration-300">
       {/* Notifikasi */}
       {message.text && (
         <div
-          className={`mb-4 p-4 rounded ${
+          className={`mb-4 p-4 rounded transition-colors duration-300 ${
             message.type === "success"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
+              ? "bg-green-100 text-green-700 dark:bg-green-200/10 dark:text-green-400"
+              : "bg-red-100 text-red-700 dark:bg-red-200/10 dark:text-red-400"
           }`}
         >
           {message.text}
@@ -150,9 +149,10 @@ const DataGuru = () => {
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
           Data Guru
         </h2>
+
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <input
             type="text"
@@ -162,7 +162,7 @@ const DataGuru = () => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="border rounded px-3 py-2 text-sm sm:text-base w-full sm:w-auto"
+            className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white rounded px-3 py-2 text-sm sm:text-base w-full sm:w-auto transition-colors duration-300"
           />
           <select
             value={selectedSubject}
@@ -170,7 +170,7 @@ const DataGuru = () => {
               setSelectedSubject(e.target.value);
               setCurrentPage(1);
             }}
-            className="border rounded px-3 py-2 text-sm sm:text-base w-full sm:w-auto"
+            className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white rounded px-3 py-2 text-sm sm:text-base w-full sm:w-auto transition-colors duration-300"
           >
             <option value="all">Semua Mapel</option>
             {sortedSubjects.map(([id, name]) => (
@@ -188,16 +188,16 @@ const DataGuru = () => {
           <LoadingSpinner />
         ) : (
           <table className="min-w-full text-sm">
-            <thead className="bg-gray-100 text-gray-700">
+            <thead className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors duration-300">
               <tr>
                 <th
-                  className="px-3 py-2 text-left cursor-pointer hover:text-blue-600"
+                  className="px-3 py-2 text-left cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   onClick={() => handleSort("nip")}
                 >
                   NIP {sortField === "nip" && (sortOrder === "asc" ? "↑" : "↓")}
                 </th>
                 <th
-                  className="px-3 py-2 text-left cursor-pointer hover:text-blue-600"
+                  className="px-3 py-2 text-left cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   onClick={() => handleSort("nama")}
                 >
                   Nama Guru{" "}
@@ -212,18 +212,22 @@ const DataGuru = () => {
                 paginatedTeachers.map((teacher) => (
                   <tr
                     key={teacher.id}
-                    className="border-b hover:bg-gray-50 transition-colors"
+                    className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
                   >
-                    <td className="px-3 py-2">{teacher.nip}</td>
-                    <td className="px-3 py-2">{teacher.nama}</td>
-                    <td className="px-3 py-2">
+                    <td className="px-3 py-2 text-gray-800 dark:text-gray-100">
+                      {teacher.nip}
+                    </td>
+                    <td className="px-3 py-2 text-gray-800 dark:text-gray-100">
+                      {teacher.nama}
+                    </td>
+                    <td className="px-3 py-2 text-gray-800 dark:text-gray-100">
                       {teacher.nama_pelajaran?.join(", ") || "-"}
                     </td>
                     <td className="px-3 py-2 text-center">
                       <div className="flex gap-2 justify-center">
                         <button
                           onClick={() => handleDetail(teacher)}
-                          className="text-blue-500 hover:text-blue-700"
+                          className="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
                           title="Lihat Detail"
                         >
                           <FaEye />
@@ -232,14 +236,14 @@ const DataGuru = () => {
                           <>
                             <button
                               onClick={() => handleEdit(teacher)}
-                              className="text-yellow-500 hover:text-yellow-700"
+                              className="text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
                               title="Edit"
                             >
                               <FaEdit />
                             </button>
                             <button
                               onClick={() => handleDelete(teacher)}
-                              className="text-red-500 hover:text-red-700"
+                              className="text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
                               title="Hapus"
                             >
                               <FaTrash />
@@ -254,7 +258,7 @@ const DataGuru = () => {
                 <tr>
                   <td
                     colSpan={4}
-                    className="text-center py-4 text-gray-500 italic"
+                    className="text-center py-4 text-gray-500 dark:text-gray-400 italic"
                   >
                     Tidak ada data guru ditemukan.
                   </td>
@@ -272,10 +276,10 @@ const DataGuru = () => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`px-3 py-1 border rounded ${
+              className={`px-3 py-1 border rounded transition-colors duration-300 ${
                 currentPage === i + 1
                   ? "bg-blue-500 text-white"
-                  : "bg-white text-blue-500 hover:bg-blue-100"
+                  : "bg-white text-blue-500 hover:bg-blue-100 dark:bg-gray-800 dark:text-blue-400 dark:hover:bg-gray-700"
               }`}
             >
               {i + 1}

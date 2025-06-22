@@ -17,9 +17,9 @@ const ModalPrestasi = ({ isOpen, onClose, onSuccess, initialData }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg w-full max-w-lg relative">
-        <h2 className="text-xl font-bold mb-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-all duration-300">
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg shadow-lg relative transition-colors duration-300">
+        <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors">
           {initialData ? "Edit Prestasi" : "Tambah Prestasi"}
         </h2>
 
@@ -66,13 +66,15 @@ const ModalPrestasi = ({ isOpen, onClose, onSuccess, initialData }) => {
           />
 
           <div>
-            <label className="block text-sm">Bukti Foto</label>
+            <label className="block text-sm text-gray-700 dark:text-gray-300">
+              Bukti Foto
+            </label>
             <input
               type="file"
               name="nama_foto"
               accept="image/*"
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white px-3 py-2 rounded transition-all duration-300"
             />
             {previewImage && (
               <img
@@ -83,18 +85,18 @@ const ModalPrestasi = ({ isOpen, onClose, onSuccess, initialData }) => {
             )}
           </div>
 
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-300 rounded"
+              className="px-4 py-2 bg-gray-300 dark:bg-zinc-600 text-gray-800 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-zinc-500 transition-colors"
               disabled={loading}
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded"
+             className="px-4 py-2 bg-amber-500 dark:bg-zinc-800 text-white dark:text-white rounded-lg hover:bg-amber-600 dark:hover:bg-zinc-500 transition-colors"
               disabled={loading}
             >
               {loading ? "Menyimpan..." : "Simpan"}
@@ -108,14 +110,16 @@ const ModalPrestasi = ({ isOpen, onClose, onSuccess, initialData }) => {
 
 const InputField = ({ label, name, value, onChange, disabled }) => (
   <div>
-    <label className="block text-sm">{label}</label>
+    <label className="block text-sm text-gray-700 dark:text-gray-300">
+      {label}
+    </label>
     <input
       type="text"
       name={name}
       value={value}
       onChange={onChange}
       disabled={disabled}
-      className="w-full border px-3 py-2 rounded"
+      className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white px-3 py-2 rounded mt-1 transition-all duration-300"
       required
     />
   </div>
@@ -123,13 +127,15 @@ const InputField = ({ label, name, value, onChange, disabled }) => (
 
 const SelectField = ({ label, name, value, onChange, options, disabled }) => (
   <div>
-    <label className="block text-sm">{label}</label>
+    <label className="block text-sm text-gray-700 dark:text-gray-300">
+      {label}
+    </label>
     <select
       name={name}
       value={value}
       onChange={onChange}
       disabled={disabled}
-      className="w-full border px-3 py-2 rounded"
+      className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white px-3 py-2 rounded mt-1 transition-all duration-300"
       required
     >
       <option value="">-- Pilih --</option>

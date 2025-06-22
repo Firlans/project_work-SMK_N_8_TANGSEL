@@ -13,11 +13,8 @@ const DataWaliMurid = () => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 20;
-
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalDetail, setModalDetail] = useState(false);
   const [editingWali, setEditingWali] = useState(null);
-  const [selectedWali, setSelectedWali] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userPrivilege, setUserPrivilege] = useState(null);
 
@@ -104,30 +101,32 @@ const DataWaliMurid = () => {
   }, []);
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 lg:p-8 w-full">
+    <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-all duration-300">
       {loading ? (
         <LoadingSpinner />
       ) : (
         <div className="space-y-6">
           {/* Header & Filter */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <h2 className="text-2xl font-bold text-gray-800">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
               Data Wali Murid
             </h2>
 
             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              {/* Search */}
               <div className="relative flex-1 sm:flex-none">
                 <input
                   type="text"
                   placeholder="Cari Nama Wali atau Siswa"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full md:w-64 pl-10 pr-4 py-2 rounded-lg border border-gray-200 
-                         bg-gray-50 text-gray-700 focus:ring-2 
-                         focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full md:w-64 pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 
+                  bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-100 
+                  focus:ring-2 focus:ring-blue-500 focus:border-transparent 
+                  transition-all duration-300"
                 />
                 <svg
-                  className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+                  className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-300"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -147,8 +146,8 @@ const DataWaliMurid = () => {
                     setEditingWali(null);
                     setModalOpen(true);
                   }}
-                  className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 
-                         text-white rounded-lg transition-colors duration-200 gap-2 shadow-sm"
+                  className="
+                  bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2  flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
                 >
                   <FaPlus className="w-4 h-4" />
                   <span>Tambah Wali Murid</span>
@@ -158,14 +157,14 @@ const DataWaliMurid = () => {
           </div>
 
           {/* Table Container */}
-          <div className="relative overflow-hidden rounded-xl border border-gray-200">
+          <div className="relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 transition-all">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-gray-50 text-gray-700">
+              <table className="w-full text-sm text-left text-gray-700 dark:text-gray-100 transition-all">
+                <thead className="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
                   <tr>
                     <th className="px-4 py-3 font-medium">No.</th>
                     <th
-                      className="px-4 py-3 font-medium cursor-pointer hover:bg-gray-100 transition-colors"
+                      className="px-4 py-3 font-medium cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       onClick={() => handleSort("nama_lengkap")}
                     >
                       <div className="flex items-center gap-2">
@@ -183,11 +182,11 @@ const DataWaliMurid = () => {
                     <th className="px-4 py-3 font-medium text-center">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900">
                   {paginatedData.map((wali, index) => (
                     <tr
                       key={wali.id}
-                      className="hover:bg-gray-50 transition-colors"
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                     >
                       <td className="px-4 py-3 text-center">
                         {(currentPage - 1) * perPage + index + 1}
@@ -211,15 +210,13 @@ const DataWaliMurid = () => {
                                   setEditingWali(wali);
                                   setModalOpen(true);
                                 }}
-                                className="p-1.5 rounded-lg text-yellow-500 hover:bg-yellow-50 
-                                     transition-colors"
+                                className="p-1.5 rounded-lg text-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-900 transition-colors"
                               >
                                 <FaEdit className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => handleDelete(wali.id)}
-                                className="p-1.5 rounded-lg text-red-500 hover:bg-red-50
-                                     transition-colors"
+                                className="p-1.5 rounded-lg text-red-500 hover:bg-red-100 dark:hover:bg-red-900 transition-colors"
                               >
                                 <FaTrash className="w-4 h-4" />
                               </button>
@@ -233,7 +230,7 @@ const DataWaliMurid = () => {
                     <tr>
                       <td
                         colSpan="8"
-                        className="px-4 py-8 text-center text-gray-500"
+                        className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
                       >
                         Data tidak ditemukan.
                       </td>
@@ -252,10 +249,10 @@ const DataWaliMurid = () => {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
                       currentPage === page
                         ? "bg-blue-600 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
                     }`}
                   >
                     {page}
@@ -265,7 +262,7 @@ const DataWaliMurid = () => {
             </div>
           )}
 
-          {/* Modals */}
+          {/* Modal */}
           {modalOpen && (
             <FormWaliMurid
               siswaList={siswaList}

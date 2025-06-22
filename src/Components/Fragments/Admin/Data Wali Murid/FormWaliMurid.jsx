@@ -46,19 +46,23 @@ const FormWaliMurid = ({ siswaList, defaultData, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="bg-white p-6 w-full max-w-lg rounded shadow-lg relative">
-        <h2 className="text-xl font-bold mb-4">
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto relative transition-all duration-300">
+        <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
           {defaultData ? "Edit Wali Murid" : "Tambah Wali Murid"}
         </h2>
+
         <form onSubmit={handleSubmit} className="space-y-3">
+          {/* Nama Siswa */}
           <div>
-            <label className="block">Nama Siswa</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Nama Siswa
+            </label>
             <select
               name="id_siswa"
               value={formData.id_siswa}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
               required
+              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 transition-colors duration-300"
             >
               <option value="">-- Pilih Siswa --</option>
               {siswaList.map((siswa) => (
@@ -68,59 +72,73 @@ const FormWaliMurid = ({ siswaList, defaultData, onClose }) => {
               ))}
             </select>
             {errors.id_siswa && (
-              <p className="text-red-600 text-sm">{errors.id_siswa[0]}</p>
+              <p className="text-red-600 text-sm mt-1">{errors.id_siswa[0]}</p>
             )}
           </div>
 
+          {/* Nama Wali */}
           <div>
-            <label className="block">Nama Wali</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Nama Wali
+            </label>
             <input
               type="text"
               name="nama_lengkap"
               value={formData.nama_lengkap}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 transition-colors duration-300"
             />
             {errors.nama_lengkap && (
-              <p className="text-red-600 text-sm">{errors.nama_lengkap[0]}</p>
+              <p className="text-red-600 text-sm mt-1">
+                {errors.nama_lengkap[0]}
+              </p>
             )}
           </div>
 
+          {/* No Telepon */}
           <div>
-            <label className="block">No Telepon</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              No Telepon
+            </label>
             <input
               type="text"
               name="no_telp"
               value={formData.no_telp}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 transition-colors duration-300"
             />
             {errors.no_telp && (
-              <p className="text-red-600 text-sm">{errors.no_telp[0]}</p>
+              <p className="text-red-600 text-sm mt-1">{errors.no_telp[0]}</p>
             )}
           </div>
 
+          {/* Email */}
           <div>
-            <label className="block">Email</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Email
+            </label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 transition-colors duration-300"
             />
             {errors.email && (
-              <p className="text-red-600 text-sm">{errors.email[0]}</p>
+              <p className="text-red-600 text-sm mt-1">{errors.email[0]}</p>
             )}
           </div>
 
+          {/* Status */}
           <div>
-            <label className="block">Status</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Status
+            </label>
             <select
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 transition-colors duration-300"
             >
               <option value="">-- Pilih Status --</option>
               <option value="ayah">Ayah</option>
@@ -128,34 +146,38 @@ const FormWaliMurid = ({ siswaList, defaultData, onClose }) => {
               <option value="wali murid">Wali Murid</option>
             </select>
             {errors.status && (
-              <p className="text-red-600 text-sm">{errors.status[0]}</p>
+              <p className="text-red-600 text-sm mt-1">{errors.status[0]}</p>
             )}
           </div>
 
+          {/* Alamat */}
           <div>
-            <label className="block">Alamat</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Alamat
+            </label>
             <textarea
               name="alamat"
               value={formData.alamat}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 transition-colors duration-300"
             />
             {errors.alamat && (
-              <p className="text-red-600 text-sm">{errors.alamat[0]}</p>
+              <p className="text-red-600 text-sm mt-1">{errors.alamat[0]}</p>
             )}
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded"
-            >
-              {defaultData ? "Update" : "Simpan"}
-            </button>
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-2 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="bg-gray-400 text-white px-4 py-2 rounded"
+              className="px-4 py-2 bg-gray-300 dark:bg-zinc-600 text-gray-800 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-zinc-500 transition-colors"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-amber-500 dark:bg-zinc-800 text-white dark:text-white rounded-lg hover:bg-amber-600 dark:hover:bg-zinc-500 transition-colors"
             >
               Batal
             </button>

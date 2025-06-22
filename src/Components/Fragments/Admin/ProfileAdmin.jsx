@@ -135,27 +135,36 @@ const ProfileAdmin = () => {
         </div>
       )}
 
-      <div className="bg-white p-6 rounded-xl shadow-sm">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Profile Admin</h2>
-          {!isEditing ? (
+      {/* Main Content */}
+      <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-colors duration-300">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">
+            Profile Admin
+          </h2>
+          {!isEditing && (
             <Button
               onClick={handleEdit}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
+              className="w-full sm:w-auto px-4 py-2 bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-slate-700 transition-colors duration-200"
             >
               Edit Profile
             </Button>
-          ) : (
-            <div className="space-x-2">
+          )}
+          {isEditing && (
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <Button
-                onClick={() => setIsEditing(false)}
-                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200"
+                onClick={() => {
+                  setIsEditing(false);
+                  setEditedData(null);
+                }}
+                className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200"
               >
                 Cancel
               </Button>
+
               <Button
                 onClick={handleSave}
-                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200"
+                className="w-full sm:w-auto px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200"
               >
                 Save
               </Button>
@@ -192,43 +201,57 @@ const ProfileAdmin = () => {
 
           {/* Right Column - Editable fields */}
           <div className="space-y-4">
-            <div className="flex flex-col">
-              <span className="text-sm text-gray-500">Alamat</span>
-              {isEditing ? (
-                <input
-                  type="text"
+            {/* Alamat */}
+            {isEditing ? (
+              <div className="flex flex-col">
+                <span className="text-sm text-gray-500 dark:text-gray-300 flex items-center gap-1">
+                  Alamat{" "}
+                </span>
+                <textarea
                   value={editedData.alamat}
                   onChange={(e) =>
                     setEditedData({ ...editedData, alamat: e.target.value })
                   }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                    focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                  className="mt-1 block w-full rounded-md border-2 border-amber-400 dark:border-amber-500 shadow-sm 
+          bg-amber-50 dark:bg-gray-800 text-sm sm:text-base text-gray-900 dark:text-white
+          focus:border-blue-500 focus:ring-blue-500 transition resize-none"
+                  rows={2}
+                  style={{ outline: "none" }}
                 />
-              ) : (
-                <span className="font-medium text-sm sm:text-base">
-                  {profileData?.data?.alamat}
+                <span className="text-xs text-amber-600 mt-1">
+                  * Ganti Alamat
                 </span>
-              )}
-            </div>
-
-            <div className="flex flex-col">
-              <span className="text-sm text-gray-500">Nomor Telepon</span>
-              {isEditing ? (
+              </div>
+            ) : (
+              <ProfileField label="Alamat" value={profileData?.data?.alamat} />
+            )}
+            {/* Nomor Telepon */}
+            {isEditing ? (
+              <div className="flex flex-col">
+                <span className="text-sm text-gray-500 dark:text-gray-300 flex items-center gap-1">
+                  Nomor Telepon
+                </span>
                 <input
                   type="tel"
                   value={editedData.no_telp}
                   onChange={(e) =>
                     setEditedData({ ...editedData, no_telp: e.target.value })
                   }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                    focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                  className="mt-1 block w-full rounded-md border-2 border-amber-400 dark:border-amber-500 shadow-sm 
+        bg-amber-50 dark:bg-gray-800 text-sm sm:text-base text-gray-900 dark:text-white
+        focus:border-blue-500 focus:ring-blue-500 transition"
+                  style={{ outline: "none" }}
                 />
-              ) : (
-                <span className="font-medium text-sm sm:text-base">
-                  {maskPhoneNumber(profileData?.data?.no_telp)}
+                <span className="text-xs text-amber-600 mt-1">
+                  * Ganti nomor telepon
                 </span>
-              )}
-            </div>
+              </div>
+            ) : (
+              <ProfileField
+                label="Nomor Telepon"
+                value={profileData?.data?.no_telp}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -239,7 +262,7 @@ const ProfileAdmin = () => {
 // Helper component for profile fields
 const ProfileField = ({ label, value, isEditing, editValue, onChange }) => (
   <div className="flex flex-col">
-    <span className="text-sm text-gray-500">{label}</span>
+    <span className="text-sm text-gray-500 dark:text-gray-300">{label}</span>
     {isEditing && onChange ? (
       <input
         type={label.toLowerCase().includes("email") ? "email" : "text"}
@@ -249,7 +272,9 @@ const ProfileField = ({ label, value, isEditing, editValue, onChange }) => (
           focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
       />
     ) : (
-      <span className="font-medium text-sm sm:text-base">{value}</span>
+      <span className="font-medium text-sm sm:text-base text-gray-800 dark:text-white">
+        {value}
+      </span>
     )}
   </div>
 );

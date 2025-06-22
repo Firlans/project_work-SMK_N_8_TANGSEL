@@ -23,6 +23,7 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
       id_kelas: "",
     },
   });
+  const [kelasList, setKelasList] = useState([]);
 
   // State untuk privileges
   const [privileges, setPrivileges] = useState({
@@ -76,6 +77,10 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
       }
     }
   }, [mode, user]);
+
+  useEffect(() => {
+    axiosClient.get("/kelas").then((res) => setKelasList(res.data.data));
+  }, []);
 
   // Handle perubahan data profile
   const handleDataChange = (field, value) => {
@@ -251,37 +256,39 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
       {/* Notification */}
       {notification.show && (
         <div
-          className={`
-          fixed top-4 right-4 z-50
-          px-6 py-3 rounded-lg shadow-lg
-          transform transition-all duration-500 ease-in-out
-          ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}
-          text-white text-sm font-medium
-        `}
+          className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out
+        ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}
+        text-white text-sm font-medium`}
         >
           {notification.message}
         </div>
       )}
-      <div className="bg-white p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto relative">
-        <h2 className="text-xl font-bold mb-4">
+
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto relative transition-all duration-300">
+        <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors duration-300">
           {mode === "create" ? "Tambah User Baru" : "Edit User"}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Form fields */}
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4 transition-all duration-300"
+        >
+          {/* Field wrapper */}
           <div>
-            <label className="block mb-1">Nama Lengkap</label>
+            <label className="block mb-1 text-gray-700 dark:text-gray-300 transition-colors">
+              Nama Lengkap
+            </label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className={`w-full border rounded p-2 ${
+              className={`w-full border rounded p-2 dark:bg-gray-800 dark:border-gray-700 dark:text-white transition-colors duration-300 ${
                 errors.name ? "border-red-500" : ""
               }`}
             />
@@ -289,16 +296,17 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
               <span className="text-red-500 text-sm">{errors.name}</span>
             )}
           </div>
-
           <div>
-            <label className="block mb-1">Email</label>
+            <label className="block mb-1 text-gray-700 dark:text-gray-300 transition-colors">
+              Email
+            </label>
             <input
               type="email"
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              className={`w-full border rounded p-2 ${
+              className={`w-full border rounded p-2 dark:bg-gray-800 dark:border-gray-700 dark:text-white transition-colors duration-300 ${
                 errors.email ? "border-red-500" : ""
               }`}
             />
@@ -306,9 +314,8 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
               <span className="text-red-500 text-sm">{errors.email}</span>
             )}
           </div>
-
           <div>
-            <label className="block mb-1">
+            <label className="block mb-1 text-gray-700 dark:text-gray-300 transition-colors">
               Password{" "}
               {mode === "edit" && "(Kosongkan jika tidak ingin mengubah)"}
             </label>
@@ -319,14 +326,14 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
-                className={`w-full border rounded p-2 pr-10 ${
+                className={`w-full border rounded p-2 pr-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white transition-colors duration-300 ${
                   errors.password ? "border-red-500" : ""
                 }`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -335,14 +342,14 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
               <span className="text-red-500 text-sm">{errors.password}</span>
             )}
           </div>
-
           <div>
-            <label className="block mb-1">Profile</label>
+            <label className="block mb-1 text-gray-700 dark:text-gray-300 transition-colors">
+              Profile
+            </label>
             <select
               value={formData.profile}
               onChange={(e) => {
                 setFormData({ ...formData, profile: e.target.value });
-                // Reset privileges saat ganti profile
                 if (e.target.value === "siswa") {
                   setPrivileges({
                     is_admin: false,
@@ -352,179 +359,169 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
                   });
                 }
               }}
-              className="w-full border rounded p-2"
+              className="w-full border rounded p-2 dark:bg-gray-800 dark:border-gray-700 dark:text-white transition-colors duration-300"
             >
               <option value="guru">Guru</option>
               <option value="siswa">Siswa</option>
             </select>
           </div>
 
-          {/* Privileges section */}
+          {/* Privileges */}
           {formData.profile === "guru" && (
             <div className="space-y-2">
-              <label className="block font-medium">Privileges</label>
+              <label className="block font-medium text-gray-700 dark:text-gray-300 transition-colors">
+                Privileges
+              </label>
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="is_admin"
-                    checked={privileges.is_admin}
-                    onChange={() => handlePrivilegeChange("is_admin")}
-                  />
-                  <label htmlFor="is_admin">Admin</label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="is_guru"
-                    checked={privileges.is_guru}
-                    onChange={() => handlePrivilegeChange("is_guru")}
-                  />
-                  <label htmlFor="is_guru">Guru</label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="is_conselor"
-                    checked={privileges.is_conselor}
-                    onChange={() => handlePrivilegeChange("is_conselor")}
-                  />
-                  <label htmlFor="is_conselor">Konselor</label>
-                </div>
+                {["is_admin", "is_guru", "is_conselor"].map((key) => (
+                  <div key={key} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id={key}
+                      checked={privileges[key]}
+                      onChange={() => handlePrivilegeChange(key)}
+                    />
+                    <label
+                      htmlFor={key}
+                      className="text-gray-700 dark:text-gray-300 transition-colors capitalize"
+                    >
+                      {key.replace("is_", "").replace("_", " ")}
+                    </label>
+                  </div>
+                ))}
               </div>
             </div>
           )}
 
-          {/* Fields kondisional berdasarkan profile */}
-          <div className="space-y-4">
-            <div>
-              <label className="block mb-1">Tanggal Lahir</label>
-              <input
-                type="date"
-                value={formData.data.tanggal_lahir}
-                onChange={(e) =>
-                  handleDataChange("tanggal_lahir", e.target.value)
-                }
-                className={`w-full border rounded p-2 ${
-                  errors.tanggal_lahir ? "border-red-500" : ""
-                }`}
-              />
-              {errors.tanggal_lahir && (
-                <span className="text-red-500 text-sm">
-                  {errors.tanggal_lahir}
-                </span>
-              )}
-            </div>
+          {/* Data User */}
+          {mode === "create" && (
+            <div className="space-y-4">
+              {[
+                { label: "Tanggal Lahir", type: "date", name: "tanggal_lahir" },
+                { label: "Alamat", type: "textarea", name: "alamat" },
+                { label: "No. Telepon", type: "tel", name: "no_telp" },
+                {
+                  label: "Jenis Kelamin",
+                  type: "select",
+                  name: "jenis_kelamin",
+                  options: ["L", "P"],
+                },
+              ].map((field) => (
+                <div key={field.name}>
+                  <label className="block mb-1 text-gray-700 dark:text-gray-300 transition-colors">
+                    {field.label}
+                  </label>
+                  {field.type === "textarea" ? (
+                    <textarea
+                      value={formData.data[field.name]}
+                      onChange={(e) =>
+                        handleDataChange(field.name, e.target.value)
+                      }
+                      className={`w-full border rounded p-2 dark:bg-gray-800 dark:border-gray-700 dark:text-white transition-colors duration-300 ${
+                        errors[field.name] ? "border-red-500" : ""
+                      }`}
+                    />
+                  ) : field.type === "select" ? (
+                    <select
+                      value={formData.data[field.name]}
+                      onChange={(e) =>
+                        handleDataChange(field.name, e.target.value)
+                      }
+                      className="w-full border rounded p-2 dark:bg-gray-800 dark:border-gray-700 dark:text-white transition-colors duration-300"
+                    >
+                      {field.options.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt === "L" ? "Laki-laki" : "Perempuan"}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type={field.type}
+                      value={formData.data[field.name]}
+                      onChange={(e) =>
+                        handleDataChange(field.name, e.target.value)
+                      }
+                      className={`w-full border rounded p-2 dark:bg-gray-800 dark:border-gray-700 dark:text-white transition-colors duration-300 ${
+                        errors[field.name] ? "border-red-500" : ""
+                      }`}
+                    />
+                  )}
+                  {errors[field.name] && (
+                    <span className="text-red-500 text-sm">
+                      {errors[field.name]}
+                    </span>
+                  )}
+                </div>
+              ))}
 
-            <div>
-              <label className="block mb-1">Alamat</label>
-              <textarea
-                value={formData.data.alamat}
-                onChange={(e) => handleDataChange("alamat", e.target.value)}
-                className={`w-full border rounded p-2 ${
-                  errors.alamat ? "border-red-500" : ""
-                }`}
-              />
-              {errors.alamat && (
-                <span className="text-red-500 text-sm">{errors.alamat}</span>
-              )}
-            </div>
-
-            <div>
-              <label className="block mb-1">No. Telepon</label>
-              <input
-                type="tel"
-                value={formData.data.no_telp}
-                onChange={(e) => handleDataChange("no_telp", e.target.value)}
-                className={`w-full border rounded p-2 ${
-                  errors.no_telp ? "border-red-500" : ""
-                }`}
-              />
-              {errors.no_telp && (
-                <span className="text-red-500 text-sm">{errors.no_telp}</span>
-              )}
-            </div>
-            <div>
-              <label className="block mb-1">Jenis Kelamin</label>
-              <select
-                value={formData.data.jenis_kelamin}
-                onChange={(e) =>
-                  handleDataChange("jenis_kelamin", e.target.value)
-                }
-                className="w-full border rounded p-2"
-              >
-                <option value="L">Laki-laki</option>
-                <option value="P">Perempuan</option>
-              </select>
-            </div>
-
-            {formData.profile === "guru" ? (
-              <div>
-                <label className="block mb-1">NIP</label>
-                <input
-                  type="text"
-                  value={formData.data.nip}
-                  onChange={(e) => handleDataChange("nip", e.target.value)}
-                  className="w-full border rounded p-2"
-                />
-              </div>
-            ) : (
-              <>
+              {/* Conditional Fields */}
+              {formData.profile === "guru" ? (
                 <div>
-                  <label className="block mb-1">NISN</label>
+                  <label className="block mb-1 text-gray-700 dark:text-gray-300 transition-colors">
+                    NIP
+                  </label>
                   <input
                     type="text"
-                    value={formData.data.nisn}
-                    onChange={(e) => handleDataChange("nisn", e.target.value)}
-                    className="w-full border rounded p-2"
+                    value={formData.data.nip}
+                    onChange={(e) => handleDataChange("nip", e.target.value)}
+                    className="w-full border rounded p-2 dark:bg-gray-800 dark:border-gray-700 dark:text-white transition-colors duration-300"
                   />
                 </div>
-                <div>
-                  <label className="block mb-1">NIS</label>
-                  <input
-                    type="text"
-                    value={formData.data.nis}
-                    onChange={(e) => handleDataChange("nis", e.target.value)}
-                    className="w-full border rounded p-2"
-                  />
-                </div>
-                <div>
-                  <label className="block mb-1">Semester</label>
-                  <input
-                    type="number"
-                    value={formData.data.semester}
-                    onChange={(e) =>
-                      handleDataChange("semester", e.target.value)
-                    }
-                    className="w-full border rounded p-2"
-                  />
-                </div>
-                <div>
-                  <label className="block mb-1">ID Kelas</label>
-                  <input
-                    type="number"
-                    value={formData.data.id_kelas}
-                    onChange={(e) =>
-                      handleDataChange("id_kelas", e.target.value)
-                    }
-                    className="w-full border rounded p-2"
-                  />
-                </div>
-              </>
-            )}
-          </div>
+              ) : (
+                <>
+                  {["nisn", "nis", "semester"].map((field) => (
+                    <div key={field}>
+                      <label className="block mb-1 text-gray-700 dark:text-gray-300 transition-colors">
+                        {field.toUpperCase()}
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.data[field]}
+                        onChange={(e) =>
+                          handleDataChange(field, e.target.value)
+                        }
+                        className="w-full border rounded p-2 dark:bg-gray-800 dark:border-gray-700 dark:text-white transition-colors duration-300"
+                      />
+                    </div>
+                  ))}
+                  {/* Select Kelas */}
+                  <div>
+                    <label className="block mb-1 text-gray-700 dark:text-gray-300 transition-colors">
+                      Kelas
+                    </label>
+                    <select
+                      value={formData.data.id_kelas}
+                      onChange={(e) =>
+                        handleDataChange("id_kelas", e.target.value)
+                      }
+                      className="w-full border rounded p-2 dark:bg-gray-800 dark:border-gray-700 dark:text-white transition-colors duration-300"
+                    >
+                      <option value="">Pilih Kelas</option>
+                      {kelasList.map((kelas) => (
+                        <option key={kelas.id} value={kelas.id}>
+                          {kelas.nama_kelas}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
+          {/* Buttons */}
           <div className="flex justify-end gap-2 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded hover:bg-gray-100"
+              className="px-4 py-2 bg-gray-300 dark:bg-zinc-600 text-gray-800 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-zinc-500 transition-colors"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="px-4 py-2 bg-amber-500 dark:bg-zinc-800 text-white dark:text-white rounded-lg hover:bg-amber-600 dark:hover:bg-zinc-500 transition-colors"
             >
               {mode === "create" ? "Tambah" : "Simpan"}
             </button>

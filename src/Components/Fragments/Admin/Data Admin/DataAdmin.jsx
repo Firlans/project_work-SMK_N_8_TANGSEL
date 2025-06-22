@@ -38,10 +38,7 @@ const DataAdmin = () => {
   const handleUpdate = async (formData) => {
     try {
       console.log("Memulai proses update...", formData);
-      const response = await axiosClient.put(
-        `/admin/${formData.id}`,
-        formData
-      );
+      const response = await axiosClient.put(`/admin/${formData.id}`, formData);
       console.log("Response dari server:", response.data);
 
       if (response.data.status === "success") {
@@ -66,63 +63,67 @@ const DataAdmin = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
+    <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm transition-colors duration-300">
       {message.text && (
         <div
-          className={`mb-4 p-4 rounded ${
+          className={`mb-4 p-4 rounded transition-colors duration-300 ${
             message.type === "success"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
+              ? "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300"
+              : "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300"
           }`}
         >
           {message.text}
         </div>
       )}
+
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Data Admin</h2>
-        <div className="w-64"></div>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
+          Data Admin
+        </h2>
+        <div className="w-64" />
       </div>
+
       <div className="overflow-x-auto">
         {isLoading ? (
           <LoadingSpinner />
         ) : (
-          <table className="w-full">
+          <table className="w-full transition-all duration-300">
             <thead>
-              <tr className="bg-gray-50">
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <tr className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider transition-colors duration-300">
                   Nama Konselor
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider transition-colors duration-300">
                   Aksi
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
               {admin.length > 0 ? (
                 admin.map((a) => (
                   <tr
                     key={a.id}
-                    className="hover:bg-gray-50 transition-colors"
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-800 dark:text-gray-100 transition-colors duration-300">
                       {a.nama}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap space-x-2">
                       <button
                         onClick={() => handleDetail(a)}
-                        className="text-blue-500 hover:text-blue-700"
+                        className="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
                       >
                         <FaEye />
                       </button>
                       <button
                         onClick={() => handleEdit(a)}
-                        className="text-yellow-500 hover:text-yellow-700"
+                        className="text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
                       >
                         <FaEdit />
                       </button>
                       <button
                         onClick={() => handleDelete(a.id)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
                       >
                         <FaTrash />
                       </button>
@@ -132,8 +133,8 @@ const DataAdmin = () => {
               ) : (
                 <tr>
                   <td
-                    colSpan="3"
-                    className="px-6 py-4 text-center text-gray-500"
+                    colSpan="2"
+                    className="px-6 py-4 text-center text-gray-500 dark:text-gray-300 transition-colors"
                   >
                     Tidak ada Data Admin
                   </td>
@@ -143,6 +144,7 @@ const DataAdmin = () => {
           </table>
         )}
       </div>
+
       {/* Add Modal Component */}
       <EditAdmin
         isOpen={isEditModalOpen}

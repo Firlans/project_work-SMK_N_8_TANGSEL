@@ -118,90 +118,99 @@ const DataMapel = () => {
   }
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
+    <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-colors duration-300">
       {loading ? (
         <LoadingSpinner />
       ) : (
         <>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-gray-800">Mata Pelajaran</h2>
-            {/* Sembunyikan tombol Tambah untuk superadmin */}
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 transition-all duration-300">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors">
+              Mata Pelajaran
+            </h2>
             {!isSuperAdmin() && (
               <button
                 onClick={() => {
                   setModalData(null);
                   setIsModalOpen(true);
                 }}
-                className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+                className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2  flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
               >
-                <FaPlus /> Tambah Mata Pelajaran
+                <FaPlus className="w-4 h-4" />
+                Tambah Mata Pelajaran
               </button>
             )}
           </div>
+
+          {/* Table */}
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white rounded-lg overflow-hidden">
-              <thead className="bg-gray-50">
+            <table className="min-w-full text-sm divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 rounded-lg overflow-hidden transition-colors duration-300">
+              <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
                 <tr>
                   <th
-                    className="px-6 py-3 cursor-pointer hover:bg-gray-200"
+                    className="px-6 py-3 text-left font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     onClick={() => requestSort("id")}
                   >
                     ID {getSortIcon("id")}
                   </th>
                   <th
-                    className="px-6 py-3 cursor-pointer hover:bg-gray-200"
+                    className="px-6 py-3 text-left font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     onClick={() => requestSort("nama_pelajaran")}
                   >
                     Mata Pelajaran {getSortIcon("nama_pelajaran")}
                   </th>
                   {!isSuperAdmin() && (
-                    <>
-                      <th className="px-6 py-3">Aksi</th>
-                    </>
+                    <th className="px-6 py-3 text-center font-medium text-gray-700 dark:text-gray-300">
+                      Aksi
+                    </th>
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
                 {getSortedData().map((m) => (
-                  <tr key={m.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-center">{m.id}</td>
-                    <td className="px-6 py-4">{capitalizeEachWord(m.nama_pelajaran)}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex gap-2 justify-center">
-                        {/* Tombol Edit dan Delete hanya untuk non-superadmin */}
-                        {!isSuperAdmin() && (
-                          <>
-                            <button
-                              onClick={() => {
-                                setModalData(m);
-                                setIsModalOpen(true);
-                              }}
-                              className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
-                              aria-label="Edit user"
-                            >
-                              <FaEdit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(user.id)}
-                              className="p-1 text-red-500 hover:text-red-700 transition-colors"
-                              aria-label="Delete user"
-                            >
-                              <FaTrash className="w-4 h-4" />
-                            </button>
-                          </>
-                        )}
-                      </div>
+                  <tr
+                    key={m.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <td className="px-6 py-4 text-gray-800 dark:text-white text-center">
+                      {m.id}
                     </td>
+                    <td className="px-6 py-4 text-gray-800 dark:text-white">
+                      {capitalizeEachWord(m.nama_pelajaran)}
+                    </td>
+                    {!isSuperAdmin() && (
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() => {
+                              setModalData(m);
+                              setIsModalOpen(true);
+                            }}
+                            className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
+                            aria-label="Edit mapel"
+                          >
+                            <FaEdit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(m.id)}
+                            className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+                            aria-label="Hapus mapel"
+                          >
+                            <FaTrash className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
+          {/* Modal */}
           {isModalOpen && (
             <EditMapel
-              onClose={() => {
-                setIsModalOpen(false);
-              }}
+              onClose={() => setIsModalOpen(false)}
               initialData={modalData}
               refreshData={fetchMapel}
             />

@@ -26,23 +26,32 @@ const DetailUser = ({ user, onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">User Details</h2>
-        <div className="space-y-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50 transition-all duration-300">
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-md mx-4 sm:mx-0 transition-all duration-300">
+        <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors duration-300">
+         Detail User
+        </h2>
+
+        <div className="space-y-4 text-gray-700 dark:text-gray-100 transition-colors duration-300">
           <div>
-            <label className="font-bold">Name:</label>
+            <label className="font-bold dark:text-white transition-colors duration-300">
+              Nama:
+            </label>
             <p>{userData.name}</p>
           </div>
           <div>
-            <label className="font-bold">Email:</label>
+            <label className="font-bold dark:text-white transition-colors duration-300">
+              Email:
+            </label>
             <p>{userData.email}</p>
           </div>
           <div>
-            <label className="font-bold">Privilege:</label>
+            <label className="font-bold dark:text-white transition-colors duration-300">
+              Privilege:
+            </label>
             <p className="capitalize">{userData.profile}</p>
             {userData.privileges && (
-              <>
+              <div className="pl-4 space-y-1">
                 {userData.privileges.is_admin === 1 && <p>- Admin</p>}
                 {userData.privileges.is_guru === 1 && <p>- Guru</p>}
                 {userData.privileges.is_siswa === 1 && <p>- Siswa</p>}
@@ -50,16 +59,17 @@ const DetailUser = ({ user, onClose }) => {
                 {userData.privileges.is_superadmin === 1 && (
                   <p>- Super Admin</p>
                 )}
-              </>
+              </div>
             )}
           </div>
         </div>
+
         <div className="mt-6 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-500 text-white rounded"
+            className="px-4 py-2 bg-amber-500 dark:bg-zinc-800 text-white dark:text-white rounded-lg hover:bg-amber-600 dark:hover:bg-zinc-500 transition-colors"
           >
-            Close
+            Tutup
           </button>
         </div>
       </div>

@@ -83,82 +83,91 @@ const DataKelas = () => {
     siswaList.find((s) => s.id === id)?.nama_lengkap || "-";
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
+    <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-colors duration-300">
       {loading ? (
         <LoadingSpinner />
       ) : (
         <>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-gray-800">Data Kelas</h2>
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 transition-all duration-300">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
+              Data Kelas
+            </h2>
+
             {!isSuperAdmin() && (
-              <>
-                <button
-                  onClick={() => {
-                    setModalData(null);
-                    setIsModalOpen(true);
-                  }}
-                  className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
-                >
-                  <FaPlus /> Tambah Kelas
-                </button>
-              </>
+              <button
+                onClick={() => {
+                  setModalData(null);
+                  setIsModalOpen(true);
+                }}
+                className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2 flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
+              >
+                <FaPlus className="w-4 h-4" />
+                <span>Tambah Kelas</span>
+              </button>
             )}
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="px-6 py-3">Nama Kelas</th>
-                  <th className="px-6 py-3">Ketua Kelas</th>
+          {/* Table */}
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
+              <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
+                <tr>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
+                    Nama Kelas
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
+                    Ketua Kelas
+                  </th>
                   {!isSuperAdmin() && (
-                    <>
-                      <th className="px-6 py-3">Aksi</th>
-                    </>
+                    <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 dark:text-gray-300">
+                      Aksi
+                    </th>
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
                 {kelas.map((k) => (
-                  <tr key={k.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
+                  <tr
+                    key={k.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100">
                       {k.nama_kelas}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100">
                       {getNamaKetua(k.ketua_kelas)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                      <div className="flex gap-2 justify-center">
-                        {/* Tombol Edit dan Delete hanya untuk non-superadmin */}
-                        {!isSuperAdmin() && (
-                          <>
-                            <button
-                              onClick={() => {
-                                setModalData(k);
-                                setIsModalOpen(true);
-                              }}
-                              className="p-1 text-yellow-500 hover:text-yellow-700 transition-colors"
-                              aria-label="Edit user"
-                            >
-                              <FaEdit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(k.id)}
-                              className="p-1 text-red-500 hover:text-red-700 transition-colors"
-                              aria-label="Delete user"
-                            >
-                              <FaTrash className="w-4 h-4" />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
+                    {!isSuperAdmin() && (
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() => {
+                              setModalData(k);
+                              setIsModalOpen(true);
+                            }}
+                            className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
+                            aria-label="Edit kelas"
+                          >
+                            <FaEdit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(k.id)}
+                            className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+                            aria-label="Delete kelas"
+                          >
+                            <FaTrash className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
+          {/* Modal */}
           {isModalOpen && (
             <EditKelas
               onClose={() => setIsModalOpen(false)}
