@@ -37,15 +37,17 @@ const Sidebar = ({
       >
         {/* HEADER */}
         <div className="p-4 border-b bg-blue-50 dark:bg-gray-800">
-          <h2 className="text-xl text-center font-bold text-blue-900 dark:text-slate-50">
+          <h2 className="text-xl text-center font-bold text-slate-900 dark:text-white">
             {title}
           </h2>
           {profile && (
-            <div className="mt-2 text-sm text-gray-700 dark:text-gray-300 space-y-0.5">
+            <div className="mt-2 text-sm text-slate-700 dark:text-white space-y-0.5">
               <div className="text-center font-semibold truncate">
                 {profile.nama_lengkap || profile.nama}
               </div>
-              {profile.nis && <div className="text-center">NIS. {profile.nis}</div>}
+              {profile.nis && (
+                <div className="text-center">NIS. {profile.nis}</div>
+              )}
               {profile.kelas?.nama_kelas && (
                 <div className="text-center">{profile.kelas?.nama_kelas}</div>
               )}
@@ -67,8 +69,8 @@ const Sidebar = ({
               }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-300 ${
                 activePage === item.id
-                  ? "bg-blue-800 text-white shadow-sm"
-                  : "text-gray-700 hover:bg-blue-100 hover:text-slate-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
+                  ? "bg-blue-800 dark:bg-amber-600 text-white shadow-sm"
+                  : "text-gray-700 hover:bg-blue-100 hover:text-slate-900 dark:text-white dark:hover:bg-gray-800 dark:hover:text-white"
               }`}
             >
               <span className="text-lg">{item.icon}</span>
