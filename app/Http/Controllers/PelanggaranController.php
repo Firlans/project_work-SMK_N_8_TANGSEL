@@ -134,17 +134,19 @@ class PelanggaranController extends Controller
             $pelanggaran->update($data);
 
             if (isset($data['status']) && $data['status'] === 'proses') {
-                $siswa = Pelanggaran::select()
+                $siswa = Pelanggaran::select([
+                    'siswa.nama_lengkap',
+                    'users.email',
+                    'wali_murid.email as email_orang_tua',
+                    'wali_murid.nama_lengkap as nama_orang_tua'
+                ])
                     ->leftJoin('siswa', 'siswa.id', '=', 'pelanggaran.terlapor')
                     ->leftJoin('wali_murid', 'wali_murid.id_siswa', '=', 'siswa.id')
                     ->leftJoin('users', 'users.id', '=', 'siswa.user_id')
                     ->where('pelanggaran.id', $pelanggaran->id)
-                    ->first([
-                        'siswa.nama_lengkap',
-                        'users.email',
-                        'wali_murid.email as email_orang_tua',
-                        'wali_murid.nama_lengkap as nama_orang_tua'
-                    ]);
+                    ->first();
+
+                \Log::info('info pelanggaran: ' . json_encode($siswa));
                 if ($siswa) {
                     $parentName = $siswa->nama_orang_tua ?? 'Orang Tua/Wali';
                     $studentName = $siswa->nama_lengkap ?? '-';

@@ -16,7 +16,9 @@ return [
     'allowed_origins' => [
         'http://localhost:5173',
         'http://localhost:8000',
-        'https://*.ngrok-free.app'
+        // 'https://*.ngrok-free.app',
+        // 'https://x61n12fl-5173.asse.devtunnels.ms'
+        // '*'
     ],
 
     'allowed_origins_patterns' => [],

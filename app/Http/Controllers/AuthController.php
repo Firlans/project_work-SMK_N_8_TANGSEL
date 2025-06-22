@@ -7,6 +7,7 @@ use App\Models\Guru;
 use App\Models\Privilege;
 use App\Models\Siswa;
 use App\Models\User;
+use App\Services\FonnteService;
 use App\Traits\ApiResponseHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -21,7 +22,12 @@ use function GuzzleHttp\json_encode;
 class AuthController extends Controller
 {
     use ApiResponseHandler;
+    protected $fonnte;
 
+    public function __construct(FonnteService $fonnte)
+    {
+        $this->fonnte = $fonnte;
+    }
     // User registration
     public function register(Request $request)
     {
@@ -53,10 +59,10 @@ class AuthController extends Controller
 
         try {
             $token = JWTAuth::attempt($credentials);
-            
+
             if (!$token) {
                 \Log::warning('Gagal login, credentials salah atau user tidak ditemukan.', $credentials);
-                
+
                 return response()->json(
                     [
                         'status' => 'fail',
@@ -192,14 +198,13 @@ class AuthController extends Controller
                     'message' => 'invalid credential',
                 ], 401);
             }
-            \Log::info('info '. json_encode($request->has(['nisn', 'no_telp'])));
             $siswa = Siswa::select('siswa.*')
-            ->leftJoin('wali_murid', 'wali_murid.id_siswa', '=', 'siswa.id')
-            // ->where('siswa.nisn', '=', $request->nisn)
-            ->where('wali_murid.no_telp', '=', $request->no_telp)
-            ->first();
+                ->leftJoin('wali_murid', 'wali_murid.id_siswa', '=', 'siswa.id')
+                ->where('siswa.nisn', '=', $request->nisn)
+                ->where('wali_murid.no_telp', '=', $request->no_telp)
+                ->first();
 
-            if(!$siswa){
+            if (!$siswa) {
                 return response()->json([
                     'status' => 'fail',
                     'message' => 'invalid credential',
@@ -208,7 +213,7 @@ class AuthController extends Controller
 
             $user = User::find($siswa->user_id);
 
-            if(!$user){
+            if (!$user) {
                 return response()->json([
                     'status' => 'fail',
                     'message' => 'invalid credential',
@@ -217,16 +222,28 @@ class AuthController extends Controller
             $user->load('privileges');
 
             $token = JWTAuth::claims(['profile' => $user->profile])->fromUser($user);
-
             if (!$token) {
                 return response()->json([
                     'status' => 'fail',
                     'message' => 'invalid credential',
                 ], 401);
             }
-            $host = env('APP_URL', 'http://localhost:8000');
+
+            $host = env('FRONTEND_URL', 'https://x61n12fl-5173.asse.devtunnels.ms');
             $link = "{$host}/login/orang-tua?token={$token}";
 
+            // Format nomor WA
+            $noTelp = preg_replace('/[^0-9]/', '', $request->no_telp); // hanya angka
+            if (strpos($noTelp, '0') === 0) {
+                $noTelp = '62' . substr($noTelp, 1); // ubah 08xxx jadi 628xxx
+            }
+
+            $pesan = "Halo, berikut adalah link akses login orang tua untuk siswa *{$siswa->nama_lengkap}*: \n\n{$link}\n\nHarap simpan link ini baik-baik.";
+
+            // Kirim via Fonnte
+            $this->fonnte->sendMessage($noTelp, $pesan);
+
+            \Log::info('Link akses dikirim ke WhatsApp: ' . $noTelp);
             return response()->json([
                 'status' => 'success',
                 'message' => 'Akses di kirim via Whatsapp'
@@ -234,7 +251,6 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Could not create token'], 500);
         }
-
     }
     public function loginOrangTuaByEmail(Request $request)
     {
@@ -245,26 +261,26 @@ class AuthController extends Controller
                     'message' => 'invalid credential',
                 ], 401);
             }
-            \Log::info('info '. json_encode($request->has(['nisn', 'email'])));
+            \Log::info('info ' . json_encode($request->has(['nisn', 'email'])));
             $siswa = Siswa::select('siswa.*', 'wali_murid.nama_lengkap')
-            ->leftJoin('wali_murid', 'wali_murid.id_siswa', '=', 'siswa.id')
-            // ->where('siswa.nisn', '=', $request->nisn)
-            ->where('wali_murid.email', '=', $request->email)
-            ->first();
+                ->leftJoin('wali_murid', 'wali_murid.id_siswa', '=', 'siswa.id')
+                // ->where('siswa.nisn', '=', $request->nisn)
+                ->where('wali_murid.email', '=', $request->email)
+                ->first();
 
-            if(!$siswa){
+            if (!$siswa) {
                 return response()->json([
                     'status' => 'fail',
-                    'message' => 'invalid credential',
+                    'message' => 'siswa tidak ditemukan',
                 ], 401);
             }
 
             $user = User::find($siswa->user_id);
 
-            if(!$user){
+            if (!$user) {
                 return response()->json([
                     'status' => 'fail',
-                    'message' => 'invalid credential',
+                    'message' => 'user tidak ditemukan',
                 ], 401);
             }
             $user->load('privileges');
@@ -274,14 +290,14 @@ class AuthController extends Controller
             if (!$token) {
                 return response()->json([
                     'status' => 'fail',
-                    'message' => 'invalid credential',
+                    'message' => 'token gagal dibuat',
                 ], 401);
             }
-            $url = env('FRONTEND_URL', 'http://localhost');
+            $url = env('FRONTEND_URL', 'https://x61n12fl-5173.asse.devtunnels.ms');
             $link = "{$url}/login/orang-tua?token={$token}";
 
             $send = Mail::to($request->email)->send(new AccessParent($link, $siswa->nama_lengkap));
-            \Log::info('terkirim'. json_encode($send));
+            \Log::info('terkirim' . json_encode($link));
             return response()->json([
                 'status' => 'success',
                 'message' => 'Akses di kirim via Email'
