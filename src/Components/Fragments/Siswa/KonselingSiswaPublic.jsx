@@ -27,32 +27,33 @@ const KonselingSiswaPublic = () => {
   };
 
   return (
-    <div className="px-4 py-6 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+    <div className="bg-white dark:bg-gray-900 shadow-lg rounded-xl p-6 transition-colors duration-300">
       {/* Back Button */}
       <div className="mb-6 flex items-center">
         <button
           onClick={() => navigate(-1)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm hover:bg-blue-700 transition"
+          className="px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm bg-amber-500 dark:bg-slate-600 text-white hover:bg-amber-600 dark:hover:bg-slate-700 transition-all duration-300"
         >
           <IoChevronBackSharp size={18} />
           <span>Kembali</span>
         </button>
       </div>
 
-      {/* Header dan Tombol Buat Chat Room */}
+      {/* Header & Create Room Button */}
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-6 transition-colors">
           Daftar Chat Room Public
         </h1>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium shadow"
+          className="px-4 py-2 rounded-lg font-medium shadow bg-amber-500 dark:bg-slate-600 text-white hover:bg-amber-600 dark:hover:bg-slate-700 transition-all duration-300"
         >
           + Buat Chat Room
         </button>
       </div>
 
-      <div className="bg-white shadow-lg rounded-xl p-6">
+      {/* Chat Room List */}
+      <div className="rounded-xl p-6">
         <ChatRoomList
           role="siswa"
           idUser={idSiswa}
@@ -71,7 +72,7 @@ const KonselingSiswaPublic = () => {
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onRoomCreated={() => setRefreshKey((k) => k + 1)}
-        isPrivate={false} // mode public
+        isPrivate={false}
       />
 
       {/* Modal Edit */}

@@ -115,17 +115,17 @@ const JadwalSiswa = () => {
   return (
     <div className="space-y-6 sm:space-y-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">
           JADWAL SISWA
         </h3>
         <button
           onClick={handleExport}
           disabled={!!exportProgress}
           className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700 text-sm font-semibold transition
-            ${exportProgress ? "opacity-60 cursor-not-allowed" : ""}`}
+        ${exportProgress ? "opacity-60 cursor-not-allowed" : ""}`}
         >
           <PiExportBold size={18} />
-          {exportProgress ? "Mengekspor..." : "Export Jadwal (PDF)"}
+          {exportProgress ? "Mengekspor..." : "Export Jadwal"}
         </button>
       </div>
 
@@ -136,40 +136,42 @@ const JadwalSiswa = () => {
         return (
           <div
             key={idHari}
-            className="bg-white p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+            className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-500 ease-in-out"
           >
-            <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-800">
+            <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-800 dark:text-white transition-colors duration-500 ease-in-out">
               {namaHari}
             </h3>
+
             <div className="overflow-x-auto -mx-4 sm:mx-0">
               <div className="inline-block min-w-full align-middle">
-                <table className="min-w-full table-fixed divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700 transition-all duration-500 ease-in-out">
+                  <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-500 ease-in-out">
                     <tr>
-                      <th className="w-1/4 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
+                      <th className="w-1/4 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors duration-500 ease-in-out">
                         Waktu
                       </th>
-                      <th className="w-2/5 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
+                      <th className="w-2/5 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors duration-500 ease-in-out">
                         Mata Pelajaran
                       </th>
-                      <th className="w-1/3 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500">
+                      <th className="w-1/3 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors duration-500 ease-in-out">
                         Guru
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 bg-white">
+
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-500 ease-in-out">
                     {rows.map((row, index) => (
                       <tr
                         key={index}
-                        className="hover:bg-gray-50 transition-colors"
+                        className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300 ease-in-out"
                       >
-                        <td className="w-1/4 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 whitespace-nowrap">
+                        <td className="w-1/4 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap transition-colors duration-500 ease-in-out">
                           {row.waktu}
                         </td>
-                        <td className="w-2/5 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 truncate">
+                        <td className="w-2/5 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 dark:text-gray-100 truncate transition-colors duration-500 ease-in-out">
                           {row.mapel}
                         </td>
-                        <td className="w-1/3 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 truncate">
+                        <td className="w-1/3 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 dark:text-gray-100 truncate transition-colors duration-500 ease-in-out">
                           {row.guru}
                         </td>
                       </tr>
@@ -181,6 +183,7 @@ const JadwalSiswa = () => {
           </div>
         );
       })}
+
       {exportProgress && <ExportLoadingModal progress={exportProgress} />}
     </div>
   );
