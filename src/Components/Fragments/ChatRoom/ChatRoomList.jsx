@@ -8,6 +8,7 @@ import {
 } from "../../../services/chatRoomService";
 import { fetchAllStudents } from "../../../services/chatRoomService";
 import ChatRoomCard from "./ChatRoomCard";
+import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 
 const ChatRoomList = ({
   role,
@@ -85,11 +86,11 @@ const ChatRoomList = ({
     }
   };
 
-  if (loading) return <p className="text-center">Loading chat rooms...</p>;
+  if (loading) return <LoadingSpinner />;
 
   if (rooms.length === 0)
     return (
-      <p className="text-center text-gray-400">
+      <p className="text-center text-slate-900 dark:text-white">
         Belum ada chat room {isPrivate ? "private" : "publik"}
       </p>
     );

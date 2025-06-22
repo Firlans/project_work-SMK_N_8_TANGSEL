@@ -39,25 +39,28 @@ const ChatRoomHeader = ({ chatRoomId, isPrivate = false }) => {
   }, [chatRoomId, isPrivate]);
 
   return (
-    <div className="relative bg-white border-b rounded-t-2xl">
+    <div className="relative bg-white dark:bg-gray-900 border-b dark:border-gray-700 rounded-t-2xl transition-colors duration-300">
       <div className="py-3 px-4">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             aria-label="Kembali"
           >
-            <IoChevronBackSharp size={20} className="text-gray-600" />
+            <IoChevronBackSharp
+              size={20}
+              className="text-gray-600 dark:text-gray-300"
+            />
           </button>
 
-          <div className="bg-gradient-to-br from-blue-100 to-blue-200 p-2.5 rounded-xl">
+          <div className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-indigo-600 dark:to-indigo-700 p-2.5 rounded-xl transition-all">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="w-6 h-6 text-blue-600"
+              className="w-6 h-6 text-blue-600 dark:text-white"
             >
               <path
                 strokeLinecap="round"
@@ -68,10 +71,10 @@ const ChatRoomHeader = ({ chatRoomId, isPrivate = false }) => {
           </div>
 
           <div className="flex-1">
-            <h2 className="text-base font-medium text-gray-800">
+            <h2 className="text-base font-medium text-gray-800 dark:text-white transition-colors">
               {room?.name || "Tanpa Judul"}
             </h2>
-            <p className="text-sm text-gray-500 flex items-center gap-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2 transition-colors">
               {user?.is_conselor ? (
                 isPrivate ? (
                   <span className="flex items-center gap-1.5">

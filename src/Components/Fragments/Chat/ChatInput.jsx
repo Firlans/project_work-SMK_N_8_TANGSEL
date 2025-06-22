@@ -10,14 +10,16 @@ const ChatInput = ({ onSend }) => {
   };
 
   return (
-    <div className="w-full bg-white/95 backdrop-blur-md">
+    <div className="w-full bg-white dark:bg-gray-900/90 backdrop-blur-md transition-colors duration-300">
       <div className="w-full">
         <div className="relative flex items-center gap-2">
           <input
-            className="w-full bg-gray-50 rounded-lg px-4 py-3 pr-12 
-                     border border-gray-200 focus:ring-2 focus:ring-blue-400 
-                     placeholder:text-gray-400 text-gray-600
-                     transition-all duration-200"
+            className="w-full bg-gray-50 dark:bg-gray-800 rounded-lg px-4 py-3 pr-12 
+          border border-gray-200 dark:border-gray-700 
+          focus:ring-2 focus:ring-blue-400 
+          placeholder:text-gray-400 dark:placeholder:text-gray-500 
+          text-gray-700 dark:text-gray-200
+          transition-all duration-200"
             placeholder="Ketik pesan anda..."
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -25,10 +27,9 @@ const ChatInput = ({ onSend }) => {
           />
           <button
             onClick={handleSend}
-            className="absolute right-2 p-2 rounded-lg bg-blue-500 
-                     hover:bg-blue-600 text-white transition-all 
-                     duration-200 active:scale-95 disabled:opacity-50
-                     disabled:cursor-not-allowed"
+            className="absolute right-2 p-2 rounded-lg bg-blue-500 dark:bg-indigo-600
+          hover:bg-blue-600 text-white transition-all 
+          duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!text.trim()}
           >
             <svg

@@ -81,31 +81,37 @@ const ChatRoomForm = ({
       isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel="Buat Chat Room"
-      className="bg-white max-w-md mx-auto mt-32 p-6 rounded-xl shadow-xl"
+      className="bg-white dark:bg-gray-700 max-w-md mx-auto mt-32 p-6 rounded-xl shadow-xl transition-colors duration-300"
       overlayClassName="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
     >
-      <h2 className="text-xl font-bold mb-4">
+      <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors">
         {isPrivate ? "Buat Chat Room Private" : "Buat Chat Room Publik"}
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Nama Chat Room */}
         <div>
-          <label className="block text-sm font-medium">Nama Chat Room</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">
+            Nama Chat Room
+          </label>
           <input
             value={roomName}
             onChange={(e) => setRoomName(e.target.value)}
-            className="w-full px-3 py-2 border rounded-lg"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
             placeholder="Contoh: Konseling Pribadi"
             required
           />
         </div>
 
+        {/* Pilih Konselor */}
         <div>
-          <label className="block text-sm font-medium">Pilih Konselor</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">
+            Pilih Konselor
+          </label>
           <select
             value={selectedConselorId}
             onChange={(e) => setSelectedConselorId(e.target.value)}
-            className="w-full px-3 py-2 border rounded-lg"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 transition-all"
             required
           >
             <option value="">-- Pilih Konselor --</option>
@@ -117,18 +123,19 @@ const ChatRoomForm = ({
           </select>
         </div>
 
+        {/* Tombol Aksi */}
         <div className="flex justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-gray-300 rounded-lg"
+            className="px-4 py-2 bg-gray-300 dark:bg-zinc-600 text-gray-800 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-zinc-500 transition-colors"
           >
             Batal
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+            className="px-4 py-2 bg-amber-500 dark:bg-zinc-800 text-white dark:text-white rounded-lg hover:bg-amber-600 dark:hover:bg-zinc-500 transition-colors"
           >
             {loading ? "Membuat..." : "Buat"}
           </button>

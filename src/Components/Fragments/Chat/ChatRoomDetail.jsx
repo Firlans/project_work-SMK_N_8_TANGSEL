@@ -201,12 +201,15 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
 
   return (
     <div className="w-full max-w-4xl mx-auto h-[90vh] p-4 md:p-6 flex flex-col">
-      <div className="bg-white rounded-2xl shadow-lg flex flex-col h-full">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg flex flex-col h-full transition-colors duration-300">
         <ChatRoomHeader chatRoomId={id} isPrivate={isPrivate} />
-        <div className="flex-1 overflow-y-auto px-4 py-3 bg-gray-50/30 scroll-smooth">
+
+        <div className="flex-1 overflow-y-auto px-4 py-3 bg-gray-50 dark:bg-gray-800/70 scroll-smooth transition-colors duration-300">
           {loading ? (
             <div className="flex items-center justify-center h-full">
-              <p className="text-gray-400 italic">Memuat pesan...</p>
+              <p className="text-gray-400 dark:text-gray-300 italic transition-colors">
+                Memuat pesan...
+              </p>
             </div>
           ) : error ? (
             <div className="flex items-center justify-center h-full">
@@ -214,7 +217,9 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
             </div>
           ) : messages.length === 0 ? (
             <div className="flex items-center justify-center h-full">
-              <p className="text-gray-500">Belum ada pesan.</p>
+              <p className="text-gray-500 dark:text-gray-400">
+                Belum ada pesan.
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -231,7 +236,8 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
           )}
           <div ref={bottomRef} />
         </div>
-        <div className="px-4 py-3 border-t border-gray-100 bg-white rounded-b-2xl">
+
+        <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-b-2xl transition-colors">
           <ChatInput onSend={handleSend} />
         </div>
       </div>
