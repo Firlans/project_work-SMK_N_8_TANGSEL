@@ -4,11 +4,11 @@ import { FiAward } from "react-icons/fi";
 
 export const siswaMenuItems = [
   { id: "profile", label: "Profile", icon: <FaUser /> },
+  { id: "bk", label: "Chat Konseling", icon: <FaComments /> },
   { id: "jadwal", label: "Jadwal Belajar", icon: <FaCalendarAlt /> },
   { id: "kehadiran", label: "Presensi Siswa", icon: <FaUserCheck /> },
   { id: "prestasi", label: "Prestasi Siswa", icon: <FiAward /> },
-  { id: "pelaporan", label: "Lapor Pelanggaran", icon: <FaExclamationCircle /> },
-  { id: "bk", label: "Bimbingan Konseling", icon: <FaComments /> },
+  { id: "pelaporan", label: "Pelanggaran", icon: <FaExclamationCircle /> },
 ];
 
 export const siswaPageRoutes = {

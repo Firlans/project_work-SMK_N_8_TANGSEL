@@ -5,8 +5,8 @@ const Konseling = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-colors duration-300">
-      <div className="w-full max-w-2xl bg-white dark:bg-gray-900 rounded-2xl p-8 transition-all duration-300">
+    <div className="flex items-center justify-center bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-colors duration-300">
+      <div className="w-full max-w-2xl p-8 transition-all duration-300">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white text-center mb-8 transition-colors">
           Pilih Jenis Konseling
         </h1>

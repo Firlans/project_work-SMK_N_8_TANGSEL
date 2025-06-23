@@ -4,7 +4,7 @@ import AuthLayout from "../../Components/Layouts/AuthLayouts";
 const LoginGuru = () => {
   return (
     <div className="bg-indigo-950">
-      <AuthLayout title="Login" type="login">
+      <AuthLayout title="Log In" type="login">
         <FormLogin role="guru" />
       </AuthLayout>
     </div>

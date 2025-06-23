@@ -139,11 +139,13 @@ const JadwalGuru = () => {
     }
   };
 
+  if (loading) return <LoadingSpinner />;
+
   return (
     <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-6 sm:py-8 space-y-6">
       {/* Judul Halaman */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">
           JADWAL GURU
         </h3>
         <button
@@ -153,75 +155,74 @@ const JadwalGuru = () => {
     ${exportProgress ? "opacity-60 cursor-not-allowed" : ""}`}
         >
           <PiExportBold size={18} />
-          {exportProgress ? "Mengekspor..." : "Export Jadwal (PDF)"}
+          {exportProgress ? "Mengekspor..." : "Export Jadwal"}
         </button>
       </div>
 
-      {loading ? (
-        <LoadingSpinner />
-      ) : (
-        Object.entries(hariMap).map(([hariId, namaHari]) => {
-          const rows = getDataByHari(parseInt(hariId));
-          if (rows.length === 0) return null;
+      {Object.entries(hariMap).map(([hariId, namaHari]) => {
+        const rows = getDataByHari(parseInt(hariId));
+        if (rows.length === 0) return null;
 
-          return (
-            <div
-              key={hariId}
-              className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 sm:p-6"
-            >
-              {/* Nama Hari */}
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">
-                {namaHari}
-              </h2>
+        return (
+          <div
+            key={hariId}
+            className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-500 ease-in-out"
+          >
+            <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-800 dark:text-white transition-colors duration-500 ease-in-out">
+              {namaHari}
+            </h3>
 
-              {/* Table Responsive */}
-              <div className="overflow-x-auto w-full">
-                <table className="min-w-full table-fixed divide-y divide-gray-200">
-                  <thead className="bg-gray-100">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 whitespace-nowrap w-2/12 min-w-[100px]">
-                        Waktu
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 whitespace-nowrap w-4/12 min-w-[140px]">
-                        Mata Pelajaran
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 whitespace-nowrap w-4/12 min-w-[140px]">
-                        Guru
-                      </th>
-                      <th className="px-4 py-3 text-center text-xs sm:text-sm font-semibold text-gray-600 whitespace-nowrap w-2/12 min-w-[90px]">
-                        Presensi
-                      </th>
+            {/* Table Responsive */}
+            <div className="overflow-x-auto w-full">
+              <table className="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700 transition-all duration-500 ease-in-out">
+                <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-500 ease-in-out">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300 transition-colors duration-500 ease-in-out whitespace-nowrap w-2/12 min-w-[100px]">
+                      Waktu
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300 transition-colors duration-500 ease-in-out whitespace-nowrap w-4/12 min-w-[140px]">
+                      Mata Pelajaran
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300 transition-colors duration-500 ease-in-out whitespace-nowrap w-4/12 min-w-[140px]">
+                      Guru
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300 transition-colors duration-500 ease-in-out whitespace-nowrap w-2/12 min-w-[90px]">
+                      Presensi
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-500 ease-in-out">
+                  {rows.map((row, index) => (
+                    <tr
+                      key={index}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300 ease-in-out"
+                    >
+                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap transition-colors duration-500 ease-in-out w-2/12 min-w-[100px]">
+                        {row.waktu}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate transition-colors duration-500 ease-in-out w-4/12 min-w-[140px]">
+                        {row.kelas}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate transition-colors duration-500 ease-in-out w-4/12 min-w-[140px]">
+                        {row.mapel}
+                      </td>
+                      <td className="px-4 py-3 text-center w-2/12 min-w-[90px]">
+                        <button
+                          onClick={() => handleLihatPertemuan(row.id)}
+                          className="text-blue-600 hover:underline text-sm"
+                        >
+                          <FaEye size={16} />
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-100">
-                    {rows.map((row, index) => (
-                      <tr key={index} className="hover:bg-gray-50 transition">
-                        <td className="px-4 py-3 text-sm text-gray-800 whitespace-nowrap w-2/12 min-w-[100px]">
-                          {row.waktu}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-800 whitespace-nowrap w-4/12 min-w-[140px]">
-                          {row.kelas}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-800 whitespace-nowrap w-4/12 min-w-[140px]">
-                          {row.mapel}
-                        </td>
-                        <td className="px-4 py-3 text-center w-2/12 min-w-[90px]">
-                          <button
-                            onClick={() => handleLihatPertemuan(row.id)}
-                            className="text-blue-600 hover:underline text-sm"
-                          >
-                            <FaEye size={16} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          );
-        })
-      )}
+          </div>
+        );
+      })}
+
       {exportProgress && <ExportLoadingModal progress={exportProgress} />}
     </div>
   );

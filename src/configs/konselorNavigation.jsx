@@ -4,7 +4,7 @@ import { FaCommentDots, FaUser } from "react-icons/fa6";
 export const konselorMenuItems = [
   { id: "profile", label: "Profile", icon: <FaUser /> },
   { id: "konseling", label: "Chat Konseling", icon: <FaCommentDots /> },
-  { id: "pelaporan", label: "Pelaporan", icon: <FaExclamationCircle /> },
+  { id: "pelaporan", label: "Pelanggaran", icon: <FaExclamationCircle /> },
 ];
 
 export const konselorPageRoutes = {

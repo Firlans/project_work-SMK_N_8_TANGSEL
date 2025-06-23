@@ -6,7 +6,7 @@ export const guruMenuItems = [
   { id: "schedule", label: "Jadwal Mengajar", icon: <FaRegCalendarAlt /> },
   {
     id: "pelaporan",
-    label: "Lapor Pelanggaran",
+    label: "Pelanggaran",
     icon: <FaExclamationCircle />,
   },
 ];

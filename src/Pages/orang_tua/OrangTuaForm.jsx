@@ -3,6 +3,7 @@ import axiosClient from "../../axiosClient";
 import InputForm from "../../Components/Elements/Input/Index";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../Components/Elements/Loading/LoadingSpinner";
+import { FaCheck } from "react-icons/fa6";
 
 const OrangTuaForm = () => {
   const [loginType, setLoginType] = useState("email");

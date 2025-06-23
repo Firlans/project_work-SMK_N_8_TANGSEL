@@ -205,7 +205,7 @@ const PelanggaranSiswa = () => {
                             <button
                               onClick={() =>
                                 setPreviewImage(
-                                  getBuktiPrestasiURL(item.nama_foto)
+                                  getBuktiPelanggaranURL(item.nama_foto)
                                 )
                               }
                               className="text-blue-600 dark:text-blue-400 hover:underline transition"
