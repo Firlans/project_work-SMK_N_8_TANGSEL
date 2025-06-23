@@ -160,7 +160,6 @@ class PelanggaranController extends Controller
                             $parentName,
                             $studentName,
                             $violationDate,
-                            $violationTitle,
                             $description
                         ));
                 }
