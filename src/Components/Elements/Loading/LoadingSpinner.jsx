@@ -1,8 +1,16 @@
-const LoadingSpinner = () => {
+const LoadingSpinner = ({text}) => {
   return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
-      <span className="ml-4 text-lg text-gray-700">Loading...</span>
+    <div className="flex flex-col items-center justify-center
+    fixed inset-0 bg-black/30 z-50 "
+    >
+      <div className="flex space-x-2">
+        <span className="w-3 h-3 bg-indigo-700 dark:bg-amber-600 rounded-full animate-bounce [animation-delay:-0.15s]" />
+        <span className="w-3 h-3 bg-indigo-700 dark:bg-amber-600 rounded-full animate-bounce" />
+        <span className="w-3 h-3 bg-indigo-700 dark:bg-amber-600 rounded-full animate-bounce [animation-delay:-0.3s]" />
+        <span className="w-3 h-3 bg-indigo-700 dark:bg-amber-600 rounded-full animate-bounce" />
+        <span className="w-3 h-3 bg-indigo-700 dark:bg-amber-600 rounded-full animate-bounce [animation-delay:-0.45s]" />
+      </div>
+      <span className="mt-2 text-xs text-slate-900 dark:text-slate-100">{text}</span>
     </div>
   );
 };

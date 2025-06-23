@@ -42,7 +42,7 @@ const Header = ({ onToggleSidebar }) => {
   return (
     <header className="w-full sticky top-0 z-40 mt-2">
       <div className="mx-2 sm:mx-4 md:mx-8">
-        <div className="backdrop-blur-md bg-blue-800/90 dark:bg-gray-900/90 border border-blue-900 dark:border-gray-700 shadow-md transition-all rounded-2xl">
+        <div className="backdrop-blur-md bg-blue-800/90 dark:bg-slate-50/5 border border-gray-50 dark:border-gray-800 shadow-md transition-colors duration-300 rounded-2xl">
           <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
             <div className="flex justify-between items-center h-16 relative">
               {/* Sidebar Toggle + Logo */}
