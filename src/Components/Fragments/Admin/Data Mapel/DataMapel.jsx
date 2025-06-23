@@ -151,7 +151,7 @@ const DataMapel = () => {
                     className="px-6 py-3 text-left font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     onClick={() => requestSort("id")}
                   >
-                    ID {getSortIcon("id")}
+                    No {getSortIcon("id")}
                   </th>
                   <th
                     className="px-6 py-3 text-left font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"

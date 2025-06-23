@@ -134,8 +134,8 @@ const DataPelanggaran = () => {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full text-sm transition-all duration-300">
-              <thead className="bg-gray-50 dark:bg-gray-800 transition-colors">
+            <table className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
+              <thead className="">
                 <tr>
                   {[
                     "No",
@@ -149,14 +149,14 @@ const DataPelanggaran = () => {
                   ].map((head, i) => (
                     <th
                       key={i}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap transition-colors"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap"
                     >
                       {head}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
                 {data.map((item, idx) => (
                   <tr
                     key={item.id}
