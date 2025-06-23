@@ -1,3 +1,4 @@
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import { usePrestasiForm } from "./usePrestasiForm";
 
 const ModalPrestasi = ({ isOpen, onClose, onSuccess, initialData }) => {
@@ -18,6 +19,7 @@ const ModalPrestasi = ({ isOpen, onClose, onSuccess, initialData }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-all duration-300">
+      {loading && <LoadingSpinner text="Menyimpan data..." />}
       <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg shadow-lg relative transition-colors duration-300">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors">
           {initialData ? "Edit Prestasi" : "Tambah Prestasi"}

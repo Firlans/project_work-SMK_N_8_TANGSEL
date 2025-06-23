@@ -1,5 +1,7 @@
 import { usePelanggaranForm } from "./usePelanggaranForm";
 import axiosClient from "../../../../axiosClient";
+import { useState } from "react";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 
 const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
   const {
@@ -11,6 +13,8 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
     getUserRole,
     isEdit,
   } = usePelanggaranForm(initialData, isOpen);
+
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,6 +35,7 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
       form.append("bukti_gambar", formData.nama_foto);
     }
 
+    setLoading(true);
     try {
       if (initialData) {
         await axiosClient.post(
@@ -49,6 +54,8 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
       onSuccess();
     } catch (err) {
       console.error("Gagal simpan pelanggaran:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,6 +65,7 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center transition-colors duration-300">
+      {loading && <LoadingSpinner text="Menyimpan data..." />}
       <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-xl shadow-lg relative transition-all duration-300 ease-in-out">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors">
           {isEdit ? "Edit Pelanggaran" : "Tambah Pelanggaran"}

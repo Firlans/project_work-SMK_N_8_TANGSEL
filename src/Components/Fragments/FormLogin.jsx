@@ -4,6 +4,7 @@ import InputForm from "../Elements/Input/Index";
 import axiosClient from "../../axiosClient.js";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import LoadingSpinner from "../Elements/Loading/LoadingSpinner.jsx";
 
 const FormLogin = ({ role }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,9 +23,9 @@ const FormLogin = ({ role }) => {
     }));
   };
 
-  const handleLoginTypeChange = (event) => {
-    setLoginType(event.target.value);
-    setFormData({ ...formData, identifier: "" }); // Kosongin input kalau ganti tipe
+  const handleLoginTypeChange = (type) => {
+    setLoginType(type);
+    setFormData((prev) => ({ ...prev, identifier: "" }));
   };
 
   const handleLogin = async (event) => {
@@ -103,21 +104,14 @@ const FormLogin = ({ role }) => {
 
   return (
     <form onSubmit={handleLogin} className="relative space-y-4">
-      {isLoading && (
-        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 border-4 border-yellow-600 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-sm text-gray-600 font-medium">Logging in...</p>
-          </div>
-        </div>
-      )}
+      {isLoading && <LoadingSpinner />}
 
       {error && <p className="text-red-500">{error}</p>}
 
       {["siswa", "guru", "admin", "konselor"].includes(role) && (
         <div className="flex flex-col gap-2 mb-4">
-          <label className="text-sm text-slate-500 font-medium">
-            Login dengan:
+          <label className="text-sm text-slate-200 font-medium">
+            Log In dengan:
           </label>
 
           <div className="relative w-full h-10 bg-gray-200 rounded-full flex items-center px-1 shadow-inner">
@@ -131,7 +125,7 @@ const FormLogin = ({ role }) => {
             {/* Email Button */}
             <button
               type="button"
-              onClick={() => setLoginType("email")}
+              onClick={() => handleLoginTypeChange("email")}
               className={`relative z-10 w-1/2 h-8 rounded-full text-sm font-semibold transition-all duration-300
         focus:outline-none
         ${
@@ -146,7 +140,9 @@ const FormLogin = ({ role }) => {
             {/* NISN / NIP Button */}
             <button
               type="button"
-              onClick={() => setLoginType(role === "siswa" ? "nisn" : "nip")}
+              onClick={() =>
+                handleLoginTypeChange(role === "siswa" ? "nisn" : "nip")
+              }
               className={`relative z-10 w-1/2 h-8 rounded-full text-sm font-semibold transition-all duration-300
         focus:outline-none
         ${
@@ -169,6 +165,7 @@ const FormLogin = ({ role }) => {
             ? "NISN"
             : "NIP"
         }
+        labelColor="text-slate-100"
         type="text"
         placeholder={`Masukkan ${
           loginType === "email"
@@ -184,6 +181,7 @@ const FormLogin = ({ role }) => {
 
       <InputForm
         label="Password"
+        labelColor="text-slate-100"
         type="password"
         placeholder="******"
         name="password"
@@ -205,7 +203,7 @@ const FormLogin = ({ role }) => {
           className="bg-yellow-600 text-white"
           disabled={isLoading}
         >
-          {isLoading ? "Logging in..." : "Login"}
+          {isLoading ? "Logging in..." : "Log In"}
         </Button>
       </div>
     </form>

@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../../../../axiosClient";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
+import GenerateLoadingModal from "../../../Elements/Loading/GenerateLoadingModal";
 
 const FormPertemuan = ({ isOpen, onClose, data, idJadwal, onSuccess }) => {
   const [loading, setLoading] = useState(false);
-
+  const [jumlah, setJumlah] = useState(0);
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
+  const [generateProgress, setGenerateProgress] = useState("");
   const [editForm, setEditForm] = useState({
     nama_pertemuan: "",
     tanggal: "",
@@ -24,23 +28,50 @@ const FormPertemuan = ({ isOpen, onClose, data, idJadwal, onSuccess }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (data) {
-        await axiosClient.put(`/pertemuan/${data.id}`, {
-          ...editForm,
-          id_jadwal: idJadwal,
-        });
-      } else {
-        await axiosClient.post("/pertemuan", {
-          ...editForm,
-          id_jadwal: idJadwal,
-        });
-      }
+      await axiosClient.put(`/pertemuan/${data.id}`, {
+        ...editForm,
+        id_jadwal: idJadwal,
+      });
       onSuccess();
       onClose();
     } catch (err) {
       console.error("Gagal menyimpan pertemuan:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // generate banyak pertemuan otomatis
+  const handleGenerate = async () => {
+    if (jumlah <= 0) return;
+    setShowGenerateModal(true);
+
+    try {
+      const today = new Date();
+
+      // looping untuk membuat banyak pertemuan
+      for (let i = 0; i < jumlah; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+        const dateStr = date.toISOString().split("T")[0];
+
+        const resPertemuan = await axiosClient.post("/pertemuan", {
+          nama_pertemuan: `Pertemuan ${i + 1}`,
+          tanggal: dateStr,
+          id_jadwal: idJadwal,
+        });
+
+        setGenerateProgress(`Membuat pertemuan ke-${i + 1} dari ${jumlah}`);
+        console.log("Pertemuan:", resPertemuan.data.data);
+      }
+
+      onSuccess();
+      onClose();
+    } catch (err) {
+      console.error("Gagal menyimpan pertemuan:", err);
+    } finally {
+      setShowGenerateModal(false);
+      setGenerateProgress("");
     }
   };
 
@@ -53,54 +84,96 @@ const FormPertemuan = ({ isOpen, onClose, data, idJadwal, onSuccess }) => {
           {data ? "Edit Pertemuan" : "Tambah Pertemuan"}
         </h2>
 
-        <form onSubmit={handleEditSubmit} className="space-y-4">
-          <div>
+        {data ? (
+          <form onSubmit={handleEditSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-300">
+                Nama Pertemuan
+              </label>
+              <input
+                type="text"
+                name="nama_pertemuan"
+                value={editForm.nama_pertemuan}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, nama_pertemuan: e.target.value })
+                }
+                className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded mt-1 transition-all duration-300"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-300">
+                Tanggal
+              </label>
+              <input
+                type="date"
+                name="tanggal"
+                value={editForm.tanggal}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, tanggal: e.target.value })
+                }
+                className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded mt-1 transition-all duration-300"
+                required
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 bg-gray-300 dark:bg-zinc-600 text-gray-800 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-zinc-500 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-amber-500 dark:bg-zinc-800 text-white dark:text-white rounded-lg hover:bg-amber-600 dark:hover:bg-zinc-500 transition-colors"
+              >
+                {loading ? "Menyimpan..." : "Simpan"}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-300">
-              Nama Pertemuan
+              Jumlah Pertemuan
             </label>
             <input
               type="text"
-              name="nama_pertemuan"
-              value={editForm.nama_pertemuan}
+              min="1"
+              value={jumlah}
               onChange={(e) =>
-                setEditForm({ ...editForm, nama_pertemuan: e.target.value })
+                setJumlah(e.target.value === "" ? "" : Number(e.target.value))
               }
-              className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded mt-1 transition-all duration-300"
-              required
+              className="w-full border px-3 py-2 rounded mb-4"
+              placeholder="Masukkan jumlah (contoh: 10)"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-300">
-              Tanggal
-            </label>
-            <input
-              type="date"
-              name="tanggal"
-              value={editForm.tanggal}
-              onChange={(e) =>
-                setEditForm({ ...editForm, tanggal: e.target.value })
-              }
-              className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded mt-1 transition-all duration-300"
-              required
-            />
-          </div>
-          <div className="flex justify-end gap-2 mt-6">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-300 dark:bg-zinc-600 text-gray-800 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-zinc-500 transition-colors"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-amber-500 dark:bg-zinc-800 text-white dark:text-white rounded-lg hover:bg-amber-600 dark:hover:bg-zinc-500 transition-colors"
-            >
-              {loading ? "Menyimpan..." : "Simpan"}
-            </button>
-          </div>
-        </form>
+
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 bg-gray-300 dark:bg-zinc-600 text-gray-800 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-zinc-500 transition-colors"
+                disabled={loading}
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                onClick={handleGenerate}
+                className="px-4 py-2 bg-amber-500 dark:bg-zinc-800 text-white dark:text-white rounded-lg hover:bg-amber-600 dark:hover:bg-zinc-500 transition-colors"
+                disabled={loading}
+              >
+                {loading ? "Menyimpan..." : "Simpan"}
+              </button>
+            </div>
+          </>
+        )}
       </div>
+      {showGenerateModal && (
+        <GenerateLoadingModal progress={generateProgress} />
+      )}
     </div>
   );
 };

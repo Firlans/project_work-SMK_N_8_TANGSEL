@@ -1,40 +1,60 @@
-//OrangTuaForm.jsx
 import { useState } from "react";
 import axiosClient from "../../axiosClient";
 import InputForm from "../../Components/Elements/Input/Index";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../../Components/Elements/Loading/LoadingSpinner";
 
 const OrangTuaForm = () => {
   const [loginType, setLoginType] = useState("email");
   const [identifier, setIdentifier] = useState("");
   const [nisn, setNisn] = useState("");
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("Sedang mengirim link...");
+    setIsLoading(true);
+    setMessage("");
 
     try {
       const endpoint =
         loginType === "email"
           ? "/login/orang-tua/email"
           : "/login/orang-tua/wa";
+
       const payload =
         loginType === "email"
           ? { email: identifier, nisn }
           : { no_telp: identifier, nisn };
 
       await axiosClient.post(endpoint, payload);
-      setMessage("Link akses telah dikirim!");
-    } catch {
-      setMessage("Gagal mengirim link. Cek kembali data Anda.");
+      setMessage(
+        loginType === "email"
+          ? "✅ Link akses telah dikirim via Email terdaftar!"
+          : "✅ Link akses telah dikirim via WhatsApp terdaftar!"
+      );
+    } catch (error) {
+      setMessage("❌ Gagal mengirim link. Cek kembali data Anda.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const handleLoginTypeChange = (type) => {
+    setLoginType(type);
+    setIdentifier("");
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-indigo-950 px-4">
-      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg space-y-6">
+    <div className="min-h-screen flex items-center justify-center bg-indigo-950 px-4 relative">
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 rounded-xl">
+          <LoadingSpinner text="Sedang mengirim link..." />
+        </div>
+      )}
+
+      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg space-y-6 relative z-10">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900">Login</h1>
           <p className="text-sm text-gray-500">
@@ -43,7 +63,7 @@ const OrangTuaForm = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Toggle Button */}
+          {/* Toggle Login Type */}
           <div className="flex flex-col gap-2">
             <label className="text-sm text-slate-500 font-medium">
               Login dengan:
@@ -59,7 +79,7 @@ const OrangTuaForm = () => {
               />
               <button
                 type="button"
-                onClick={() => setLoginType("email")}
+                onClick={() => handleLoginTypeChange("email")}
                 className={`relative z-10 w-1/2 h-8 rounded-full text-sm font-semibold transition-all
                   ${
                     loginType === "email"
@@ -71,7 +91,7 @@ const OrangTuaForm = () => {
               </button>
               <button
                 type="button"
-                onClick={() => setLoginType("no_telp")}
+                onClick={() => handleLoginTypeChange("no_telp")}
                 className={`relative z-10 w-1/2 h-8 rounded-full text-sm font-semibold transition-all
                   ${
                     loginType === "no_telp"
@@ -84,9 +104,9 @@ const OrangTuaForm = () => {
             </div>
           </div>
 
-          {/* Input: Email / No Telp */}
           <InputForm
             label={loginType === "email" ? "Email" : "No Telp"}
+            labelColor="text-slate-900"
             type="text"
             placeholder={
               loginType === "email" ? "Masukkan Email" : "Masukkan No Telp"
@@ -96,7 +116,6 @@ const OrangTuaForm = () => {
             onChange={(e) => setIdentifier(e.target.value)}
           />
 
-          {/* Input: NISN Anak */}
           <InputForm
             label="NISN Anak"
             type="text"
@@ -106,7 +125,6 @@ const OrangTuaForm = () => {
             onChange={(e) => setNisn(e.target.value)}
           />
 
-          {/* Action Buttons */}
           <div className="flex justify-between gap-3">
             <button
               type="button"
@@ -118,6 +136,7 @@ const OrangTuaForm = () => {
             <button
               type="submit"
               className="w-1/2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 rounded-md shadow transition-all"
+              disabled={isLoading}
             >
               Kirim Link Akses
             </button>
