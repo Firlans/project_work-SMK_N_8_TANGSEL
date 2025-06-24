@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../../../../axiosClient";
-import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import GenerateLoadingModal from "../../../Elements/Loading/GenerateLoadingModal";
 
 const FormPertemuan = ({ isOpen, onClose, data, idJadwal, onSuccess }) => {
