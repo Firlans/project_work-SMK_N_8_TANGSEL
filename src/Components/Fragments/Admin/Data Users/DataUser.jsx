@@ -4,7 +4,8 @@ import axiosClient from "../../../../axiosClient";
 import DetailUser from "./DetailUser";
 import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import Cookies from "js-cookie";
-import FormUser from "./FormUser";
+import FormUser from "./Form User";
+import ModalBulkUploader from "./Form User/BulkUserUploader";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -15,6 +16,7 @@ const DataUser = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [modalMode, setModalMode] = useState("create");
+  const [showBulkModal, setShowBulkModal] = useState(false);
   const [selectedRole, setSelectedRole] = useState("all");
   const [userPrivilege, setUserPrivilege] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -128,13 +130,23 @@ const DataUser = () => {
               </select>
 
               {isSuperAdmin() && (
-                <button
-                  onClick={handleCreate}
-                    className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2  flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={handleCreate}
+                    className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2 flex items-center justify-center gap-2"
                   >
                     <FaPlus className="w-4 h-4" />
-                  <span>Tambah User</span>
-                </button>
+                    Tambah User
+                  </button>
+
+                  <button
+                    onClick={() => setShowBulkModal(true)}
+                    className="bg-green-600 dark:bg-slate-600 text-white rounded-lg hover:bg-green-700 dark:hover:bg-slate-700 px-4 py-2 flex items-center justify-center gap-2"
+                  >
+                    <FaPlus className="w-4 h-4" />
+                    Upload Massal
+                  </button>
+                </div>
               )}
             </div>
           </div>
@@ -239,6 +251,13 @@ const DataUser = () => {
               mode={modalMode}
               user={selectedUser}
               onClose={() => setShowModal(false)}
+              onSuccess={fetchUsers}
+            />
+          )}
+
+          {showBulkModal && (
+            <ModalBulkUploader
+              onClose={() => setShowBulkModal(false)}
               onSuccess={fetchUsers}
             />
           )}

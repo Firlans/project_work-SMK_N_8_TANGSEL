@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../../../../axiosClient";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 
 const DetailUser = ({ user, onClose }) => {
   const [userData, setUserData] = useState(null);
@@ -21,9 +22,7 @@ const DetailUser = ({ user, onClose }) => {
     fetchUserDetails();
   }, [user.id]);
 
-  if (loading || !userData) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <LoadingSpinner text="Memuat detail user..." />
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50 transition-all duration-300">
