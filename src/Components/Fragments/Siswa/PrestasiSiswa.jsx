@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import axiosClient from "../../../axiosClient";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 import Badge from "../../Elements/Badges/Index";
-import { FaEye } from "react-icons/fa";
+import { FaEye, FaPlus } from "react-icons/fa";
 import ImagePreview from "../../Elements/Image Pop Up/ImagePreview";
+import ModalPrestasi from "../Admin/Data Prestasi/FormPrestasi";
 
 const getBuktiPrestasiURL = (filename) =>
   axiosClient.defaults.baseURL + "/images/prestasi/" + filename;
@@ -11,24 +12,27 @@ const getBuktiPrestasiURL = (filename) =>
 const PrestasiSiswa = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selected, setSelected] = useState(null);
   const [namaSiswa, setNamaSiswa] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data: profileData } = await axiosClient.get("/profile");
-        const idSiswa = profileData.data.id;
-        setNamaSiswa(profileData.data.nama_lengkap);
+  const fetchData = async () => {
+    try {
+      const { data: profileData } = await axiosClient.get("/profile");
+      const idSiswa = profileData.data.id;
+      setNamaSiswa(profileData.data.nama_lengkap);
 
-        const res = await axiosClient.get(`/prestasi/siswa/${idSiswa}`);
-        setData(res.data.data);
-      } catch (error) {
-        console.error("Gagal mengambil data jadwal:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const res = await axiosClient.get(`/prestasi/siswa/${idSiswa}`);
+      setData(res.data.data);
+    } catch (error) {
+      console.error("Gagal mengambil data jadwal:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -40,6 +44,15 @@ const PrestasiSiswa = () => {
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-500">
           Daftar Prestasi
         </h2>
+        <button
+          className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2  flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
+          onClick={() => {
+            setSelected(null);
+            setShowModal(true);
+          }}
+        >
+          <FaPlus className="w-4 h-4" /> Tambah Prestasi
+        </button>
       </div>
 
       <div className="-mx-4 sm:mx-0 overflow-x-auto">
@@ -103,6 +116,21 @@ const PrestasiSiswa = () => {
           </table>
         </div>
       </div>
+
+      {showModal && (
+        <ModalPrestasi
+          isOpen={showModal}
+          onClose={() => {
+            setShowModal(false);
+            setSelected(null);
+          }}
+          onSuccess={() => {
+            fetchData();
+            setShowModal(false);
+          }}
+          initialData={selected}
+        />
+      )}
 
       <ImagePreview
         isOpen={!!previewImage}
