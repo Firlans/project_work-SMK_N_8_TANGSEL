@@ -1,6 +1,7 @@
 // FormWaliMurid.jsx
 import { useEffect, useState } from "react";
 import axiosClient from "../../../../axiosClient";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 
 const FormWaliMurid = ({ siswaList, defaultData, onClose }) => {
   const [formData, setFormData] = useState({
@@ -11,7 +12,7 @@ const FormWaliMurid = ({ siswaList, defaultData, onClose }) => {
     status: "",
     alamat: "",
   });
-
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -27,6 +28,7 @@ const FormWaliMurid = ({ siswaList, defaultData, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setErrors({});
     try {
       if (defaultData) {
@@ -41,11 +43,14 @@ const FormWaliMurid = ({ siswaList, defaultData, onClose }) => {
       } else {
         alert("Terjadi kesalahan.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      {loading && <LoadingSpinner text="Menyimpan data..." />}
       <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto relative transition-all duration-300">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
           {defaultData ? "Edit Wali Murid" : "Tambah Wali Murid"}
@@ -179,7 +184,7 @@ const FormWaliMurid = ({ siswaList, defaultData, onClose }) => {
               type="submit"
               className="px-4 py-2 bg-amber-500 dark:bg-zinc-800 text-white dark:text-white rounded-lg hover:bg-amber-600 dark:hover:bg-zinc-500 transition-colors"
             >
-              Batal
+              Simpan
             </button>
           </div>
         </form>

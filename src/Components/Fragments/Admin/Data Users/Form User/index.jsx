@@ -22,11 +22,10 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
     handleSubmit,
   } = useFormUser({ mode, user, onClose, onSuccess });
 
-  if (loading) return <LoadingSpinner />;
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
       <Notification notification={notification} />
+      {loading && <LoadingSpinner text="Menyimpan data..." />}
       <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto relative">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
           {mode === "create" ? "Tambah User Baru" : "Edit User"}
