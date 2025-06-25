@@ -4,7 +4,7 @@ import { FaBars } from "react-icons/fa";
 import { TbLogout2 } from "react-icons/tb";
 import Cookies from "js-cookie";
 import Logo from "../../../assets/logo_smkn8tangsel.svg";
-import ThemeToggle from "../Theme Toggle/Index";
+import ThemeToggle from "../Theme Toggle";
 import axiosClient from "../../../axiosClient";
 import { FaCircleChevronDown } from "react-icons/fa6";
 import { IoPersonCircleSharp } from "react-icons/io5";
@@ -42,7 +42,7 @@ const Header = ({ onToggleSidebar }) => {
   return (
     <header className="w-full sticky top-0 z-40 mt-2">
       <div className="mx-2 sm:mx-4 md:mx-8">
-        <div className="backdrop-blur-md bg-blue-800/90 dark:bg-slate-50/5 border border-gray-50 dark:border-gray-800 shadow-md transition-colors duration-300 rounded-2xl">
+        <div className="backdrop-blur-md bg-blue-800/90 dark:bg-slate-50/5 shadow-md transition-colors duration-300 rounded-2xl">
           <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
             <div className="flex justify-between items-center h-16 relative">
               {/* Sidebar Toggle + Logo */}
@@ -90,7 +90,6 @@ const Header = ({ onToggleSidebar }) => {
                 <div
                   className={`absolute right-0 mt-2 
               bg-white dark:bg-gray-800 
-              border border-gray-200 dark:border-gray-700 
               rounded-lg shadow-lg z-50 transform transition-all duration-200 origin-top
               ${
                 dropdownOpen
