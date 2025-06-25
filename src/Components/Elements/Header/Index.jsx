@@ -8,11 +8,13 @@ import ThemeToggle from "../Theme Toggle";
 import axiosClient from "../../../axiosClient";
 import { FaCircleChevronDown } from "react-icons/fa6";
 import { IoPersonCircleSharp } from "react-icons/io5";
+import { useProfile } from "../../../contexts/ProfileProvider";
 
 const Header = ({ onToggleSidebar }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const { setProfile } = useProfile();
 
   const handleLogout = async () => {
     try {
@@ -24,6 +26,9 @@ const Header = ({ onToggleSidebar }) => {
     Cookies.remove("token");
     Cookies.remove("userRole");
     Cookies.remove("userPrivilege");
+    Cookies.remove("id_siswa");
+    Cookies.remove("user_id");
+    setProfile(null);
     delete axiosClient.defaults.headers.common["Authorization"];
     navigate("/login");
   };

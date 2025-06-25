@@ -5,6 +5,7 @@ import axiosClient from "../../axiosClient.js";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import LoadingSpinner from "../Elements/Loading/LoadingSpinner.jsx";
+import { useProfile } from "../../contexts/ProfileProvider.jsx";
 
 const FormLogin = ({ role }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,6 +16,7 @@ const FormLogin = ({ role }) => {
   const [loginType, setLoginType] = useState("email");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { fetchProfile } = useProfile();
 
   const handleChange = (event) => {
     setFormData((prev) => ({
@@ -79,6 +81,8 @@ const FormLogin = ({ role }) => {
       Cookies.set("userRole", role, { expires: 1 });
 
       axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      await fetchProfile();
 
       if (privilege.is_superadmin === 1 && role === "admin") {
         navigate("/dashboard-admin");
