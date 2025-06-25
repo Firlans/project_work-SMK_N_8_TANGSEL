@@ -103,14 +103,14 @@ const FormLogin = ({ role }) => {
   };
 
   return (
-    <form onSubmit={handleLogin} className="relative space-y-4">
+    <form onSubmit={handleLogin} className="flex flex-col space-y-4">
       {isLoading && <LoadingSpinner />}
 
       {error && <p className="text-red-500">{error}</p>}
 
       {["siswa", "guru", "admin", "konselor"].includes(role) && (
         <div className="flex flex-col gap-2 mb-4">
-          <label className="text-sm text-slate-200 font-medium">
+          <label className="text-sm text-slate-800 font-medium">
             Log In dengan:
           </label>
 
@@ -165,7 +165,7 @@ const FormLogin = ({ role }) => {
             ? "NISN"
             : "NIP"
         }
-        labelColor="text-slate-100"
+        labelColor="text-slate-800"
         type="text"
         placeholder={`Masukkan ${
           loginType === "email"
@@ -181,7 +181,7 @@ const FormLogin = ({ role }) => {
 
       <InputForm
         label="Password"
-        labelColor="text-slate-100"
+        labelColor="text-slate-800"
         type="password"
         placeholder="******"
         name="password"

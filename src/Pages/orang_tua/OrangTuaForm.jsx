@@ -48,45 +48,56 @@ const OrangTuaForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-indigo-950 px-4 relative">
+    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
+      {/* Background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: "url('/images/bg-landing.jpg')", // ganti sesuai path
+        }}
+      />
+
+      {/* Overlay blue & blur */}
+      <div className="absolute inset-0 bg-indigo-950/80 backdrop-blur-sm" />
+
+      {/* Loading state */}
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 rounded-xl">
+        <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/40">
           <LoadingSpinner text="Sedang mengirim link..." />
         </div>
       )}
 
-      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg space-y-6 relative z-10">
+      {/* Form Box */}
+      <div className="relative z-10 w-full max-w-md bg-white p-8 rounded-xl shadow-xl space-y-6 transition-all duration-300">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900">Login</h1>
           <p className="text-sm text-gray-500">
-            Selamat Datang, silahkan isi data di bawah.
+            Selamat Datang, silakan isi data di bawah.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Toggle Login Type */}
+          {/* Login Type Toggle */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm text-slate-500 font-medium">
+            <label className="text-sm text-slate-600 font-medium">
               Login dengan:
             </label>
 
             <div className="relative w-full h-10 bg-gray-200 rounded-full flex items-center px-1 shadow-inner">
               <div
                 className={`absolute top-1 left-1 w-[calc(50%-0.25rem)] h-8 bg-yellow-600 rounded-full transition-all duration-300
-                  ${
-                    loginType === "email" ? "translate-x-0" : "translate-x-full"
-                  }
-                  ring-2 ring-yellow-700 ring-offset-1`}
+                ${loginType === "email" ? "translate-x-0" : "translate-x-full"}
+                ring-2 ring-yellow-700 ring-offset-1`}
               />
               <button
                 type="button"
                 onClick={() => handleLoginTypeChange("email")}
                 className={`relative z-10 w-1/2 h-8 rounded-full text-sm font-semibold transition-all
-                  ${
-                    loginType === "email"
-                      ? "text-white"
-                      : "text-gray-700 hover:text-yellow-700"
-                  }`}
+                ${
+                  loginType === "email"
+                    ? "text-white"
+                    : "text-gray-700 hover:text-yellow-700"
+                }`}
               >
                 Email
               </button>
@@ -94,11 +105,11 @@ const OrangTuaForm = () => {
                 type="button"
                 onClick={() => handleLoginTypeChange("no_telp")}
                 className={`relative z-10 w-1/2 h-8 rounded-full text-sm font-semibold transition-all
-                  ${
-                    loginType === "no_telp"
-                      ? "text-white"
-                      : "text-gray-700 hover:text-yellow-700"
-                  }`}
+                ${
+                  loginType === "no_telp"
+                    ? "text-white"
+                    : "text-gray-700 hover:text-yellow-700"
+                }`}
               >
                 No Telp
               </button>
@@ -129,22 +140,24 @@ const OrangTuaForm = () => {
           <div className="flex justify-between gap-3">
             <button
               type="button"
-              className="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 rounded-md shadow transition-all"
               onClick={() => navigate("/")}
+              className="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 rounded-md shadow transition-all"
             >
               Kembali
             </button>
             <button
               type="submit"
-              className="w-1/2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 rounded-md shadow transition-all"
               disabled={isLoading}
+              className="w-1/2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 rounded-md shadow transition-all"
             >
               Kirim Link Akses
             </button>
           </div>
 
           {message && (
-            <p className="text-center text-sm text-gray-600">{message}</p>
+            <p className="text-center text-sm text-gray-600 transition-all">
+              {message}
+            </p>
           )}
         </form>
       </div>

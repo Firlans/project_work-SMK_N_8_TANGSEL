@@ -21,6 +21,8 @@ import LoginSiswa from "./Pages/siswa/loginSiswa";
 import LoginGuru from "./Pages/guru/loginGuru";
 import LoginAdmin from "./Pages/admin/loginAdmin";
 import LoginKonselor from "./Pages/konselor/loginKonselor";
+import OrangTuaForm from "./Pages/orang_tua/OrangTuaForm";
+import OrangTuaRedirect from "./Pages/orang_tua/OrangTuaRedirect";
 
 // Dashboard Pages
 import DashboardSiswaPage from "./Pages/siswa/dashboardSiswaPage";
@@ -67,8 +69,6 @@ import KonselingPrivatePage from "./Pages/konselor/konselingPrivatePage";
 import KonselorPublicChatPage from "./Pages/konselor/konselorPublicChatPage";
 import SiswaPrivateChatPage from "./Pages/siswa/siswaPrivateChatPage";
 import KonselorPrivateChatPage from "./Pages/konselor/konselorPrivateChatPage";
-import OrangTuaForm from "./Pages/orang_tua/OrangTuaForm";
-import OrangTuaRedirect from "./Pages/orang_tua/OrangTuaRedirect";
 import { ThemeProvider } from "./contexts/ThemeProvider";
 
 const adminDataRoutes = [

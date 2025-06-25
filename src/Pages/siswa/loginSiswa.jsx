@@ -3,7 +3,7 @@ import FormLogin from "../../Components/Fragments/FormLogin";
 
 const LoginSiswa = () => {
   return (
-    <div className="bg-indigo-950">
+    <div>
       <AuthLayout title="Log In" type="login">
         <FormLogin role="siswa" />
       </AuthLayout>

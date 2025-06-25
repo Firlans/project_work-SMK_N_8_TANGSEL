@@ -3,7 +3,7 @@ import AuthLayout from "../../Components/Layouts/AuthLayouts";
 
 const LoginKonselor = () => {
   return (
-    <div className="bg-indigo-950">
+    <div>
       <AuthLayout title="Log In" type="login">
         <FormLogin role="konselor" />
       </AuthLayout>
