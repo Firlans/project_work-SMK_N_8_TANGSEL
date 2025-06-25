@@ -1,4 +1,4 @@
-import PresensiList from "../../Components/Fragments/PresensiList";
+import PresensiList from "../../Components/Fragments/Presensi/PresensiList";
 import GuruLayouts from "../../Components/Layouts/GuruLayouts";
 
 const PresensiGuruPage = () => {
