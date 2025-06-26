@@ -20,7 +20,7 @@ const AdminLayout = ({ children, defaultActivePage = "profile" }) => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-800 transition-colors duration-500 relative">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-800 transition-colors duration-300 relative">
       <Sidebar
         title="Dashboard Admin"
         menuItems={adminMenuItems}

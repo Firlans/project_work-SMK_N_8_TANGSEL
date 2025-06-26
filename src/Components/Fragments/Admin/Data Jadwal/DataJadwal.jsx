@@ -9,6 +9,7 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import autoTable from "jspdf-autotable";
 import jsPDF from "jspdf";
+import { PiExportBold } from "react-icons/pi";
 
 const DataJadwal = () => {
   const [jadwal, setJadwal] = useState([]);
@@ -135,9 +136,9 @@ const DataJadwal = () => {
 
   const handleExportPDF = () => {
     const doc = new jsPDF("landscape", "mm", "a4");
-    const logoPath = "/images/logo-smkn8tangsel.png"; // pastikan ini ada
+    const logoPath = "/images/logo-smkn8tangsel.png";
 
-    // 🧾 Header
+    // 🖼️ Logo dan Header
     doc.addImage(logoPath, "PNG", 14, 10, 25, 25);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
@@ -148,19 +149,9 @@ const DataJadwal = () => {
     doc.setFontSize(12);
     doc.text("JADWAL MATA PELAJARAN & PRESENSI", 148, 22, { align: "center" });
 
-    // 🔠 Header tabel: [Hari/Waktu, Kelas1, Kelas2, ...]
-    const tableHeaders = [
-      {
-        content: "Hari / Waktu",
-        styles: { halign: "center", fontStyle: "bold" },
-      },
-      ...kelas.map((k) => ({
-        content: k.nama_kelas,
-        styles: { halign: "center", fontStyle: "bold" },
-      })),
-    ];
+    // 🔠 Header tabel: [Hari / Waktu, Kelas1, Kelas2, ...]
+    const tableHeaders = ["Hari / Waktu", ...kelas.map((k) => k.nama_kelas)];
 
-    // 🧱 Bangun body sesuai UI
     const body = [];
 
     Object.entries(hariMap).forEach(([idHari, namaHari]) => {
@@ -175,7 +166,7 @@ const DataJadwal = () => {
           )}`
         );
 
-        // Kolom tiap kelas
+        // Kolom per kelas
         kelas.forEach((k) => {
           const matchGroup = groupedJadwal.find(
             (g) =>
@@ -194,13 +185,8 @@ const DataJadwal = () => {
               matchGroup.semuaJadwalId.includes(j.id) && j.id_waktu === w.id
           );
 
-          if (!slot) {
-            row.push("-");
-            return;
-          }
-
-          const guruData = guru.find((g) => g.id === slot.id_guru);
-          const mapelData = mapel.find((m) => m.id === slot.id_mata_pelajaran);
+          const guruData = guru.find((g) => g.id === slot?.id_guru);
+          const mapelData = mapel.find((m) => m.id === slot?.id_mata_pelajaran);
 
           const guruIndex = guru.indexOf(guruData) + 1;
           const mapelIndex = mapel.indexOf(mapelData) + 1;
@@ -213,15 +199,14 @@ const DataJadwal = () => {
       });
     });
 
-    // 🖨️ Tampilkan tabel
+    // 🖨️ Render tabel
     autoTable(doc, {
       startY: 40,
-      head: [tableHeaders.map((h) => h.content)],
+      head: [tableHeaders],
       body,
       styles: { fontSize: 7, valign: "middle", cellPadding: 2 },
       headStyles: {
-        fillColor: [230, 230, 230],
-        textColor: 0,
+        fillColor: [220, 220, 220],
         halign: "center",
         fontStyle: "bold",
       },
@@ -231,35 +216,77 @@ const DataJadwal = () => {
       theme: "grid",
     });
 
+    let currentY = doc.lastAutoTable.finalY + 10;
+
+    // 📘 LEGEND GURU
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text("Kode Guru:", 14, currentY);
+    currentY += 6;
+
+    doc.setFont("helvetica", "normal");
+    const guruList = guru.map((g, i) => `G${i + 1}: ${g.nama}`);
+    const guruChunks = chunkArray(guruList, 4); // 4 kolom per baris
+
+    guruChunks.forEach((row) => {
+      doc.text(row, 14, currentY);
+      currentY += 6;
+    });
+
+    currentY += 4;
+
+    // 📗 LEGEND MAPEL
+    doc.setFont("helvetica", "bold");
+    doc.text("Kode Mata Pelajaran:", 14, currentY);
+    currentY += 6;
+
+    doc.setFont("helvetica", "normal");
+    const mapelList = mapel.map((m, i) => `M${i + 1}: ${m.nama_pelajaran}`);
+    const mapelChunks = chunkArray(mapelList, 4); // 4 kolom per baris
+
+    mapelChunks.forEach((row) => {
+      doc.text(row, 14, currentY);
+      currentY += 6;
+    });
+
     // 🕘 Footer tanggal
-    const today = new Date().toLocaleDateString("id-ID", {
+    const tanggal = new Date().toLocaleDateString("id-ID", {
       day: "numeric",
       month: "long",
       year: "numeric",
     });
     doc.setFontSize(9);
-    doc.text(`Dicetak: ${today}`, 14, doc.lastAutoTable.finalY + 10);
+    doc.text(`Dicetak: ${tanggal}`, 14, currentY + 10);
 
-    // 💾 Save PDF
-    doc.save("jadwal-mata-pelajaran.pdf");
+    // 💾 Save
+    doc.save("jadwal-semua-kelas.pdf");
   };
 
+  // 🔧 Helper
+  function chunkArray(arr, chunkSize) {
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += chunkSize) {
+      chunks.push(arr.slice(i, i + chunkSize));
+    }
+    return chunks.map((c) => c.join("    "));
+  }
+
   return (
-    <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-colors duration-300">
+    <div className="bg-white dark:bg-gray-900 p-2 sm:p-4 md:p-6 rounded-xl shadow-sm transition-colors duration-300 max-w-screen-xl mx-auto mb-8">
       {loading ? (
         <LoadingSpinner text={"Memuat data jadwal..."} />
       ) : (
         <>
           {/* Header */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 transition-all duration-300">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6 transition-all duration-300">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
               Jadwal Mata Pelajaran & Presensi
             </h1>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               {!isSuperAdmin() && (
                 <button
                   onClick={() => setShowForm(true)}
-                  className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2 flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
+                  className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-3 py-2 sm:px-4 flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto text-sm sm:text-base"
                 >
                   <FaPlus className="w-4 h-4" />
                   Tambah Jadwal
@@ -267,26 +294,26 @@ const DataJadwal = () => {
               )}
               <button
                 onClick={handleExportPDF}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700 text-sm font-semibold transition-colors duration-300"
               >
-                Export Jadwal PDF
+                <PiExportBold size={18} /> Export Jadwal
               </button>
             </div>
           </div>
 
           {/* Tabel */}
-          <div className="-mx-4 sm:mx-0 overflow-x-auto">
+          <div className="w-full overflow-x-auto">
             <div className="inline-block min-w-full align-middle">
-              <table className="min-w-max table-auto divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
-                <thead className="bg-gray-50 dark:bg-gray-800">
+              <table className="min-w-full table-auto divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300 text-xs sm:text-sm">
+                <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
                   <tr>
-                    <th className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300">
+                    <th className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap">
                       Hari/Waktu
                     </th>
                     {kelas.map((k) => (
                       <th
                         key={k.id}
-                        className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300"
+                        className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap"
                       >
                         {k.nama_kelas}
                       </th>
@@ -301,7 +328,7 @@ const DataJadwal = () => {
                           key={`${idHari}-${w.id}`}
                           className="transition-colors duration-300"
                         >
-                          <td className="px-3 sm:px-6 py-2 sm:py-4 text-center whitespace-nowrap text-gray-700 dark:text-gray-200">
+                          <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-4 text-center whitespace-nowrap text-gray-700 dark:text-gray-200">
                             <span className="font-medium text-xs sm:text-sm">
                               {namaHari}
                             </span>
@@ -313,7 +340,7 @@ const DataJadwal = () => {
                           </td>
 
                           {kelas.map((k) => {
-                            // Temukan group dengan kombinasi kelas-guru-hari-mapel
+                            // ...existing code...
                             const matchGroup = groupedJadwal.find(
                               (g) =>
                                 g.id_kelas === k.id &&
@@ -325,7 +352,7 @@ const DataJadwal = () => {
                               return (
                                 <td
                                   key={k.id}
-                                  className="px-3 sm:px-6 py-2 sm:py-4 text-center text-gray-400"
+                                  className="px-2 sm:px-4 md:px-6 py-2 sm:py-4 text-center text-gray-400"
                                 >
                                   -
                                 </td>
@@ -346,7 +373,7 @@ const DataJadwal = () => {
                             return (
                               <td
                                 key={k.id}
-                                className="px-3 sm:px-6 py-2 sm:py-4 text-center relative group text-gray-800 dark:text-gray-100 transition-colors duration-300"
+                                className="px-2 sm:px-4 md:px-6 py-2 sm:py-4 text-center relative group text-gray-800 dark:text-gray-100 transition-colors duration-300"
                               >
                                 <div className="text-xs sm:text-sm">
                                   {getKodeGuruMapel(slot)}
@@ -391,12 +418,12 @@ const DataJadwal = () => {
             </div>
 
             {/* Legend */}
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-              <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg transition-colors duration-300">
-                <h3 className="text-sm sm:text-base font-semibold mb-3 text-gray-800 dark:text-white">
+            <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
+              <div className="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg transition-colors duration-300">
+                <h3 className="text-xs sm:text-sm md:text-base font-semibold mb-2 sm:mb-3 text-gray-800 dark:text-white">
                   Kode Guru:
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-700 dark:text-gray-200">
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-1 sm:gap-2 text-gray-700 dark:text-gray-200">
                   {guru.map((g, i) => (
                     <div key={g.id} className="text-xs sm:text-sm">
                       G{i + 1}: {g.nama}
@@ -404,11 +431,11 @@ const DataJadwal = () => {
                   ))}
                 </div>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg transition-colors duration-300">
-                <h3 className="text-sm sm:text-base font-semibold mb-3 text-gray-800 dark:text-white">
+              <div className="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg transition-colors duration-300">
+                <h3 className="text-xs sm:text-sm md:text-base font-semibold mb-2 sm:mb-3 text-gray-800 dark:text-white">
                   Kode Mata Pelajaran:
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-700 dark:text-gray-200">
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-1 sm:gap-2 text-gray-700 dark:text-gray-200">
                   {mapel.map((m, i) => (
                     <div key={m.id} className="text-xs sm:text-sm">
                       M{i + 1}: {m.nama_pelajaran}

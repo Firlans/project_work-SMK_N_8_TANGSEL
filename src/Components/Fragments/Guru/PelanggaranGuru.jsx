@@ -70,7 +70,7 @@ const PelanggaranGuru = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm transition-all duration-500 ease-in-out">
+    <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm transition-all duration-300 ease-in-out">
       {loading ? (
         <LoadingSpinner />
       ) : (

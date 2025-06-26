@@ -110,7 +110,7 @@ const JadwalSiswa = () => {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner text={"Memuat jadwal siswa..."}/>;
 
   return (
     <div className="space-y-6 sm:space-y-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -136,42 +136,42 @@ const JadwalSiswa = () => {
         return (
           <div
             key={idHari}
-            className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-500 ease-in-out"
+            className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 ease-in-out"
           >
-            <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-800 dark:text-white transition-colors duration-500 ease-in-out">
+            <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-800 dark:text-white transition-colors duration-300 ease-in-out">
               {namaHari}
             </h3>
 
             <div className="overflow-x-auto -mx-4 sm:mx-0">
               <div className="inline-block min-w-full align-middle">
-                <table className="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700 transition-all duration-500 ease-in-out">
-                  <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-500 ease-in-out">
+                <table className="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700 transition-all duration-300 ease-in-out">
+                  <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300 ease-in-out">
                     <tr>
-                      <th className="w-1/4 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors duration-500 ease-in-out">
+                      <th className="w-1/4 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-300 transition-colors duration-300 ease-in-out">
                         Waktu
                       </th>
-                      <th className="w-2/5 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors duration-500 ease-in-out">
+                      <th className="w-2/5 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-300 transition-colors duration-300 ease-in-out">
                         Mata Pelajaran
                       </th>
-                      <th className="w-1/3 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors duration-500 ease-in-out">
+                      <th className="w-1/3 px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-300 transition-colors duration-300 ease-in-out">
                         Guru
                       </th>
                     </tr>
                   </thead>
 
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-500 ease-in-out">
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300 ease-in-out">
                     {rows.map((row, index) => (
                       <tr
                         key={index}
                         className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300 ease-in-out"
                       >
-                        <td className="w-1/4 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap transition-colors duration-500 ease-in-out">
+                        <td className="w-1/4 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap transition-colors duration-300 ease-in-out">
                           {row.waktu}
                         </td>
-                        <td className="w-2/5 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 dark:text-gray-100 truncate transition-colors duration-500 ease-in-out">
+                        <td className="w-2/5 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 dark:text-gray-100 truncate transition-colors duration-300 ease-in-out">
                           {row.mapel}
                         </td>
-                        <td className="w-1/3 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 dark:text-gray-100 truncate transition-colors duration-500 ease-in-out">
+                        <td className="w-1/3 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 dark:text-gray-100 truncate transition-colors duration-300 ease-in-out">
                           {row.guru}
                         </td>
                       </tr>

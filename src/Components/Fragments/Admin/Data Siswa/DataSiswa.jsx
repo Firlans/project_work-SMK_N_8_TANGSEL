@@ -115,7 +115,7 @@ const DataSiswa = () => {
     currentPage * itemsPerPage
   );
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner text={"Memuat data siswa..."}/>;
 
   return (
     <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-md transition-colors duration-300">
@@ -209,7 +209,7 @@ const DataSiswa = () => {
               paginated.map((siswa) => (
                 <tr
                   key={siswa.id}
-                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
                 >
                   <td className="p-3 text-gray-900 dark:text-gray-200">
                     {siswa.nis}
@@ -224,7 +224,7 @@ const DataSiswa = () => {
                     <div className="flex gap-2 justify-center">
                       <button
                         onClick={() => handleDetail(siswa)}
-                        className="p-1 text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+                        className="p-1 text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-300"
                         aria-label="View details"
                       >
                         <FaEye className="w-4 h-4" />
@@ -233,14 +233,14 @@ const DataSiswa = () => {
                         <>
                           <button
                             onClick={() => handleEdit(siswa)}
-                            className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
+                            className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors duration-300"
                             aria-label="Edit user"
                           >
                             <FaEdit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(siswa.id)}
-                            className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+                            className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors duration-300"
                             aria-label="Delete user"
                           >
                             <FaTrash className="w-4 h-4" />

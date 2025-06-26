@@ -51,7 +51,7 @@ const FormPertemuan = ({ isOpen, onClose, data, idJadwal, onSuccess }) => {
       // looping untuk membuat banyak pertemuan
       for (let i = 0; i < jumlah; i++) {
         const date = new Date(today);
-        date.setDate(today.getDate() + i);
+        date.setDate(today.getDate() + i * 7);
         const dateStr = date.toISOString().split("T")[0];
 
         const resPertemuan = await axiosClient.post("/pertemuan", {

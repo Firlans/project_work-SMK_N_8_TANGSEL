@@ -107,7 +107,7 @@ const DataMapel = () => {
     return sortConfig.direction === "ascending" ? "↑" : "↓";
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner text={"Memuat data mata pelajaran..."}/>;
   if (error) return <div className="text-red-500">{error}</div>;
   if (mapel.length === 0) {
     return (

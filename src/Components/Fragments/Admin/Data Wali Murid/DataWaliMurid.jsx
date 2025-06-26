@@ -157,14 +157,14 @@ const DataWaliMurid = () => {
           </div>
 
           {/* Table Container */}
-          <div className="relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 transition-all">
+          <div className="relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 transition-colors duration-300">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left text-gray-700 dark:text-gray-100 transition-all">
-                <thead className="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+              <table className="w-full text-sm text-left text-gray-700 dark:text-gray-100 transition-colors duration-300">
+                <thead className="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors duration-300">
                   <tr>
                     <th className="px-4 py-3 font-medium">No.</th>
                     <th
-                      className="px-4 py-3 font-medium cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      className="px-4 py-3 font-medium cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300"
                       onClick={() => handleSort("nama_lengkap")}
                     >
                       <div className="flex items-center gap-2">
@@ -182,11 +182,11 @@ const DataWaliMurid = () => {
                     <th className="px-4 py-3 font-medium text-center">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900">
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
                   {paginatedData.map((wali, index) => (
                     <tr
                       key={wali.id}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
                     >
                       <td className="px-4 py-3 text-center">
                         {(currentPage - 1) * perPage + index + 1}
@@ -210,13 +210,13 @@ const DataWaliMurid = () => {
                                   setEditingWali(wali);
                                   setModalOpen(true);
                                 }}
-                                className="p-1.5 rounded-lg text-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-900 transition-colors"
+                                className="p-1.5 rounded-lg text-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-900 transition-colors duration-300"
                               >
                                 <FaEdit className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => handleDelete(wali.id)}
-                                className="p-1.5 rounded-lg text-red-500 hover:bg-red-100 dark:hover:bg-red-900 transition-colors"
+                                className="p-1.5 rounded-lg text-red-500 hover:bg-red-100 dark:hover:bg-red-900 transition-colors duration-300"
                               >
                                 <FaTrash className="w-4 h-4" />
                               </button>
@@ -249,7 +249,7 @@ const DataWaliMurid = () => {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
                       currentPage === page
                         ? "bg-blue-600 text-white"
                         : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"

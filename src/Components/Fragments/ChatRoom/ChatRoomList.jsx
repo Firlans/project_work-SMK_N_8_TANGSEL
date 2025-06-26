@@ -86,7 +86,7 @@ const ChatRoomList = ({
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner text="Memuat chat room..." />;
 
   if (rooms.length === 0)
     return (

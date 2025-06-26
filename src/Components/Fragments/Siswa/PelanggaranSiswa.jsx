@@ -132,7 +132,7 @@ const PelanggaranSiswa = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm transition-all duration-500 ease-in-out">
+    <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm transition-all duration-300 ease-in-out">
       {loading ? (
         <LoadingSpinner />
       ) : (
@@ -259,7 +259,7 @@ const PelanggaranSiswa = () => {
               Pelanggaran yang Menimpa Kamu
             </h2>
             <div className="overflow-x-auto">
-              <table className="w-full divide-y divide-gray-200 dark:divide-gray-700 transition-all duration-500 ease-in-out">
+              <table className="w-full divide-y divide-gray-200 dark:divide-gray-700 transition-all duration-300 ease-in-out">
                 <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
                   <tr className="text-left text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-all duration-300 ease-in-out">
                     <th className="px-6 py-3">No</th>

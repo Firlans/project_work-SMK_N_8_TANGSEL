@@ -116,13 +116,13 @@ const PertemuanList = () => {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner text={"Memuat pertemuan..."}/>;
 
   return (
     <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-colors duration-300">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 transition-all duration-300">
         <div>
-          <h3 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
             Daftar Pertemuan
           </h3>
           <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
@@ -166,7 +166,7 @@ const PertemuanList = () => {
 
       <div className="overflow-x-auto transition-all duration-300">
         <table className="w-full text-sm transition-colors duration-300">
-          <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-200">
+          <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-200 transition-colors duration-300">
             <tr>
               <th className="px-4 py-2">No.</th>
               <th className="px-4 py-2">Nama Pertemuan</th>
@@ -174,7 +174,7 @@ const PertemuanList = () => {
               <th className="px-4 py-2">Aksi</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900">
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
             {pertemuan.length > 0 ? (
               pertemuan.map((p, index) => (
                 <tr

@@ -28,7 +28,7 @@ const PresensiList = () => {
   const { state } = useLocation();
   const { namaKelas, namaMapel, namaPertemuan } = state || {};
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner text={"Memuat presensi..."} />;
 
   return (
     <div className="relative">
@@ -54,7 +54,7 @@ const PresensiList = () => {
           </div>
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg"
+            className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2  flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
           >
             <IoChevronBackSharp />
             Kembali

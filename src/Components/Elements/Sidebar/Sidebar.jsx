@@ -50,12 +50,12 @@ const Sidebar = ({
         className={`fixed lg:sticky top-0 left-0 z-50 w-64 h-screen 
           bg-white dark:bg-gray-900 
           border-r border-gray-200 dark:border-gray-700 
-          shadow-lg transform transition-transform duration-300 ease-in-out 
+          shadow-lg transform transition-all duration-300 ease-in-out 
           ${isOpen ? "translate-x-0" : "-translate-x-full"} 
           lg:translate-x-0 lg:block flex flex-col`}
       >
         {/* === Header === */}
-        <div className="p-4 border-b bg-blue-50 dark:bg-gray-800 shrink-0">
+        <div className="p-4 border-b bg-white dark:bg-gray-800 shrink-0 transition-all duration-300">
           <h2 className="text-xl text-center font-bold text-slate-900 dark:text-white">
             {title}
           </h2>
@@ -86,7 +86,7 @@ const Sidebar = ({
 
       {/* === Overlay (mobile) === */}
       <div
-        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-20 transition-opacity duration-300 lg:hidden 
+        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-20 transition-all duration-300 lg:hidden 
           ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         onClick={() => setIsOpen(false)}
       />

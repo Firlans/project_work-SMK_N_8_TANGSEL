@@ -189,26 +189,26 @@ const JadwalGuru = () => {
         return (
           <div
             key={hariId}
-            className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-500 ease-in-out"
+            className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 ease-in-out"
           >
             <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-800 dark:text-white">{namaHari}</h3>
 
             <div className="overflow-x-auto w-full">
-              <table className="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-800">
+              <table className="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700 transition-all duration-300 ease-in-out">
+                <thead className="bg-gray-50 dark:bg-gray-800 transition-all duration-300 ease-in-out">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300">Waktu</th>
-                    <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300">Kelas</th>
-                    <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300">Mata Pelajaran</th>
-                    <th className="px-4 py-3 text-center text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300">Presensi</th>
+                    <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300 transition-all duration-300 ease-in-out">Waktu</th>
+                    <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300 transition-all duration-300 ease-in-out">Kelas</th>
+                    <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300 transition-all duration-300 ease-in-out">Mata Pelajaran</th>
+                    <th className="px-4 py-3 text-center text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300 transition-all duration-300 ease-in-out">Presensi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900">
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-all duration-300 ease-in-out">
                   {rows.map((row, index) => (
-                    <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{row.waktu}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{row.kelas}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{row.mapel}</td>
+                    <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 ease-in-out">
+                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 transition-all duration-300 ease-in-out">{row.waktu}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 transition-all duration-300 ease-in-out">{row.kelas}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 transition-all duration-300 ease-in-out">{row.mapel}</td>
                       <td className="px-4 py-3 text-center">
                         <button
                           onClick={() => handleLihatPertemuan(row.idUtama)}

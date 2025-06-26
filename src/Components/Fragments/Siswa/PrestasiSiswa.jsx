@@ -36,12 +36,12 @@ const PrestasiSiswa = () => {
     fetchData();
   }, []);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner text={"Memuat prestasi..."}/>;
 
   return (
-    <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-all duration-500 ease-in-out">
+    <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-all duration-300 ease-in-out">
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-500">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
           Daftar Prestasi
         </h2>
         <button
@@ -57,8 +57,8 @@ const PrestasiSiswa = () => {
 
       <div className="-mx-4 sm:mx-0 overflow-x-auto">
         <div className="inline-block min-w-full align-middle">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 transition-all duration-500 ease-in-out">
-            <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-500">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 transition-all duration-300 ease-in-out">
+            <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
               <tr>
                 {["No", "Nama Siswa", "Foto", "Deskripsi", "Status"].map(
                   (label, i) => (
@@ -74,7 +74,7 @@ const PrestasiSiswa = () => {
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-500">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
               {data.map((item, index) => (
                 <tr
                   key={item.id}

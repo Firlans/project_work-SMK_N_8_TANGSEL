@@ -15,8 +15,8 @@ const PresensiPickerTable = ({
   return (
     <div className="overflow-x-auto transition-all duration-300">
       <table className="min-w-full table-auto text-sm sm:text-base transition-colors duration-300">
-        <thead className="bg-slate-100 dark:bg-slate-900 transition-colors duration-300">
-          <tr className="text-left text-slate-900 dark:text-slate-200">
+        <thead className="bg-slate-100 dark:bg-gray-900 transition-colors duration-300">
+          <tr className="text-left text-slate-900 dark:text-slate-200 transition-colors duration-300">
             <th className="px-3 py-2 font-medium whitespace-nowrap">No</th>
             <th className="px-3 py-2 font-medium whitespace-nowrap">
               Nama Siswa
@@ -31,7 +31,7 @@ const PresensiPickerTable = ({
           </tr>
         </thead>
 
-        <tbody className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-200 divide-y divide-slate-200 dark:divide-slate-700 transition-colors duration-300">
+        <tbody className="bg-white dark:bg-gray-900 text-slate-900 dark:text-slate-200 divide-y divide-slate-200 dark:divide-slate-900 transition-colors duration-300">
           {siswaList.map((siswa, idx) => {
             const existing = presensi.find((p) => p.id_siswa === siswa.id);
             return (
