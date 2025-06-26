@@ -1,3 +1,5 @@
+// DataJadwal.jsx
+
 import { useEffect, useState } from "react";
 import axiosClient from "../../../../axiosClient";
 import FormJadwal from "./FormJadwal";
@@ -5,9 +7,12 @@ import { FaEye, FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import autoTable from "jspdf-autotable";
+import jsPDF from "jspdf";
 
 const DataJadwal = () => {
   const [jadwal, setJadwal] = useState([]);
+  const [groupedJadwal, setGroupedJadwal] = useState([]);
   const [waktu, setWaktu] = useState([]);
   const [kelas, setKelas] = useState([]);
   const [guru, setGuru] = useState([]);
@@ -27,8 +32,30 @@ const DataJadwal = () => {
     6: "Sabtu",
   };
 
+  const groupJadwalBySesi = (jadwalList) => {
+    const grouped = {};
+    jadwalList.forEach((j) => {
+      const key = `${j.id_kelas}-${j.id_guru}-${j.id_hari}-${j.id_mata_pelajaran}`;
+      if (!grouped[key]) {
+        grouped[key] = {
+          id_kelas: j.id_kelas,
+          id_guru: j.id_guru,
+          id_hari: j.id_hari,
+          id_mata_pelajaran: j.id_mata_pelajaran,
+          waktuList: [],
+          semuaJadwalId: [],
+          jadwalUtama: j,
+        };
+      }
+      grouped[key].waktuList.push(j.id_waktu);
+      grouped[key].semuaJadwalId.push(j.id);
+    });
+    return Object.values(grouped);
+  };
+
   const fetchData = async () => {
     try {
+      setLoading(true);
       const [resJadwal, resWaktu, resKelas, resGuru, resMapel] =
         await Promise.all([
           axiosClient.get("/jadwal"),
@@ -39,6 +66,12 @@ const DataJadwal = () => {
         ]);
 
       setJadwal(resJadwal.data.data);
+
+      setGroupedJadwal(groupJadwalBySesi(resJadwal.data.data));
+      console.log(
+        JSON.stringify(groupJadwalBySesi(resJadwal.data.data), null, 2)
+      );
+
       setWaktu(resWaktu.data.data);
       setKelas(
         resKelas.data.data.sort((a, b) =>
@@ -47,50 +80,36 @@ const DataJadwal = () => {
       );
       setGuru(resGuru.data.data);
       setMapel(resMapel.data.data);
-      setLoading(false);
-      console.log("Data jadwal:", resJadwal.data.data);
     } catch (error) {
       console.error("Gagal mengambil data:", error);
+    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    // Ambil dan parse privilege dari cookies
     const privilegeData = Cookies.get("userPrivilege");
-    console.log("Cookie privilege data:", privilegeData);
-
     if (privilegeData) {
       try {
-        const parsedPrivilege = JSON.parse(privilegeData);
-        console.log("Parsed privilege:", parsedPrivilege);
-        setUserPrivilege(parsedPrivilege);
+        setUserPrivilege(JSON.parse(privilegeData));
       } catch (error) {
         console.error("Error parsing privilege:", error);
       }
     }
-
     fetchData();
   }, []);
 
   const isSuperAdmin = () => {
-    if (!userPrivilege) {
-      console.log("userPrivilege is null");
-      return false;
-    }
-    const isSuperAdmin = userPrivilege.is_superadmin === 1;
-    return isSuperAdmin;
+    if (!userPrivilege) return false;
+    return userPrivilege.is_superadmin === 1;
   };
 
   const getKodeGuruMapel = (slot) => {
     const guruData = guru.find((g) => g.id === slot.id_guru);
     const mapelData = mapel.find((m) => m.id === slot.id_mata_pelajaran);
-
     if (!guruData || !mapelData) return "-";
-
     const guruIndex = guru.indexOf(guruData) + 1;
     const mapelIndex = mapel.indexOf(mapelData) + 1;
-
     return `G${guruIndex}-M${mapelIndex}`;
   };
 
@@ -101,10 +120,10 @@ const DataJadwal = () => {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Yakin ingin menghapus jadwal ini?")) return;
-
     try {
       await axiosClient.delete(`/jadwal/${id}`);
       setJadwal((prev) => prev.filter((j) => j.id !== id));
+      setGroupedJadwal(groupJadwalBySesi(jadwal.filter((j) => j.id !== id)));
     } catch (error) {
       console.error("Gagal menghapus jadwal:", error);
     }
@@ -114,13 +133,124 @@ const DataJadwal = () => {
     navigate(`/dashboard-admin/data-jadwal/${jadwalId}/pertemuan`);
   };
 
+  const handleExportPDF = () => {
+    const doc = new jsPDF("landscape", "mm", "a4");
+    const logoPath = "/images/logo-smkn8tangsel.png"; // pastikan ini ada
+
+    // 🧾 Header
+    doc.addImage(logoPath, "PNG", 14, 10, 25, 25);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text("SMK NEGERI 8 KOTA TANGERANG SELATAN", 148, 15, {
+      align: "center",
+    });
+
+    doc.setFontSize(12);
+    doc.text("JADWAL MATA PELAJARAN & PRESENSI", 148, 22, { align: "center" });
+
+    // 🔠 Header tabel: [Hari/Waktu, Kelas1, Kelas2, ...]
+    const tableHeaders = [
+      {
+        content: "Hari / Waktu",
+        styles: { halign: "center", fontStyle: "bold" },
+      },
+      ...kelas.map((k) => ({
+        content: k.nama_kelas,
+        styles: { halign: "center", fontStyle: "bold" },
+      })),
+    ];
+
+    // 🧱 Bangun body sesuai UI
+    const body = [];
+
+    Object.entries(hariMap).forEach(([idHari, namaHari]) => {
+      waktu.forEach((w) => {
+        const row = [];
+
+        // Kolom 1: Hari + Jam
+        row.push(
+          `${namaHari}\n${w.jam_mulai.slice(0, 5)} - ${w.jam_selesai.slice(
+            0,
+            5
+          )}`
+        );
+
+        // Kolom tiap kelas
+        kelas.forEach((k) => {
+          const matchGroup = groupedJadwal.find(
+            (g) =>
+              g.id_kelas === k.id &&
+              g.id_hari === Number(idHari) &&
+              g.waktuList.includes(w.id)
+          );
+
+          if (!matchGroup) {
+            row.push("-");
+            return;
+          }
+
+          const slot = jadwal.find(
+            (j) =>
+              matchGroup.semuaJadwalId.includes(j.id) && j.id_waktu === w.id
+          );
+
+          if (!slot) {
+            row.push("-");
+            return;
+          }
+
+          const guruData = guru.find((g) => g.id === slot.id_guru);
+          const mapelData = mapel.find((m) => m.id === slot.id_mata_pelajaran);
+
+          const guruIndex = guru.indexOf(guruData) + 1;
+          const mapelIndex = mapel.indexOf(mapelData) + 1;
+
+          const kode = `G${guruIndex}-M${mapelIndex}`;
+          row.push(kode);
+        });
+
+        body.push(row);
+      });
+    });
+
+    // 🖨️ Tampilkan tabel
+    autoTable(doc, {
+      startY: 40,
+      head: [tableHeaders.map((h) => h.content)],
+      body,
+      styles: { fontSize: 7, valign: "middle", cellPadding: 2 },
+      headStyles: {
+        fillColor: [230, 230, 230],
+        textColor: 0,
+        halign: "center",
+        fontStyle: "bold",
+      },
+      columnStyles: {
+        0: { cellWidth: 40 },
+      },
+      theme: "grid",
+    });
+
+    // 🕘 Footer tanggal
+    const today = new Date().toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    doc.setFontSize(9);
+    doc.text(`Dicetak: ${today}`, 14, doc.lastAutoTable.finalY + 10);
+
+    // 💾 Save PDF
+    doc.save("jadwal-mata-pelajaran.pdf");
+  };
+
   return (
     <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-colors duration-300">
       {loading ? (
-        <LoadingSpinner />
+        <LoadingSpinner text={"Memuat data jadwal..."} />
       ) : (
         <>
-          {/* Header Section */}
+          {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 transition-all duration-300">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
               Jadwal Mata Pelajaran & Presensi
@@ -129,19 +259,25 @@ const DataJadwal = () => {
               {!isSuperAdmin() && (
                 <button
                   onClick={() => setShowForm(true)}
-                  className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2  flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
+                  className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2 flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
                 >
                   <FaPlus className="w-4 h-4" />
                   Tambah Jadwal
                 </button>
               )}
+              <button
+                onClick={handleExportPDF}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
+              >
+                Export Jadwal PDF
+              </button>
             </div>
           </div>
 
-          {/* Table Section */}
+          {/* Tabel */}
           <div className="-mx-4 sm:mx-0 overflow-x-auto">
             <div className="inline-block min-w-full align-middle">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
+              <table className="min-w-max table-auto divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
                 <thead className="bg-gray-50 dark:bg-gray-800">
                   <tr>
                     <th className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300">
@@ -159,82 +295,102 @@ const DataJadwal = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
                   {Object.entries(hariMap).map(([idHari, namaHari]) =>
-                    waktu.map((w) => (
-                      <tr
-                        key={`${idHari}-${w.id}`}
-                        className="transition-colors duration-300"
-                      >
-                        <td className="px-3 sm:px-6 py-2 sm:py-4 text-center whitespace-nowrap text-gray-700 dark:text-gray-200">
-                          <span className="font-medium text-xs sm:text-sm">
-                            {namaHari}
-                          </span>
-                          <br />
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            {w.jam_mulai.slice(0, 5)} -{" "}
-                            {w.jam_selesai.slice(0, 5)}
-                          </span>
-                        </td>
-                        {kelas.map((k) => {
-                          const slot = jadwal.find(
-                            (j) =>
-                              j.id_hari === Number(idHari) &&
-                              j.id_waktu === w.id &&
-                              j.id_kelas === k.id
-                          );
+                    waktu.map((w) => {
+                      return (
+                        <tr
+                          key={`${idHari}-${w.id}`}
+                          className="transition-colors duration-300"
+                        >
+                          <td className="px-3 sm:px-6 py-2 sm:py-4 text-center whitespace-nowrap text-gray-700 dark:text-gray-200">
+                            <span className="font-medium text-xs sm:text-sm">
+                              {namaHari}
+                            </span>
+                            <br />
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              {w.jam_mulai.slice(0, 5)} -{" "}
+                              {w.jam_selesai.slice(0, 5)}
+                            </span>
+                          </td>
 
-                          return (
-                            <td
-                              key={k.id}
-                              className="px-3 sm:px-6 py-2 sm:py-4 text-center relative group text-gray-800 dark:text-gray-100 transition-colors duration-300"
-                            >
-                              <div className="text-xs sm:text-sm">
-                                {slot ? (
-                                  <>
-                                    {getKodeGuruMapel(slot)}
-                                    <div className="hidden group-hover:flex gap-2 justify-center mt-1">
-                                      {!isSuperAdmin() && (
-                                        <>
-                                          <button
-                                            className="p-1 text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
-                                            onClick={() =>
-                                              handleLihatPertemuan(slot.id)
-                                            }
-                                          >
-                                            <FaEye className="w-3 h-3 sm:w-4 sm:h-4" />
-                                          </button>
-                                          <button
-                                            onClick={() => handleEdit(slot)}
-                                            className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
-                                          >
-                                            <FaEdit className="w-3 h-3 sm:w-4 sm:h-4" />
-                                          </button>
-                                          <button
-                                            onClick={() =>
-                                              handleDelete(slot.id)
-                                            }
-                                            className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
-                                          >
-                                            <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" />
-                                          </button>
-                                        </>
-                                      )}
-                                    </div>
-                                  </>
-                                ) : (
-                                  "-"
-                                )}
-                              </div>
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))
+                          {kelas.map((k) => {
+                            // Temukan group dengan kombinasi kelas-guru-hari-mapel
+                            const matchGroup = groupedJadwal.find(
+                              (g) =>
+                                g.id_kelas === k.id &&
+                                g.id_hari === Number(idHari) &&
+                                g.waktuList.includes(w.id)
+                            );
+
+                            if (!matchGroup) {
+                              return (
+                                <td
+                                  key={k.id}
+                                  className="px-3 sm:px-6 py-2 sm:py-4 text-center text-gray-400"
+                                >
+                                  -
+                                </td>
+                              );
+                            }
+
+                            const slot = jadwal.find(
+                              (j) =>
+                                j.id ===
+                                matchGroup.semuaJadwalId.find((idJ) => {
+                                  const jadwalItem = jadwal.find(
+                                    (x) => x.id === idJ
+                                  );
+                                  return jadwalItem?.id_waktu === w.id;
+                                })
+                            );
+
+                            return (
+                              <td
+                                key={k.id}
+                                className="px-3 sm:px-6 py-2 sm:py-4 text-center relative group text-gray-800 dark:text-gray-100 transition-colors duration-300"
+                              >
+                                <div className="text-xs sm:text-sm">
+                                  {getKodeGuruMapel(slot)}
+                                  <div className="hidden group-hover:flex gap-2 justify-center mt-1">
+                                    {!isSuperAdmin() && (
+                                      <>
+                                        <button
+                                          className="p-1 text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+                                          onClick={() =>
+                                            handleLihatPertemuan(
+                                              matchGroup.jadwalUtama.id
+                                            )
+                                          }
+                                        >
+                                          <FaEye className="w-3 h-3 sm:w-4 sm:h-4" />
+                                        </button>
+                                        <button
+                                          onClick={() => handleEdit(slot)}
+                                          className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
+                                        >
+                                          <FaEdit className="w-3 h-3 sm:w-4 sm:h-4" />
+                                        </button>
+                                        <button
+                                          onClick={() => handleDelete(slot.id)}
+                                          className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+                                        >
+                                          <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" />
+                                        </button>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
             </div>
 
-            {/* Legend Section */}
+            {/* Legend */}
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg transition-colors duration-300">
                 <h3 className="text-sm sm:text-base font-semibold mb-3 text-gray-800 dark:text-white">
@@ -263,7 +419,7 @@ const DataJadwal = () => {
             </div>
           </div>
 
-          {/* Form Modal */}
+          {/* Modal Form */}
           {showForm && (
             <FormJadwal
               isOpen={showForm}
@@ -278,13 +434,27 @@ const DataJadwal = () => {
               jadwal={jadwal}
               mapel={mapel}
               onSuccess={(newData) => {
-                if (selectedData) {
-                  setJadwal((prev) =>
-                    prev.map((j) => (j.id === newData.id ? newData : j))
-                  );
+                const isEdit = !!selectedData;
+
+                if (Array.isArray(newData)) {
+                  // handle banyak data baru (create multiple waktu)
+                  const updated = [...jadwal, ...newData];
+                  setJadwal(updated);
+                  setGroupedJadwal(groupJadwalBySesi(updated));
                 } else {
-                  setJadwal((prev) => [...prev, newData]);
+                  if (isEdit) {
+                    const updated = jadwal.map((j) =>
+                      j.id === newData.id ? newData : j
+                    );
+                    setJadwal(updated);
+                    setGroupedJadwal(groupJadwalBySesi(updated));
+                  } else {
+                    const updated = [...jadwal, newData];
+                    setJadwal(updated);
+                    setGroupedJadwal(groupJadwalBySesi(updated));
+                  }
                 }
+
                 setShowForm(false);
                 setSelectedData(null);
               }}

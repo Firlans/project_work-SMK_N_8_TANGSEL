@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axiosClient from "../../../../axiosClient";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 
 const FormJadwal = ({
   isOpen,
@@ -14,12 +15,13 @@ const FormJadwal = ({
 }) => {
   const [formData, setFormData] = useState({
     id_hari: data?.id_hari || "",
-    id_waktu: data?.id_waktu || "",
+    id_waktu: data?.id_waktu ? [data.id_waktu] : [],
     id_kelas: data?.id_kelas || "",
     id_guru: data?.id_guru || "",
     id_mata_pelajaran: data?.id_mata_pelajaran || "",
   });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const hariOptions = [
     { id: 1, nama: "Senin" },
@@ -30,68 +32,64 @@ const FormJadwal = ({
     { id: 6, nama: "Sabtu" },
   ];
 
-  const checkJadwalBentrok = () => {
-    const existingSchedule = jadwal.find(
-      (j) =>
-        j.id !== data?.id && // Exclude current schedule for edit
-        j.id_guru === formData.id_guru &&
-        j.id_hari === formData.id_hari &&
-        j.id_waktu === formData.id_waktu
-    );
-
-    return existingSchedule;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // Validasi required fields
     const requiredFields = [
       "id_kelas",
       "id_guru",
       "id_hari",
-      "id_waktu",
       "id_mata_pelajaran",
     ];
     const emptyFields = requiredFields.filter((field) => !formData[field]);
+    if (formData.id_waktu.length === 0) emptyFields.push("id_waktu");
 
     if (emptyFields.length > 0) {
       setError(`Field berikut harus diisi: ${emptyFields.join(", ")}`);
       return;
     }
 
-    // Cek jadwal bentrok di frontend
-    const bentrok = checkJadwalBentrok();
-    if (bentrok) {
-      setError("Guru sudah memiliki jadwal di hari dan waktu yang sama");
+    const bentrokList = formData.id_waktu.filter((idWaktu) =>
+      jadwal.some(
+        (j) =>
+          j.id !== data?.id &&
+          j.id_guru === formData.id_guru &&
+          j.id_hari === formData.id_hari &&
+          j.id_waktu === idWaktu
+      )
+    );
+
+    if (bentrokList.length > 0) {
+      setError("Beberapa jam yang dipilih sudah ada jadwal untuk guru ini.");
       return;
     }
 
     try {
-      const response = data?.id
-        ? await axiosClient.put(`/jadwal/${data.id}`, formData)
-        : await axiosClient.post("/jadwal", formData);
+      setLoading(true);
+      if (data?.id) {
+        // mode edit: tetap pakai 1 waktu
+        const response = await axiosClient.put(`/jadwal/${data.id}`, {
+          ...formData,
+          id_waktu: formData.id_waktu[0],
+        });
+        onSuccess(response.data.data);
+      } else {
+        const createdList = [];
 
-      onSuccess(response.data.data);
-
-      // // ✅ Buat pertemuan otomatis jika tambah baru
-      // if (!data?.id) {
-      //   await axiosClient.post("/pertemuan", {
-      //     id_jadwal: response.data.data.id,
-      //     nama_pertemuan: "Pertemuan 1",
-      //     tanggal: new Date().toISOString().split("T")[0],
-      //   });
-      //   console.log("Pertemuan otomatis berhasil dibuat");
-      // }
+        for (const waktuId of formData.id_waktu) {
+          const payload = { ...formData, id_waktu: waktuId };
+          const res = await axiosClient.post("/jadwal", payload);
+          createdList.push(res.data.data);
+        }
+        onSuccess(createdList);
+      }
     } catch (err) {
       if (err.response?.status === 422) {
-        // Handle validation errors from backend
         const errors = err.response.data.message;
         if (typeof errors === "string") {
           setError(errors);
         } else {
-          // Handle multiple validation errors
           const errorMessages = Object.entries(errors)
             .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
             .join("\n");
@@ -100,10 +98,13 @@ const FormJadwal = ({
       } else {
         setError(err.response?.data?.message || "Terjadi kesalahan");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   if (!isOpen) return null;
+  if (loading) return <LoadingSpinner text="Menyimpan jadwal..." />;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -143,28 +144,31 @@ const FormJadwal = ({
 
           {/* WAKTU */}
           <div>
-            <label className="block text-sm text-gray-700 dark:text-gray-300">
-              Waktu
+            <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
+              Pilih Waktu (bisa lebih dari 1)
             </label>
-            <select
-              name="id_waktu"
-              value={formData.id_waktu}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  id_waktu: Number(e.target.value),
-                }))
-              }
-              className="w-full border border-gray-300 dark:border-gray-700 px-3 py-2 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-white transition-all duration-300"
-              required
-            >
-              <option value="">Pilih Waktu</option>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {waktu.map((w) => (
-                <option key={w.id} value={w.id}>
-                  {w.jam_mulai.slice(0, 5)} - {w.jam_selesai.slice(0, 5)}
-                </option>
+                <label key={w.id} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    value={w.id}
+                    checked={formData.id_waktu.includes(w.id)}
+                    onChange={(e) => {
+                      const waktuId = Number(e.target.value);
+                      const selected = formData.id_waktu.includes(waktuId)
+                        ? formData.id_waktu.filter((id) => id !== waktuId)
+                        : [...formData.id_waktu, waktuId];
+                      setFormData((prev) => ({ ...prev, id_waktu: selected }));
+                    }}
+                    className="accent-amber-500"
+                  />
+                  <span className="text-sm text-gray-800 dark:text-gray-100">
+                    {w.jam_mulai.slice(0, 5)} - {w.jam_selesai.slice(0, 5)}
+                  </span>
+                </label>
               ))}
-            </select>
+            </div>
           </div>
 
           {/* KELAS */}
