@@ -2,6 +2,7 @@ import { useState } from "react";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import axiosClient from "../../../../../axiosClient";
+import { toast } from "react-hot-toast";
 
 export const useBulkUplouder = (onClose, onSuccess) => {
   const [file, setFile] = useState(null);
@@ -52,6 +53,38 @@ export const useBulkUplouder = (onClose, onSuccess) => {
     return `${base}0000`;
   };
 
+  const translateErrorMessage = (field, message) => {
+    const mapField = {
+      "data.nisn": "NISN",
+      "data.nip": "NIP",
+      "data.nis": "NIS",
+      "data.tanggal_lahir": "Tanggal lahir",
+      "data.id_kelas": "Kelas",
+      profile: "Tipe pengguna",
+      email: "Email",
+      name: "Nama",
+    };
+
+    const fieldName = mapField[field] || field;
+
+    if (message.includes("has already been taken")) {
+      return `${fieldName} sudah digunakan`;
+    }
+
+    if (
+      message.includes("is required") ||
+      message.includes("must be provided")
+    ) {
+      return `${fieldName} wajib diisi`;
+    }
+
+    if (message.includes("invalid")) {
+      return `${fieldName} tidak valid`;
+    }
+
+    return `${fieldName}: ${message}`;
+  };
+
   const handleUpload = async (users) => {
     setUploading(true);
     setShowLoading(true);
@@ -91,14 +124,31 @@ export const useBulkUplouder = (onClose, onSuccess) => {
         await axiosClient.post("/user", dataToSubmit);
         logResult.push({ index, status: "success", name: user.name });
       } catch (error) {
+        const response = error.response?.data;
+        let message = "Unknown error";
+
+        // Kalau bentuk message-nya object (biasa Laravel validation error)
+        if (typeof response?.message === "object") {
+          message = Object.entries(response.message)
+            .map(([field, msgs]) =>
+              msgs.map((msg) => translateErrorMessage(field, msg)).join(", ")
+            )
+            .join(" | ");
+        } else if (typeof response?.message === "string") {
+          message = response.message;
+        }
+
         logResult.push({
           index,
           status: "error",
           name: user.name,
-          message: error.response?.data?.message || "Unknown error",
+          message,
         });
+
+        toast.error(`Gagal upload ${user.name}: ${message}`);
       }
 
+      toast.success(`User ${user.name} berhasil diupload`);
       setProgressText(`Mengupload ${index + 1} dari ${users.length} user...`);
       setUploadPercentage(Math.round(((index + 1) / users.length) * 100));
     }

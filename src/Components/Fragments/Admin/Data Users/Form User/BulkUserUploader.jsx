@@ -11,7 +11,7 @@ const ModalBulkUploader = ({ onClose, onSuccess }) => {
     uploadPercentage,
     handleFileChange,
     parseFile,
-  } = useBulkUplouder(onClose, onSuccess);
+  } = useBulkUplouder(onSuccess);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
@@ -44,22 +44,22 @@ const ModalBulkUploader = ({ onClose, onSuccess }) => {
           </button>
 
           {log.length > 0 && (
-            <div className="mt-4 text-sm max-h-48 overflow-y-auto">
-              <h3 className="font-bold mb-2 text-gray-800 dark:text-white">
-                Log Hasil Upload:
-              </h3>
-              <ul className="space-y-1">
-                {log.map((item, idx) => (
+            <div className="mt-6 border-t pt-4">
+              <h3 className="font-semibold text-lg mb-2 text-slate-900 dark:text-white">Hasil Upload</h3>
+              <ul className="space-y-1 max-h-40 overflow-y-auto text-sm">
+                {log.map((item, i) => (
                   <li
-                    key={idx}
-                    className={
-                      item.status === "success"
-                        ? "text-green-600"
-                        : "text-red-500"
-                    }
+                    key={i}
+                    className={`${
+                      item.status === "error"
+                        ? "text-red-500"
+                        : "text-green-500"
+                    }`}
                   >
-                    {idx + 1}. {item.name} - {item.status}
-                    {item.message && ` (${item.message})`}
+                    {i + 1}. {item.name} -{" "}
+                    {item.status === "error"
+                      ? `Gagal: ${item.message}`
+                      : "Berhasil"}
                   </li>
                 ))}
               </ul>
