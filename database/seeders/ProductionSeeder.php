@@ -54,12 +54,12 @@ class ProductionSeeder extends Seeder
         ];
 
         foreach ($users as $userData) {
-
+            $i = 1;
             $profile = [
                 'email' => $userData['email'],
                 'nama' => $userData['name'],
                 'jenis_kelamin' => 'L',
-                'nip' => '**************',
+                'nip' => '********'. $i++,
                 'tanggal_lahir' => '2025-07-01',
                 'alamat' => 'Jl. H Jamat Gg. Rais RT. 002, RW.004, Kel. Buaran, Kec, Serpong. Kota Tangerang Selatan, Banten',
                 'no_telp' => '081234567890',
