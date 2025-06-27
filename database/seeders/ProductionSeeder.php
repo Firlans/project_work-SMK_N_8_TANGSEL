@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Guru;
 use App\Models\Privilege;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -22,7 +23,7 @@ class ProductionSeeder extends Seeder
         ];
 
         // Set privileges based on email/profile
-        if($email === 'smkn8tangerangselatan.com'){
+        if ($email === 'smkn8tangerangselatan.com') {
             $privilege['is_superadmin'] = true;
         } elseif ($email === 'admin@smkn8tangerangselatan.com') {
             $privilege['is_admin'] = true;
@@ -53,8 +54,28 @@ class ProductionSeeder extends Seeder
         ];
 
         foreach ($users as $userData) {
+
+            $profile = [
+                'email' => $userData['email'],
+                'nama' => $userData['name'],
+                'jenis_kelamin' => 'L',
+                'nip' => '**************',
+                'tanggal_lahir' => '2025-07-01',
+                'alamat' => 'Jl. H Jamat Gg. Rais RT. 002, RW.004, Kel. Buaran, Kec, Serpong. Kota Tangerang Selatan, Banten',
+                'no_telp' => '081234567890',
+            ];
+
             $user = User::create($userData);
             $this->createPrivilege($user->id, $userData['email'], $userData['profile']);
+            Guru::create([
+                'user_id' => $user->id,
+                'nama' => $profile['nama'],
+                'jenis_kelamin' => $profile['jenis_kelamin'],
+                'nip' => $profile['nip'],
+                'tanggal_lahir' => $profile['tanggal_lahir'],
+                'alamat' => $profile['alamat'],
+                'no_telp' => $profile['no_telp']
+            ]);
         }
     }
 }
