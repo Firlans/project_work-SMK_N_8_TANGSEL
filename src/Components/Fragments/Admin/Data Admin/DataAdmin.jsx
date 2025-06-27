@@ -121,12 +121,6 @@ const DataAdmin = () => {
                       >
                         <FaEdit />
                       </button>
-                      <button
-                        onClick={() => handleDelete(a.id)}
-                        className="text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
-                      >
-                        <FaTrash />
-                      </button>
                     </td>
                   </tr>
                 ))
