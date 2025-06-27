@@ -296,8 +296,7 @@ class AuthController extends Controller
             $url = env('FRONTEND_URL', 'https://x61n12fl-5173.asse.devtunnels.ms');
             $link = "{$url}/login/orang-tua?token={$token}";
 
-            $send = Mail::to($request->email)->send(new AccessParent($link, $siswa->nama_lengkap));
-            \Log::info('terkirim' . json_encode($link));
+            Mail::to($request->email)->send(new AccessParent($link, $siswa->nama_lengkap));
             return response()->json([
                 'status' => 'success',
                 'message' => 'Akses di kirim via Email'

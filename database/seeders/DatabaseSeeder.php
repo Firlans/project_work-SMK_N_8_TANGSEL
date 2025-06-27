@@ -8,20 +8,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call([
-            KelasSeeder::class,
-            MataPelajaranSeeder::class,
-            WaktuSeeder::class,
-            HariSeeder::class,
-            UserSeeder::class,
-            GuruSeeder::class,
-            SiswaSeeder::class,
-            WaliMuridSeeder::class,
-            JadwalSeeder::class,
-            PertemuanSeeder::class,
-            KehadiranSeeder::class,
-            PrestasiSeeder::class,
-            PelanggaranSeeder::class,
-        ]);
+        if(env('APP_ENV') === 'production') {
+            $this->call(ProductionSeeder::class);
+        } else {
+            $this->call(DevelopmentSeeder::class);
+        }
     }
 }
