@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -29,7 +30,7 @@ class AccessParent extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Link Akses untuk Orang Tua',
+            subject: 'Link Akses untuk Orang Tua - ' . Carbon::now()->format('Y-m-d H:i:s'),
         );
     }
 

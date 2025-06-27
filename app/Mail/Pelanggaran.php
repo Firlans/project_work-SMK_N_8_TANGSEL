@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -21,7 +22,7 @@ class Pelanggaran extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($parentName, $studentName, $violationDate, $violationType, $description)
+    public function __construct($parentName, $studentName, $violationDate, $description)
     {
         $this->parentName = $parentName;
         $this->studentName = $studentName;
@@ -35,7 +36,7 @@ class Pelanggaran extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Laporan Pelanggaran Siswa',
+            subject: 'Laporan Pelanggaran Siswa - ' . Carbon::now()->format('Y-m-d H:i:s'),
         );
     }
 

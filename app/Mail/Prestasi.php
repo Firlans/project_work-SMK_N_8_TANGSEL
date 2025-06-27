@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -42,7 +43,7 @@ class Prestasi extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Penghargaan atas Prestasi Ananda',
+            subject: 'Penghargaan atas Prestasi Ananda - ' . Carbon::now()->format('Y-m-d H:i:s'),
         );
     }
 

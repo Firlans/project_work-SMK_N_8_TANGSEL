@@ -10,19 +10,5 @@ use App\Mail\Email;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function(){
-    return view('BroadcastTesting');
+    return 'server is running';
 });
-
-Route::post('/send-email/{name}', function($name){
-    $to = 'firlansyah54321@gmail.com';
-    $send = Mail::to($to)->send(new Email($name));
-    \Log::info('pengiriman'. json_encode($send));
-    return 'email already send';
-});
-
-
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/dashboard', [SiswaController::class, 'siswa']);
-Route::get('/admin', [GuruController::class, 'admin']);
-Route::get('/teacher', [GuruController::class, 'teacher']);
-Route::get('/konselor', [GuruController::class, 'konselor']);
