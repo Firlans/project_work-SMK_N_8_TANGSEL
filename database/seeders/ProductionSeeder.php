@@ -22,19 +22,11 @@ class ProductionSeeder extends Seeder
         ];
 
         // Set privileges based on email/profile
-        if($email === 'superadmin@test.com'){
+        if($email === 'smkn8tangerangselatan.com'){
             $privilege['is_superadmin'] = true;
-            $privilege['is_guru'] = true;
-        }elseif ($email === 'admin@test.com') {
+        } elseif ($email === 'admin@smkn8tangerangselatan.com') {
             $privilege['is_admin'] = true;
             $privilege['is_guru'] = true;
-        } elseif ($email === 'konselor@test.com') {
-            $privilege['is_conselor'] = true;
-            $privilege['is_guru'] = true;
-        } elseif ($profile === 'guru') {
-            $privilege['is_guru'] = true;
-        } elseif ($profile === 'siswa') {
-            $privilege['is_siswa'] = true;
         }
 
         Privilege::create($privilege);
