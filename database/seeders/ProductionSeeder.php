@@ -48,13 +48,13 @@ class ProductionSeeder extends Seeder
         $users = [
             [
                 'name' => 'SuperAdmin',
-                'email' => 'superadmin@domain.com',
+                'email' => 'smkn8tangerangselatan.com',
                 'password' => Hash::make('SuperSecurePassword123'),
                 'profile' => 'guru',
             ],
             [
                 'name' => 'Administrator',
-                'email' => 'admin@domain.com',
+                'email' => 'admin@smkn8tangerangselatan.com',
                 'password' => Hash::make('SMKN8tangsel'),
                 'profile' => 'guru'
             ],
