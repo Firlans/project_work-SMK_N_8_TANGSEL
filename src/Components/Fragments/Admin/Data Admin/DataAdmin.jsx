@@ -90,10 +90,10 @@ const DataAdmin = () => {
           <table className="w-full transition-all duration-300">
             <thead>
               <tr className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider transition-colors duration-300">
-                  Nama Konselor
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 transition-colors duration-300">
+                  Nama Admin
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider transition-colors duration-300">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 transition-colors duration-300">
                   Aksi
                 </th>
               </tr>
@@ -108,19 +108,21 @@ const DataAdmin = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-gray-800 dark:text-gray-100 transition-colors duration-300">
                       {a.nama}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                      <button
-                        onClick={() => handleDetail(a)}
-                        className="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
-                      >
-                        <FaEye />
-                      </button>
-                      <button
-                        onClick={() => handleEdit(a)}
-                        className="text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
-                      >
-                        <FaEdit />
-                      </button>
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
+                      <div className="p-1 flex gap-2 justify-center">
+                        <button
+                          onClick={() => handleDetail(a)}
+                          className="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+                        >
+                          <FaEye />
+                        </button>
+                        <button
+                          onClick={() => handleEdit(a)}
+                          className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
+                        >
+                          <FaEdit />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
