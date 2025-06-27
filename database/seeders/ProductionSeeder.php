@@ -53,8 +53,8 @@ class ProductionSeeder extends Seeder
             ],
         ];
 
+        $i = 1;
         foreach ($users as $userData) {
-            $i = 1;
             $profile = [
                 'email' => $userData['email'],
                 'nama' => $userData['name'],
