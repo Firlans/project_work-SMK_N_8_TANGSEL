@@ -6,10 +6,10 @@ const useFormUser = ({ mode, user, onSuccess, onClose }) => {
     name: "",
     email: "",
     password: "",
-    profile: "guru",
+    profile: "",
     is_active: true,
     data: {
-      jenis_kelamin: "L",
+      jenis_kelamin: "",
       tanggal_lahir: "",
       alamat: "",
       no_telp: "",
@@ -140,7 +140,7 @@ const useFormUser = ({ mode, user, onSuccess, onClose }) => {
       if (!formData.data.nisn) newErrors.nisn = "NISN harus diisi";
       if (!formData.data.nis) newErrors.nis = "NIS harus diisi";
       if (!formData.data.semester) newErrors.semester = "Semester harus diisi";
-      if (!formData.data.id_kelas) newErrors.id_kelas = "ID Kelas harus diisi";
+      if (!formData.data.id_kelas) newErrors.id_kelas = "Kelas harus dipilih";
     } else if (formData.profile === "guru") {
       if (!formData.data.nip) newErrors.nip = "NIP harus diisi";
     }
