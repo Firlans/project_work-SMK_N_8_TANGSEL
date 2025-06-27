@@ -11,7 +11,9 @@ window.Echo = new Echo({
   wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
   forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? "https") === "https",
   enabledTransports: ["ws", "wss"],
-  authEndpoint: "http://localhost:8000/broadcasting/auth", // ganti ke domain laravel kamu
+  authEndpoint:
+    (import.meta.env.VITE_DOMAIN ?? "http://localhost:8000") +
+    "/broadcasting/auth",
   auth: {
     headers: {
       Authorization: `Bearer ${Cookies.get("token")}`, // kalau pakai sanctum/jwt
