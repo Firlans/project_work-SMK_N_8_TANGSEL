@@ -117,6 +117,32 @@ class GuruController extends Controller
         }
     }
 
+    public function getGuruByUserId($id)
+    {
+        try {
+            $guru = Guru::select('guru.*')
+            ->leftJoin('users', 'users.id', '=', 'guru.user_id')
+            ->where('users.profile', 'guru')
+            ->where('user_id', $id)
+            ->first();
+
+            if (!$guru) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Guru not found'
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Guru retrieved successfully',
+                'data' => $guru
+            ], 200);
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'getGuruByUserId');
+        }
+    }
+
     public function updateGuru(Request $request, $id)
     {
         try {

@@ -70,6 +70,32 @@ class SiswaController extends Controller
             return $this->handleError($e, 'getSiswaById');
         }
     }
+
+    public function getSiswaByUserId($id)
+    {
+        try {
+            $siswa = Siswa::select('siswa.*')
+            ->leftJoin('users', 'users.id', '=', 'siswa.user_id')
+            ->where('users.profile', 'siswa')
+            ->where('user_id', $id)
+            ->first();
+
+            if (!$siswa) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Siswa not found'
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Siswa retrieved successfully',
+                'data' => $siswa
+            ], 200);
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'getSiswaByUserId');
+        }
+    }
     public function updateSiswa(Request $request, $id)
     {
         try {

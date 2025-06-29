@@ -96,6 +96,7 @@ Route::delete('user/{id}', [UserController::class, 'deleteUser']);
 // route siswa
 Route::get('/siswa', [SiswaController::class, 'getAllSiswa']);
 Route::get('/siswa/{id}', [SiswaController::class, 'getSiswaById']);
+Route::get('/siswa/user/{id}', [SiswaController::class, 'getSiswaByUserId']);
 Route::put('/siswa/{id}', [SiswaController::class, 'updateSiswa']);
 Route::delete('/siswa/{id}', [SiswaController::class, 'deleteSiswa']);
 
@@ -107,6 +108,7 @@ Route::put('/admin/{id_admin}', [AdminController::class, 'updateAdmin']);
 // route guru
 Route::get('/guru', [GuruController::class, 'getAllGuru']);
 Route::get('/guru/{id}', [GuruController::class, 'getGuruById']);
+Route::get('/guru/user/{id}', [GuruController::class, 'getGuruByUserId']);
 Route::get('/guru/mata-pelajaran/{id}', [GuruController::class, 'getGuruByMataPelajaranId']);
 Route::put('/guru/{id}', [GuruController::class, 'updateGuru']);
 Route::delete('/guru/{id}', [GuruController::class, 'deleteGuru']);
