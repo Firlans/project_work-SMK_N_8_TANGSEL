@@ -29,6 +29,7 @@ class BroadcastMessageJob implements ShouldQueue
      */
     public function handle(): void
     {
+        \Log::info('BroadcastMessageJob is running');
         broadcast(new SendMessageEvent($this->message, $this->roomId, $this->sender))->toOthers();
     }
 }
