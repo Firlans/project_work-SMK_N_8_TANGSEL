@@ -27,10 +27,10 @@ class ConversationController extends Controller
             $user = auth()->user();
             $message = ChatDetail::create($data);
 
-            BroadcastMessageJob::dispatch([
+            event(new SendMessageEvent([
                 "plain_text"=>$message->message,
                 "encrypt_text"=>$message->encrypted_message,
-            ], $message->id_chat_room, $user);
+            ], $message->id_chat_room, $user));
 
             return $this->handleCreated($message, 'message');
         } catch (\Exception $e) {
