@@ -7,16 +7,14 @@ import { useNavigate } from "react-router-dom";
 
 const ChatRoomHeader = ({ chatRoomId, isPrivate = false }) => {
   const [room, setRoom] = useState(null);
-  const [siswaName, setSiswaName] = useState("");
-  const [konselorName, setKonselorName] = useState("");
-  const [profileData, setProfileData] = useState(null);
+  const [siswaProfile, setSiswaProfile] = useState(null);
+  const [konselorProfile, setKonselorProfile] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
-  const [isClosing, setIsClosing] = useState(false); // ✨
+  const [isClosing, setIsClosing] = useState(false);
 
   const user = JSON.parse(Cookies.get("userPrivilege") || "{}");
   const navigate = useNavigate();
 
-  // Ambil data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -24,32 +22,38 @@ const ChatRoomHeader = ({ chatRoomId, isPrivate = false }) => {
         const data = res.data;
         setRoom(data);
 
-        if (data?.id_user_siswa && !(isPrivate && user?.is_conselor)) {
+        if (user?.is_conselor && !isPrivate && data?.id_user_siswa) {
           const siswaRes = await axiosClient.get(
-            `/siswa/${data.id_user_siswa}`
+            `/siswa/user/${data.id_user_siswa}`
           );
           const siswa = siswaRes.data.data;
-          setSiswaName(siswa.nama_lengkap);
-          setProfileData(siswa);
+
+          if (siswa.id_kelas) {
+            try {
+              const kelasRes = await axiosClient.get(
+                `/kelas/${siswa.id_kelas}`
+              );
+              siswa.kelas = kelasRes.data.data;
+            } catch (kelasErr) {
+              siswa.kelas = null;
+            }
+          }
+
+          setSiswaProfile(siswa);
         }
 
-        if (data?.id_user_guru) {
+        if (!user?.is_conselor && data?.id_user_guru) {
           const konselorRes = await axiosClient.get(
-            `/guru/${data.id_user_guru}`
+            `/guru/user/${data.id_user_guru}`
           );
-          const konselor = konselorRes.data.data;
-          setKonselorName(konselor.nama);
-          setProfileData(konselor);
+          setKonselorProfile(konselorRes.data.data);
         }
-      } catch (err) {
-        console.error("Gagal ambil info chat room:", err);
-      }
+      } catch (err) {}
     };
 
     fetchData();
   }, [chatRoomId, isPrivate, user?.is_conselor]);
 
-  // Disable scroll saat modal terbuka
   useEffect(() => {
     document.body.style.overflow = showProfile ? "hidden" : "auto";
     return () => {
@@ -57,20 +61,28 @@ const ChatRoomHeader = ({ chatRoomId, isPrivate = false }) => {
     };
   }, [showProfile]);
 
-  // ✨ Modal Close Handler (with animation)
   const handleCloseModal = () => {
     setIsClosing(true);
     setTimeout(() => {
       setShowProfile(false);
       setIsClosing(false);
-    }, 400); // Match with fadeOut duration
+    }, 400);
+  };
+
+  const getDisplayName = () => {
+    if (user?.is_conselor) {
+      return isPrivate
+        ? "Siswa Anonim"
+        : siswaProfile?.nama_lengkap || "Memuat...";
+    } else {
+      return konselorProfile?.nama || "Memuat...";
+    }
   };
 
   return (
     <div className="relative bg-white dark:bg-gray-900 border-b dark:border-gray-700 rounded-t-2xl transition-colors duration-300">
       <div className="py-3 px-4">
         <div className="flex items-center gap-4">
-          {/* Back */}
           <button
             onClick={() => navigate(-1)}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -82,7 +94,6 @@ const ChatRoomHeader = ({ chatRoomId, isPrivate = false }) => {
             />
           </button>
 
-          {/* Trigger Modal */}
           <button
             onClick={() => setShowProfile(true)}
             className="cursor-pointer bg-gradient-to-br from-blue-100 to-blue-200 dark:from-indigo-600 dark:to-indigo-700 p-2.5 rounded-xl transition-transform duration-200 hover:scale-105 hover:shadow-lg active:scale-95"
@@ -109,30 +120,15 @@ const ChatRoomHeader = ({ chatRoomId, isPrivate = false }) => {
             </svg>
           </button>
 
-          {/* Nama dan status */}
           <div className="flex-1">
             <h2 className="text-base font-medium text-gray-800 dark:text-white transition-colors">
               {room?.name || "Tanpa Judul"}
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2 transition-colors">
-              {user?.is_conselor ? (
-                isPrivate ? (
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                    Siswa Anonim
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                    {siswaName || "Memuat..."}
-                  </span>
-                )
-              ) : (
-                <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-                  {konselorName || "Memuat..."}
-                </span>
-              )}
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                {getDisplayName()}
+              </span>
             </p>
           </div>
         </div>
@@ -169,10 +165,7 @@ const ChatRoomHeader = ({ chatRoomId, isPrivate = false }) => {
                   />
                 </svg>
               </div>
-              <h3
-                id="modal-title"
-                className="text-lg font-semibold text-gray-800 dark:text-white mb-2"
-              >
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
                 Info Profil
               </h3>
             </div>
@@ -187,23 +180,24 @@ const ChatRoomHeader = ({ chatRoomId, isPrivate = false }) => {
               ) : (
                 <>
                   <p className="text-gray-800 dark:text-white">
-                    <strong>Nama:</strong> {profileData?.name || siswaName}
+                    <strong>Nama:</strong> {siswaProfile?.nama_lengkap || "-"}
                   </p>
                   <p className="text-gray-800 dark:text-white">
-                    <strong>Kelas:</strong> {profileData?.kelas?.name || "-"}
+                    <strong>Kelas:</strong>{" "}
+                    {siswaProfile?.kelas?.nama_kelas || "-"}
                   </p>
                   <p className="text-gray-800 dark:text-white">
-                    <strong>NIS:</strong> {profileData?.nis || "-"}
+                    <strong>NIS:</strong> {siswaProfile?.nis || "-"}
                   </p>
                 </>
               )
             ) : (
               <>
                 <p className="text-gray-800 dark:text-white">
-                  <strong>Nama:</strong> {profileData?.name || konselorName}
+                  <strong>Nama:</strong> {konselorProfile?.nama || "-"}
                 </p>
                 <p className="text-gray-800 dark:text-white">
-                  <strong>NIP:</strong> {profileData?.nip || "-"}
+                  <strong>NIP:</strong> {konselorProfile?.nip || "-"}
                 </p>
               </>
             )}
