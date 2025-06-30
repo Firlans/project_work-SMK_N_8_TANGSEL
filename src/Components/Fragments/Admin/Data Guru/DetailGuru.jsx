@@ -1,6 +1,6 @@
 import { formatTanggal } from "../../../../utils/dateFormatter";
 
-const DetailGuru = ({ isOpen, onClose, guru, subjects }) => {
+const DetailGuru = ({ isOpen, onClose, guru }) => {
   if (!isOpen || !guru) return null;
 
   return (

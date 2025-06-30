@@ -16,6 +16,7 @@ const PrestasiSiswa = () => {
   const [selected, setSelected] = useState(null);
   const [namaSiswa, setNamaSiswa] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
+  const [error, setError] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -26,7 +27,7 @@ const PrestasiSiswa = () => {
       const res = await axiosClient.get(`/prestasi/siswa/${idSiswa}`);
       setData(res.data.data);
     } catch (error) {
-      console.error("Gagal mengambil data jadwal:", error);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -36,7 +37,7 @@ const PrestasiSiswa = () => {
     fetchData();
   }, []);
 
-  if (loading) return <LoadingSpinner text={"Memuat prestasi..."}/>;
+  if (loading) return <LoadingSpinner text={"Memuat prestasi..."} />;
 
   return (
     <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-all duration-300 ease-in-out">

@@ -12,7 +12,6 @@ export const fetchChatRoomsBySiswa = async (idSiswa) => {
 
 export const fetchChatRoomByAccessCode = async (accessCode) => {
   const res = await axiosClient.get(`/chat-room/access-code/${accessCode}`);
-  console.log("Response dari access code:", res.data);
   return res.data;
 };
 
@@ -24,7 +23,7 @@ export const fetchAllConselors = async () => {
 export const fetchAllStudents = async () => {
   const res = await axiosClient.get("/siswa");
   return res.data.data;
-}
+};
 
 export const getChatRoomById = async (id) => {
   const res = await axiosClient.get(`/chat-room/${id}`);
@@ -35,7 +34,6 @@ export const fetchLastMessage = async (roomId) => {
   try {
     const res = await axiosClient.get(`/chat/room/${roomId}?page=1`);
 
-    // Optional: cek struktur datanya
     if (
       res?.data?.data?.data &&
       Array.isArray(res.data.data.data) &&
@@ -46,7 +44,6 @@ export const fetchLastMessage = async (roomId) => {
 
     return null;
   } catch (error) {
-    console.error(`Gagal ambil last message untuk room ${roomId}`, error);
     return null;
   }
 };

@@ -28,6 +28,7 @@ const JadwalSiswa = () => {
     kelas: "",
   });
   const [exportProgress, setExportProgress] = useState(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,7 +66,7 @@ const JadwalSiswa = () => {
         setMapelLookup(mapelMap);
         setJadwal(jadwalRes.data.data);
       } catch (error) {
-        console.error("Gagal mengambil data jadwal:", error);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -101,16 +102,14 @@ const JadwalSiswa = () => {
         getDataByHari,
         setExportProgress,
       });
-      console.log("Export selesai.");
     } catch (err) {
-      console.error("Export gagal:", err);
       alert("Export PDF gagal, cek konsol untuk detail.");
     } finally {
       setExportProgress(null);
     }
   };
 
-  if (loading) return <LoadingSpinner text={"Memuat jadwal siswa..."}/>;
+  if (loading) return <LoadingSpinner text={"Memuat jadwal siswa..."} />;
 
   return (
     <div className="space-y-6 sm:space-y-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">

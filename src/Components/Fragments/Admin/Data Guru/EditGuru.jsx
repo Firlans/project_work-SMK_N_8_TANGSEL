@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 const EditGuru = ({ isOpen, onClose, guru, subjects, onSubmit }) => {
   const [formData, setFormData] = useState({

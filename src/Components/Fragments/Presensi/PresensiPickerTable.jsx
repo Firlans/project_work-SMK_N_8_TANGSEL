@@ -1,5 +1,3 @@
-// PresensiPickerTable.jsx
-
 import PresensiPickerRow from "./PresensiPickerRow";
 
 const PresensiPickerTable = ({

@@ -17,6 +17,7 @@ const DataWaliMurid = () => {
   const [editingWali, setEditingWali] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userPrivilege, setUserPrivilege] = useState(null);
+  const [error, setError] = useState(false);
 
   const fetchWaliMurid = async () => {
     try {
@@ -40,7 +41,7 @@ const DataWaliMurid = () => {
         const parsedPrivilege = JSON.parse(privilegeData);
         setUserPrivilege(parsedPrivilege);
       } catch (error) {
-        console.error("Error parsing privilege:", error);
+        setError(true);
       }
     }
     fetchWaliMurid();

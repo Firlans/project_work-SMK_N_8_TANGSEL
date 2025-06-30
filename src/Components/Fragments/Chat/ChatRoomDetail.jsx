@@ -80,7 +80,6 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
         }));
       setMessages(sorted);
     } catch (err) {
-      console.error("Gagal ambil pesan:", err);
       setError("Gagal memuat pesan.");
     } finally {
       setLoading(false);
@@ -92,11 +91,8 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
   useEffect(() => {
     if (!id) return;
     const channel = echo.private(`room.${id}`);
-    console.log("Subscribed to room:", `room.${id}`);
 
     channel.listen("SendMessageEvent", (e) => {
-      console.log("Pesan real-time masuk:", e);
-
       const newMessage = {
         id: `realtime-${Date.now()}`,
         id_sender: e.sender?.id,
@@ -181,7 +177,6 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
         );
       }
     } catch (err) {
-      console.error("Gagal kirim pesan:", err);
       setMessages((prev) =>
         prev.map((msg) =>
           msg.tempId === tempId ? { ...msg, error: true } : msg

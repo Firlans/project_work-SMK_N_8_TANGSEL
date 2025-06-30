@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { FaEdit, FaEye } from "react-icons/fa";
 import axiosClient from "../../../../axiosClient";
 import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import EditAdmin from "./EditAdmin";
@@ -12,6 +12,7 @@ const DataAdmin = () => {
   const [selectedadmin, setSelectedadmin] = useState(null);
   const [message, setMessage] = useState({ text: "", type: "" });
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,9 +20,8 @@ const DataAdmin = () => {
       try {
         const adminRes = await axiosClient.get("/admin");
         setAdmin(adminRes.data.data);
-        console.log("Data Admin:", adminRes.data.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        setError(true);
       } finally {
         setIsLoading(false);
       }
@@ -37,12 +37,9 @@ const DataAdmin = () => {
 
   const handleUpdate = async (formData) => {
     try {
-      console.log("Memulai proses update...", formData);
       const response = await axiosClient.put(`/admin/${formData.id}`, formData);
-      console.log("Response dari server:", response.data);
 
       if (response.data.status === "success") {
-        console.log("Update berhasil!");
         const adminRes = await axiosClient.get("/admin");
         setAdmin(adminRes.data.data);
         setIsEditModalOpen(false);
@@ -50,8 +47,6 @@ const DataAdmin = () => {
         setMessage({ text: "Data berhasil diupdate!", type: "success" });
       }
     } catch (error) {
-      console.error("Error saat update:", error);
-      console.error("Detail error:", error.response?.data || error.message);
       setMessage({ text: "Gagal mengupdate data!", type: "error" });
     }
     setTimeout(() => setMessage({ text: "", type: "" }), 3000);

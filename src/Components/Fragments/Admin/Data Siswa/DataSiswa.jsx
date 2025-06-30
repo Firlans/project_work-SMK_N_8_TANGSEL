@@ -19,6 +19,7 @@ const DataSiswa = () => {
   const [selectedSiswa, setSelectedSiswa] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -27,7 +28,7 @@ const DataSiswa = () => {
       try {
         setUserPrivilege(JSON.parse(privilegeData));
       } catch (err) {
-        console.error("Failed to parse privilege:", err);
+        setError(true);
       }
     }
   }, []);
@@ -46,7 +47,7 @@ const DataSiswa = () => {
       kelasRes.data.data.forEach((k) => (kelasMap[k.id] = k));
       setKelas(kelasMap);
     } catch (err) {
-      console.error("Fetch error:", err);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -115,7 +116,7 @@ const DataSiswa = () => {
     currentPage * itemsPerPage
   );
 
-  if (loading) return <LoadingSpinner text={"Memuat data siswa..."}/>;
+  if (loading) return <LoadingSpinner text={"Memuat data siswa..."} />;
 
   return (
     <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-md transition-colors duration-300">

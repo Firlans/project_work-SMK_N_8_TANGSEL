@@ -1,4 +1,3 @@
-// src/data/features.js
 const roleFeatures = [
   {
     role: "Siswa",

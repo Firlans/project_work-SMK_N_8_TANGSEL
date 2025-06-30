@@ -12,6 +12,7 @@ const PresensiSiswa = () => {
   const [selectedMapel, setSelectedMapel] = useState("");
   const [loading, setLoading] = useState(true);
   const [mataPelajaranList, setMataPelajaranList] = useState([]);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,7 +45,6 @@ const PresensiSiswa = () => {
         setGuruMap(guruById);
         setMapelMap(mapelById);
 
-        // Ambil ID mapel unik dari jadwal yang digunakan di presensi
         const mapelSet = new Set();
         presensiData.forEach((p) => {
           const jadwal = jadwalById[p.id_jadwal];
@@ -61,7 +61,7 @@ const PresensiSiswa = () => {
         setMataPelajaranList(mapelList);
         setLoading(false);
       } catch (error) {
-        console.error("Gagal mengambil data presensi:", error);
+        setError(true);
         setLoading(false);
       }
     };

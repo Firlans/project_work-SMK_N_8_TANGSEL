@@ -19,6 +19,7 @@ const ChatRoomForm = ({
   const [selectedConselorId, setSelectedConselorId] = useState("");
   const [counselors, setCounselors] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -28,7 +29,7 @@ const ChatRoomForm = ({
         const res = await fetchAllConselors();
         setCounselors(res.data);
       } catch (err) {
-        console.error("Gagal ambil konselor:", err);
+        setError(true);
       }
     };
 
@@ -69,7 +70,6 @@ const ChatRoomForm = ({
       onRoomCreated?.(res.data);
       onClose();
     } catch (err) {
-      console.error("Gagal buat chat room:", err);
       alert("Gagal membuat chat room. Coba lagi nanti.");
     } finally {
       setLoading(false);

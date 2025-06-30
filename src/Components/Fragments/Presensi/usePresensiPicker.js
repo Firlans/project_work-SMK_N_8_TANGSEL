@@ -1,8 +1,5 @@
-// usePresensiPicker.js
-
 import { useEffect, useState } from "react";
 import axiosClient from "../../../axiosClient";
-import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 
 const usePresensiPicker = (idJadwal, idPertemuan) => {
   const [siswaList, setSiswaList] = useState([]);
@@ -12,6 +9,7 @@ const usePresensiPicker = (idJadwal, idPertemuan) => {
   const [selectedKeterangan, setSelectedKeterangan] = useState({});
   const [loading, setLoading] = useState(true);
   const [loadingSave, setLoadingSave] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,7 +31,7 @@ const usePresensiPicker = (idJadwal, idPertemuan) => {
         setPresensi(resPresensi.data?.data || []);
         setTanggalPertemuan(resPertemuan.data.data.tanggal);
       } catch (err) {
-        console.error("Gagal memuat data:", err);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -88,7 +86,7 @@ const usePresensiPicker = (idJadwal, idPertemuan) => {
       const updated = await axiosClient.get(`/absen/pertemuan/${idPertemuan}`);
       setPresensi(updated.data.data);
     } catch (err) {
-      console.error("Gagal simpan data presensi:", err);
+      alert("Gagal menyimpan data.");
     } finally {
       setLoadingSave(false);
     }

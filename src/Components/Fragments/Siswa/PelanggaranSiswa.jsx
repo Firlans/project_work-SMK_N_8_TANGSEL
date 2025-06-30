@@ -21,6 +21,7 @@ const PelanggaranSiswa = () => {
   const [selected, setSelected] = useState(null);
   const isReadOnly = useReadOnlyRole();
   const [previewImage, setPreviewImage] = useState(null);
+  const [error, setError] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -28,38 +29,32 @@ const PelanggaranSiswa = () => {
       let id_user, id_siswa;
 
       if (isReadOnly) {
-        // Ambil dari cookies yang sudah diset di ProfileSiswa
         id_user = Cookies.get("user_id");
         id_siswa = Cookies.get("id_siswa");
         if (!id_user || !id_siswa) {
           throw new Error("User atau siswa tidak ditemukan di cookie");
         }
       } else {
-        // Mode siswa biasa
         const cookie = Cookies.get("userPrivilege");
         if (!cookie) throw new Error("User tidak ditemukan di cookie");
         const parsed = JSON.parse(cookie);
         id_user = parsed.id_user;
 
-        // Ambil semua siswa
         const siswaRes = await axiosClient.get("/siswa");
         const semuaSiswa = siswaRes.data.data;
         const siswaLogin = semuaSiswa.find((s) => s.user_id === id_user);
         if (!siswaLogin) {
-          console.error("Siswa terkait user tidak ditemukan");
           setLoading(false);
           return;
         }
         id_siswa = siswaLogin.id;
       }
 
-      // Fetch pelanggaran pelapor (berdasarkan id_user)
       const pelaporRes = await axiosClient.get(
         `/pelanggaran/pelapor/${id_user}`
       );
       const pelaporRaw = pelaporRes.data.data;
 
-      // Enrich pelanggaran pelapor dengan nama_terlapor
       const enrichedPelapor = await Promise.all(
         pelaporRaw.map(async (item) => {
           try {
@@ -69,7 +64,6 @@ const PelanggaranSiswa = () => {
               nama_terlapor: siswaRes.data.data.nama_lengkap,
             };
           } catch (err) {
-            console.error(`Gagal ambil nama siswa ID ${item.terlapor}:`, err);
             return {
               ...item,
               nama_terlapor: "Tidak ditemukan",
@@ -80,27 +74,23 @@ const PelanggaranSiswa = () => {
 
       setDataPelapor(enrichedPelapor);
 
-      // Fetch pelanggaran terlapor (berdasarkan id_siswa)
       const terlaporRes = await axiosClient.get(
         `/pelanggaran/terlapor/${id_siswa}`
       );
       const terlaporRaw = terlaporRes.data.data;
 
-      // Enrich pelanggaran terlapor dengan nama_pelapor
       const enrichedTerlapor = await Promise.all(
         terlaporRaw.map(async (item) => {
           try {
             const pelaporUserRes = await axiosClient.get(
               `/user/${item.pelapor}`
             );
-            // Asumsi endpoint user untuk nama pelapor, sesuaikan kalau beda
             return {
               ...item,
               nama_pelapor:
                 pelaporUserRes.data.data.nama_lengkap || "Tidak ditemukan",
             };
           } catch (err) {
-            console.error(`Gagal ambil nama pelapor ID ${item.pelapor}:`, err);
             return {
               ...item,
               nama_pelapor: "Tidak ditemukan",
@@ -111,7 +101,7 @@ const PelanggaranSiswa = () => {
 
       setDataTerlapor(enrichedTerlapor);
     } catch (err) {
-      console.error("Gagal mengambil data:", err);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -127,7 +117,7 @@ const PelanggaranSiswa = () => {
       await axiosClient.delete(`/pelanggaran/${id}`);
       fetchData();
     } catch (err) {
-      console.error("Gagal menghapus data pelanggaran:", err);
+      alert("Gagal menghapus data.");
     }
   };
 

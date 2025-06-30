@@ -19,6 +19,7 @@ const DataPelanggaran = () => {
   const [selected, setSelected] = useState(null);
   const [userPrivilege, setUserPrivilege] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [error, setError] = useState(false);
 
   const checkUserRole = () => {
     if (!userPrivilege) return null;
@@ -58,7 +59,7 @@ const DataPelanggaran = () => {
 
       setData(pelanggaranWithNama);
     } catch (err) {
-      console.error("Gagal mengambil pelanggaran:", err);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -71,7 +72,7 @@ const DataPelanggaran = () => {
         const parsedPrivilege = JSON.parse(privilegeData);
         setUserPrivilege(parsedPrivilege);
       } catch (error) {
-        console.error("Error parsing privilege:", error);
+        setError(true);
       }
     }
   }, []);
@@ -88,7 +89,7 @@ const DataPelanggaran = () => {
       await axiosClient.delete(`/pelanggaran/${id}`);
       fetchData();
     } catch (err) {
-      console.error("Gagal menghapus:", err);
+      setError(true);
     }
   };
 

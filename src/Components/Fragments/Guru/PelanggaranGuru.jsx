@@ -38,7 +38,7 @@ const PelanggaranGuru = () => {
               nama_terlapor: siswaRes.data.data.nama_lengkap,
             };
           } catch (err) {
-            console.error(`Gagal ambil nama siswa ID ${item.terlapor}:`, err);
+            alert("Gagal mengambil data pelanggaran.");
             return {
               ...item,
               nama_terlapor: "Tidak ditemukan",
@@ -49,7 +49,7 @@ const PelanggaranGuru = () => {
 
       setData(enrichedData);
     } catch (err) {
-      console.error("Gagal mengambil data pelanggaran:", err);
+      alert("Gagal mengambil data pelanggaran.");
     } finally {
       setLoading(false);
     }
@@ -65,7 +65,7 @@ const PelanggaranGuru = () => {
       await axiosClient.delete(`/pelanggaran/${id}`);
       fetchData();
     } catch (err) {
-      console.error("Gagal menghapus data pelanggaran:", err);
+      alert("Gagal menghapus data.");
     }
   };
 

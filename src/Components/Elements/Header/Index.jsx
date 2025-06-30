@@ -15,12 +15,13 @@ const Header = ({ onToggleSidebar }) => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const { setProfile } = useProfile();
+  const [error, setError] = useState(false);
 
   const handleLogout = async () => {
     try {
       await axiosClient.post("/logout");
     } catch (error) {
-      console.error("Logout gagal:", error.response?.data);
+      setError(true);
     }
 
     Cookies.remove("token");
@@ -33,7 +34,6 @@ const Header = ({ onToggleSidebar }) => {
     navigate("/login");
   };
 
-  // close dropdown if click outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {

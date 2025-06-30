@@ -10,14 +10,9 @@ const KonselingSiswaPublic = () => {
   const navigate = useNavigate();
   const privilege = JSON.parse(Cookies.get("userPrivilege") || "{}");
   const idSiswa = privilege?.user_id || privilege?.id;
-
-  // State buat create
   const [showCreateModal, setShowCreateModal] = useState(false);
-
-  // State buat edit
   const [showEditModal, setShowEditModal] = useState(false);
   const [editRoom, setEditRoom] = useState(null);
-
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleRoomUpdated = () => {

@@ -19,7 +19,6 @@ export const decryptMessage = (ciphertext) => {
     const decrypted = bytes.toString(CryptoJS.enc.Utf8);
     return decrypted || "[UNREADABLE]";
   } catch (e) {
-    console.error("❌ Gagal dekripsi:", e);
     return "[ERROR]";
   }
 };

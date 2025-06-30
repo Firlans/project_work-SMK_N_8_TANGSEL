@@ -17,14 +17,13 @@ const ProfileKonselor = () => {
     message: "",
     type: "",
   });
+  const [error, setError] = useState(false);
 
-  // Fetch data profil dari backend saat pertama kali komponen dimuat
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axiosClient.get("/profile"); // Sesuaikan endpoint backend
-        console.log("Data Profile:", response.data);
-        setProfileData(response.data); // Simpan data dari backend
+        const response = await axiosClient.get("/profile");
+        setProfileData(response.data);
         setLoading(false);
       } catch (error) {
         if (
@@ -33,7 +32,7 @@ const ProfileKonselor = () => {
         ) {
           return;
         }
-        console.error("Gagal mengambil data profil:", error);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -65,28 +64,19 @@ const ProfileKonselor = () => {
   const handleSave = async () => {
     try {
       setLoading(true);
-      // Siapkan payload dengan field yang dibutuhkan
       const payload = {
         nip: profileData.data.nip,
         nama: profileData.data.nama,
         jenis_kelamin: profileData.data.jenis_kelamin,
         tanggal_lahir: profileData.data.tanggal_lahir,
         mata_pelajaran_id: profileData.data.mata_pelajaran_id,
-        // Data yang diupdate
         alamat: editedData.alamat,
         no_telp: editedData.no_telp,
       };
-      console.log("HANDLE SAVE, payload to send:", payload);
 
-      const response = await axiosClient.put(
-        `/konselor/${profileData.data.id}`,
-        payload
-      );
-      console.log("HANDLE SAVE, response.data:", response.data);
+      await axiosClient.put(`/konselor/${profileData.data.id}`, payload);
 
-      // Refresh profile setelah update
       const refreshed = await axiosClient.get("/profile");
-      console.log("HANDLE SAVE, refreshed.data:", refreshed.data);
       setProfileData(refreshed.data);
       setIsEditing(false);
       setEditedData({
@@ -110,8 +100,6 @@ const ProfileKonselor = () => {
         message: "Gagal memperbarui profile. Silakan coba lagi.",
         type: "error",
       });
-      console.error("Gagal menyimpan data profil:", error);
-      console.log("Gagal menyimpan data profil:", error.response?.data);
     } finally {
       setLoading(false);
     }

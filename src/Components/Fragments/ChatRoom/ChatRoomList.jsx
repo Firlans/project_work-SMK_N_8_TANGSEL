@@ -33,7 +33,6 @@ const ChatRoomList = ({
         if (isPrivate) {
           const accessCode = localStorage.getItem("chat_access_code");
           if (!accessCode) {
-            console.warn("No access code found in localStorage.");
             return setRooms([]);
           }
           const result = await fetchChatRoomByAccessCode(accessCode);
@@ -64,7 +63,7 @@ const ChatRoomList = ({
 
       setRooms(enrichedRooms);
     } catch (err) {
-      console.error("Gagal load chat room:", err);
+      alert("Gagal memuat chat room");
     } finally {
       setLoading(false);
     }
@@ -81,7 +80,6 @@ const ChatRoomList = ({
       await deleteChatRoom(room.id);
       onDeleted?.();
     } catch (err) {
-      console.error("Gagal hapus", err);
       alert("Gagal hapus");
     }
   };

@@ -21,10 +21,8 @@ const DataMapel = () => {
   const fetchMapel = async () => {
     try {
       const response = await axiosClient.get("/mata-pelajaran");
-      console.log("Response Data:", response.data); // Debug response data
-      setMapel(response.data.data); // Access the data array from response
+      setMapel(response.data.data);
     } catch (err) {
-      console.error("Error fetching mapel:", err); // Debug error
       setError("Gagal memuat data mata pelajaran");
     } finally {
       setLoading(false);
@@ -32,17 +30,14 @@ const DataMapel = () => {
   };
 
   useEffect(() => {
-    // Ambil dan parse privilege dari cookies
     const privilegeData = Cookies.get("userPrivilege");
-    console.log("Cookie privilege data:", privilegeData);
 
     if (privilegeData) {
       try {
         const parsedPrivilege = JSON.parse(privilegeData);
-        console.log("Parsed privilege:", parsedPrivilege);
         setUserPrivilege(parsedPrivilege);
       } catch (error) {
-        console.error("Error parsing privilege:", error);
+        setError(true);
       }
     }
 
@@ -51,7 +46,6 @@ const DataMapel = () => {
 
   const isSuperAdmin = () => {
     if (!userPrivilege) {
-      console.log("userPrivilege is null");
       return false;
     }
     const isSuperAdmin = userPrivilege.is_superadmin === 1;
@@ -63,10 +57,8 @@ const DataMapel = () => {
     try {
       await axiosClient.delete(`/mata-pelajaran/${id}`);
       fetchMapel();
-      console.log("Data deleted.");
     } catch (err) {
-      console.log(err);
-      console.error("Gagal menghapus data:", err);
+      setError(true);
     }
   };
 
@@ -107,7 +99,7 @@ const DataMapel = () => {
     return sortConfig.direction === "ascending" ? "↑" : "↓";
   };
 
-  if (loading) return <LoadingSpinner text={"Memuat data mata pelajaran..."}/>;
+  if (loading) return <LoadingSpinner text={"Memuat data mata pelajaran..."} />;
   if (error) return <div className="text-red-500">{error}</div>;
   if (mapel.length === 0) {
     return (

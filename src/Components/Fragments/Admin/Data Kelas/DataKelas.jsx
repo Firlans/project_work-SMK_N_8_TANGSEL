@@ -12,6 +12,7 @@ const DataKelas = () => {
   const [modalData, setModalData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userPrivilege, setUserPrivilege] = useState(null);
+  const [error, setError] = useState(false);
 
   const fetchKelas = async () => {
     try {
@@ -20,9 +21,8 @@ const DataKelas = () => {
         a.nama_kelas.localeCompare(b.nama_kelas)
       );
       setKelas(sortedKelas);
-      console.log("Data kelas:", res.data.data);
     } catch (err) {
-      console.error("Gagal mengambil data kelas:", err);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -36,22 +36,19 @@ const DataKelas = () => {
       );
       setSiswaList(sortedSiswa);
     } catch (err) {
-      console.error("Gagal mengambil data siswa:", err);
+      setError(true);
     }
   };
 
   useEffect(() => {
-    // Ambil dan parse privilege dari cookies
     const privilegeData = Cookies.get("userPrivilege");
-    console.log("Cookie privilege data:", privilegeData);
 
     if (privilegeData) {
       try {
         const parsedPrivilege = JSON.parse(privilegeData);
-        console.log("Parsed privilege:", parsedPrivilege);
         setUserPrivilege(parsedPrivilege);
       } catch (error) {
-        console.error("Error parsing privilege:", error);
+        setError(true);
       }
     }
     fetchKelas();
@@ -60,7 +57,6 @@ const DataKelas = () => {
 
   const isSuperAdmin = () => {
     if (!userPrivilege) {
-      console.log("userPrivilege is null");
       return false;
     }
     const isSuperAdmin = userPrivilege.is_superadmin === 1;
@@ -72,10 +68,8 @@ const DataKelas = () => {
     try {
       await axiosClient.delete(`/kelas/${id}`);
       fetchKelas();
-      console.log("Kelas berhasil dihapus");
     } catch (err) {
-      console.log(err);
-      console.error("Gagal menghapus data:", err);
+      setError(true);
     }
   };
 

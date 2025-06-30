@@ -1,6 +1,4 @@
-import React from "react";
-
-const ModalForm = ({ isOpen, onClose, title, children }) => {
+const ModalForm = ({ isOpen, title, children }) => {
   if (!isOpen) return null;
 
   return (

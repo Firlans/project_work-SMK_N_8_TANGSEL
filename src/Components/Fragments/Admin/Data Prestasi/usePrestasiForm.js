@@ -29,14 +29,14 @@ export const usePrestasiForm = (isOpen, initialData, onSuccess) => {
         );
         setSiswaOptions(sorted);
       } catch (err) {
-        console.error("Gagal mengambil siswa:", err);
+        setError(true);
       }
     };
 
     fetchSiswa();
 
     if (initialData) {
-      setFormData({ ...initialData, nama_foto: null })
+      setFormData({ ...initialData, nama_foto: null });
       if (initialData.nama_foto) {
         setPreviewImage(
           axiosClient.defaults.baseURL +
@@ -87,7 +87,6 @@ export const usePrestasiForm = (isOpen, initialData, onSuccess) => {
       }
       onSuccess();
     } catch (err) {
-      console.error(err);
       setError(
         err.response?.data?.message || "Terjadi kesalahan saat menyimpan data"
       );

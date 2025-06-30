@@ -22,6 +22,7 @@ const PertemuanList = () => {
   const navigate = useNavigate();
   const userRole = Cookies.get("userRole");
   const [exportProgress, setExportProgress] = useState(null);
+  const [error, setError] = useState(false);
 
   const fetchPertemuan = async () => {
     setLoading(true);
@@ -49,7 +50,7 @@ const PertemuanList = () => {
         namaMapel: mapel?.nama_pelajaran || "-",
       });
     } catch (error) {
-      console.error("Gagal mengambil data pertemuan:", error);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -86,7 +87,7 @@ const PertemuanList = () => {
       await axiosClient.delete(`/pertemuan/${id}`);
       setRefreshToggle((prev) => !prev);
     } catch (error) {
-      console.error("Gagal menghapus pertemuan:", error);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -110,13 +111,12 @@ const PertemuanList = () => {
       });
     } catch (err) {
       alert("Gagal export presensi.");
-      console.error("Export gagal:", err);
     } finally {
       setExportProgress(null);
     }
   };
 
-  if (loading) return <LoadingSpinner text={"Memuat pertemuan..."}/>;
+  if (loading) return <LoadingSpinner text={"Memuat pertemuan..."} />;
 
   return (
     <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-colors duration-300">

@@ -11,7 +11,6 @@ const ChatRoomCard = ({ room, onEdit, onDelete }) => {
 
   const handleClick = () => {
     if (!room.id) {
-      console.warn("Room ID undefined!", room);
       return;
     }
     const routeType = room.is_private ? "private" : "public";

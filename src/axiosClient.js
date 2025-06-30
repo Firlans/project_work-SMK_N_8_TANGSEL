@@ -24,30 +24,22 @@ axiosClient.interceptors.response.use(
     if (error.response) {
       const errorStatus = error.response.data.status;
 
-      // Handle all token-related errors
       if (
         error.response.status === 401 &&
         (errorStatus === "Token is Invalid" ||
           errorStatus === "Token is Expired" ||
           errorStatus === "Authorization Token not found")
       ) {
-        console.error("Token error:", errorStatus);
-
-        // Clear authentication
         Cookies.remove("token");
         delete axiosClient.defaults.headers.common["Authorization"];
-
-        // Redirect to login
         window.location.href = "/";
         return Promise.reject(error);
       }
 
-      // Handle invalid credentials separately
       if (
         error.response.status === 401 &&
         errorStatus === "Invalid credentials"
       ) {
-        console.warn("Login gagal: Email atau password salah.");
         return Promise.reject(error);
       }
     }

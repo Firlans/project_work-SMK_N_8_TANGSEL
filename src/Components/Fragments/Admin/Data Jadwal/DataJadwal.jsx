@@ -23,6 +23,7 @@ const DataJadwal = () => {
   const [loading, setLoading] = useState(true);
   const [userPrivilege, setUserPrivilege] = useState(null);
   const navigate = useNavigate();
+  const [error, setError] = useState(false);
 
   const hariMap = {
     1: "Senin",
@@ -69,9 +70,6 @@ const DataJadwal = () => {
       setJadwal(resJadwal.data.data);
 
       setGroupedJadwal(groupJadwalBySesi(resJadwal.data.data));
-      console.log(
-        JSON.stringify(groupJadwalBySesi(resJadwal.data.data), null, 2)
-      );
 
       setWaktu(resWaktu.data.data);
       setKelas(
@@ -79,10 +77,14 @@ const DataJadwal = () => {
           a.nama_kelas.localeCompare(b.nama_kelas)
         )
       );
-      setGuru(resGuru.data.data);
-      setMapel(resMapel.data.data);
+      setGuru(resGuru.data.data.sort((a, b) => a.nama.localeCompare(b.nama)));
+      setMapel(
+        resMapel.data.data.sort((a, b) =>
+          a.nama_pelajaran.localeCompare(b.nama_pelajaran)
+        )
+      );
     } catch (error) {
-      console.error("Gagal mengambil data:", error);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -94,7 +96,7 @@ const DataJadwal = () => {
       try {
         setUserPrivilege(JSON.parse(privilegeData));
       } catch (error) {
-        console.error("Error parsing privilege:", error);
+        setError(true);
       }
     }
     fetchData();
@@ -126,7 +128,7 @@ const DataJadwal = () => {
       setJadwal((prev) => prev.filter((j) => j.id !== id));
       setGroupedJadwal(groupJadwalBySesi(jadwal.filter((j) => j.id !== id)));
     } catch (error) {
-      console.error("Gagal menghapus jadwal:", error);
+      setError(true);
     }
   };
 
@@ -138,7 +140,6 @@ const DataJadwal = () => {
     const doc = new jsPDF("landscape", "mm", "a4");
     const logoPath = "/images/logo-smkn8tangsel.png";
 
-    // 🖼️ Logo dan Header
     doc.addImage(logoPath, "PNG", 14, 10, 25, 25);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
@@ -149,7 +150,6 @@ const DataJadwal = () => {
     doc.setFontSize(12);
     doc.text("JADWAL MATA PELAJARAN & PRESENSI", 148, 22, { align: "center" });
 
-    // 🔠 Header tabel: [Hari / Waktu, Kelas1, Kelas2, ...]
     const tableHeaders = ["Hari / Waktu", ...kelas.map((k) => k.nama_kelas)];
 
     const body = [];
@@ -199,7 +199,6 @@ const DataJadwal = () => {
       });
     });
 
-    // 🖨️ Render tabel
     autoTable(doc, {
       startY: 40,
       head: [tableHeaders],
@@ -218,7 +217,6 @@ const DataJadwal = () => {
 
     let currentY = doc.lastAutoTable.finalY + 10;
 
-    // 📘 LEGEND GURU
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.text("Kode Guru:", 14, currentY);
@@ -235,7 +233,6 @@ const DataJadwal = () => {
 
     currentY += 4;
 
-    // 📗 LEGEND MAPEL
     doc.setFont("helvetica", "bold");
     doc.text("Kode Mata Pelajaran:", 14, currentY);
     currentY += 6;
@@ -249,7 +246,6 @@ const DataJadwal = () => {
       currentY += 6;
     });
 
-    // 🕘 Footer tanggal
     const tanggal = new Date().toLocaleDateString("id-ID", {
       day: "numeric",
       month: "long",
@@ -258,11 +254,9 @@ const DataJadwal = () => {
     doc.setFontSize(9);
     doc.text(`Dicetak: ${tanggal}`, 14, currentY + 10);
 
-    // 💾 Save
     doc.save("jadwal-semua-kelas.pdf");
   };
 
-  // 🔧 Helper
   function chunkArray(arr, chunkSize) {
     const chunks = [];
     for (let i = 0; i < arr.length; i += chunkSize) {

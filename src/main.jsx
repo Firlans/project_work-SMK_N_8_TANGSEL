@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 
 import ProtectedRoute from "./protectedRoute";
+import { ThemeProvider } from "./contexts/ThemeProvider";
 import { ProfileProvider } from "./contexts/ProfileProvider";
 
 // Pages
@@ -69,7 +70,6 @@ import KonselingPrivatePage from "./Pages/konselor/konselingPrivatePage";
 import KonselorPublicChatPage from "./Pages/konselor/konselorPublicChatPage";
 import SiswaPrivateChatPage from "./Pages/siswa/siswaPrivateChatPage";
 import KonselorPrivateChatPage from "./Pages/konselor/konselorPrivateChatPage";
-import { ThemeProvider } from "./contexts/ThemeProvider";
 
 const adminDataRoutes = [
   { path: "/dashboard-admin/data-user", element: <DataUserPage /> },

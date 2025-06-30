@@ -18,11 +18,11 @@ const DataPrestasi = () => {
   const [selected, setSelected] = useState(null);
   const [userPrivilege, setUserPrivilege] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [error, setError] = useState(false);
 
   const fetchData = async () => {
     try {
       const res = await axiosClient.get("/prestasi");
-      console.log("Data Prestasi:", res.data.data);
       const pelanggaranWithNama = await Promise.all(
         res.data.data.map(async (item) => {
           const siswa = await axiosClient.get(`/siswa/${item.siswa_id}`);
@@ -34,7 +34,7 @@ const DataPrestasi = () => {
       );
       setData(pelanggaranWithNama);
     } catch (err) {
-      console.error("Gagal mengambil pelanggaran:", err);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -42,15 +42,13 @@ const DataPrestasi = () => {
 
   useEffect(() => {
     const privilegeData = Cookies.get("userPrivilege");
-    console.log("Cookie privilege data:", privilegeData);
 
     if (privilegeData) {
       try {
         const parsedPrivilege = JSON.parse(privilegeData);
-        console.log("Parsed privilege:", parsedPrivilege);
         setUserPrivilege(parsedPrivilege);
       } catch (error) {
-        console.error("Error parsing privilege:", error);
+        setError(true);
       }
     }
 
@@ -59,7 +57,6 @@ const DataPrestasi = () => {
 
   const isSuperAdmin = () => {
     if (!userPrivilege) {
-      console.log("userPrivilege is null");
       return false;
     }
     const isSuperAdmin = userPrivilege.is_superadmin === 1;
@@ -72,7 +69,7 @@ const DataPrestasi = () => {
       await axiosClient.delete(`/prestasi/${id}`);
       fetchData();
     } catch (err) {
-      console.error("Gagal menghapus:", err);
+      setError(true);
     }
   };
 

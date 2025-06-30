@@ -14,29 +14,26 @@ const DataKonselor = () => {
   const [selectedGuru, setSelectedGuru] = useState(null);
   const [message, setMessage] = useState({ text: "", type: "" });
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Fetch teachers
         const teachersResponse = await axiosClient.get("/konselor");
         setTeachers(teachersResponse.data.data);
-        console.log("Data Guru:", teachersResponse.data.data);
 
-        // Fetch subjects
         const subjectsResponse = await axiosClient.get("/mata-pelajaran");
-        // Convert array to object for easier lookup
+
         const subjectsMap = subjectsResponse.data.data.reduce(
           (acc, subject) => {
             acc[subject.id] = subject.nama_pelajaran;
             return acc;
-          },
-          {}
+          }
         );
         setSubjects(subjectsMap);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        setError(true);
       } finally {
         setIsLoading(false);
       }
@@ -45,23 +42,16 @@ const DataKonselor = () => {
     fetchData();
   }, []);
 
-  // Mengurutkan data guru berdasarkan nama
   const sortedTeachers = [...teachers].sort((a, b) =>
     a.nama.localeCompare(b.nama)
   );
 
-  // Filter teachers based on selected subject
   const filteredTeachers =
     selectedSubject === "all"
       ? sortedTeachers
       : sortedTeachers.filter(
           (teacher) => teacher.mata_pelajaran_id === parseInt(selectedSubject)
         );
-
-  // Sort subjects by name for dropdown
-  const sortedSubjects = Object.entries(subjects).sort((a, b) =>
-    a[1].localeCompare(b[1])
-  );
 
   const handleEdit = (guru) => {
     setSelectedGuru(guru);
@@ -70,15 +60,12 @@ const DataKonselor = () => {
 
   const handleUpdate = async (formData) => {
     try {
-      console.log("Memulai proses update...", formData);
       const response = await axiosClient.put(
         `/konselor/${formData.id}`,
         formData
       );
-      console.log("Response dari server:", response.data);
 
       if (response.data.status === "success") {
-        console.log("Update berhasil!");
         const teachersResponse = await axiosClient.get("/konselor");
         setTeachers(teachersResponse.data.data);
         setIsEditModalOpen(false);
@@ -86,8 +73,6 @@ const DataKonselor = () => {
         setMessage({ text: "Data berhasil diupdate!", type: "success" });
       }
     } catch (error) {
-      console.error("Error saat update:", error);
-      console.error("Detail error:", error.response?.data || error.message);
       setMessage({ text: "Gagal mengupdate data!", type: "error" });
     }
     setTimeout(() => setMessage({ text: "", type: "" }), 3000);

@@ -16,7 +16,7 @@ window.Echo = new Echo({
     "/broadcasting/auth",
   auth: {
     headers: {
-      Authorization: `Bearer ${Cookies.get("token")}`, // kalau pakai sanctum/jwt
+      Authorization: `Bearer ${Cookies.get("token")}`,
     },
   },
 });

@@ -15,6 +15,7 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
   } = usePelanggaranForm(initialData, isOpen);
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,7 +54,7 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
 
       onSuccess();
     } catch (err) {
-      console.error("Gagal simpan pelanggaran:", err);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -145,7 +146,7 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
             </div>
           )}
 
-           {/* Upload */}
+          {/* Upload */}
           <div>
             <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors">
               Bukti Foto
@@ -165,7 +166,6 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
               />
             )}
           </div>
-
 
           {/* Tombol Aksi */}
           <div className="flex justify-end gap-2 mt-4">

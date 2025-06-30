@@ -16,6 +16,7 @@ export const usePelanggaranForm = (initialData, isOpen) => {
   const [siswaList, setSiswaList] = useState([]);
   const [userPrivilege, setUserPrivilege] = useState(null);
   const isEdit = Boolean(initialData);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const privilegeData = Cookies.get("userPrivilege");
@@ -30,7 +31,7 @@ export const usePelanggaranForm = (initialData, isOpen) => {
           }));
         }
       } catch (err) {
-        console.error("Error parsing privilege:", err);
+        setError(true);
       }
     }
   }, [initialData]);
@@ -44,7 +45,7 @@ export const usePelanggaranForm = (initialData, isOpen) => {
         );
         setSiswaList(sorted);
       } catch (err) {
-        console.error("Gagal fetch siswa:", err);
+        setError(true);
       }
     };
 

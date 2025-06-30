@@ -17,15 +17,13 @@ const ProfileSiswa = () => {
     type: "",
   });
   const isReadOnly = useReadOnlyRole();
+  const [error, setError] = useState(false);
 
-  // Fetch data profil dari backend saat pertama kali komponen dimuat
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axiosClient.get("/profile"); // Sesuaikan endpoint backend
-        console.log("Data Profile:", response.data);
-        setProfileData(response.data); // Simpan data dari backend
-        // SET COOKIES user_id dan id_siswa AGAR BISA DIPAKAI KOMPONEN LAIN
+        const response = await axiosClient.get("/profile");
+        setProfileData(response.data);
         const profile = response.data.data;
         if (profile?.user_id) {
           Cookies.set("user_id", profile.user_id, { path: "/" });
@@ -41,7 +39,7 @@ const ProfileSiswa = () => {
         ) {
           return;
         }
-        console.error("Gagal mengambil data profil:", error);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -53,7 +51,6 @@ const ProfileSiswa = () => {
   const handleEdit = () => {
     if (isReadOnly) return;
     if (profileData && profileData.data) {
-      console.log("HANDLE EDIT, profileData.data:", profileData.data);
       setEditedData({ ...profileData.data });
       setIsEditing(true);
     }
@@ -62,7 +59,6 @@ const ProfileSiswa = () => {
   const handleSave = async () => {
     try {
       setLoading(true);
-      // Ambil hanya field yang dibutuhkan backend (tanpa id)
       const payload = {
         user_id: editedData.user_id,
         nama_lengkap: editedData.nama_lengkap,
@@ -75,17 +71,10 @@ const ProfileSiswa = () => {
         semester: editedData.semester,
         id_kelas: editedData.id_kelas,
       };
-      console.log("HANDLE SAVE, payload to send:", payload);
 
-      const response = await axiosClient.put(
-        `/siswa/${editedData.id}`,
-        payload
-      );
-      console.log("HANDLE SAVE, response.data:", response.data);
+      await axiosClient.put(`/siswa/${editedData.id}`, payload);
 
-      // Refresh profile setelah update
       const refreshed = await axiosClient.get("/profile");
-      console.log("HANDLE SAVE, refreshed.data:", refreshed.data);
       setProfileData(refreshed.data);
       setIsEditing(false);
       setEditedData(null);
@@ -105,8 +94,6 @@ const ProfileSiswa = () => {
         message: "Gagal memperbarui profile. Silakan coba lagi.",
         type: "error",
       });
-      console.error("Gagal menyimpan data profil:", error);
-      console.log("Gagal menyimpan data profil:", error.response?.data);
     } finally {
       setLoading(false);
     }
@@ -115,7 +102,6 @@ const ProfileSiswa = () => {
   if (loading) return <LoadingSpinner />;
 
   const siswa = isEditing ? editedData : profileData?.data;
-  console.log("RENDER: siswa yang ditampilkan:", siswa);
 
   return (
     <div className="relative">

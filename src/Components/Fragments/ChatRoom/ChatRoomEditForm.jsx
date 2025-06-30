@@ -32,7 +32,6 @@ const ChatRoomEditForm = ({ isOpen, onClose, room, onUpdated }) => {
       onUpdated?.();
       onClose();
     } catch (err) {
-      console.error("Gagal update chat room", err);
       alert("Gagal update");
     } finally {
       setLoading(false);

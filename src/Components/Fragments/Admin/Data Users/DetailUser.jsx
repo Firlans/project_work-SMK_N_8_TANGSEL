@@ -5,15 +5,15 @@ import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 const DetailUser = ({ user, onClose }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
         const response = await axiosClient.get(`/user/${user.id}`);
-        console.log("Response data:", response.data); // Add this log
         setUserData(response.data.data);
       } catch (error) {
-        console.error("Error fetching user details:", error);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -22,13 +22,13 @@ const DetailUser = ({ user, onClose }) => {
     fetchUserDetails();
   }, [user.id]);
 
-  if (loading) return <LoadingSpinner text="Memuat detail user..." />
+  if (loading) return <LoadingSpinner text="Memuat detail user..." />;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50 transition-all duration-300">
       <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-md mx-4 sm:mx-0 transition-all duration-300">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors duration-300">
-         Detail User
+          Detail User
         </h2>
 
         <div className="space-y-4 text-gray-700 dark:text-gray-100 transition-colors duration-300">

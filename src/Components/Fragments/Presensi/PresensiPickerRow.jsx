@@ -1,5 +1,3 @@
-// PresensiPickerRow.jsx
-
 import { FaEdit, FaTrash } from "react-icons/fa";
 import Badge from "../../Elements/Badges/Index";
 

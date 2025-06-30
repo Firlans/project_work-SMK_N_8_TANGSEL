@@ -17,10 +17,8 @@ const EditMapel = ({ onClose, refreshData, initialData }) => {
           `/mata-pelajaran/${initialData.id}?nama_pelajaran=${form.nama_pelajaran}`,
           form
         );
-        console.log("Data mapel berhasil diperbarui:", form);
       } else {
         await axiosClient.post("/mata-pelajaran", form);
-        console.log("Data mapel berhasil ditambahkan:", form);
       }
       refreshData();
       onClose();

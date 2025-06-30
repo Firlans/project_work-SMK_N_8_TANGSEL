@@ -1,7 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import ThemeToggle from "../../Elements/Theme Toggle";
-import { Link } from "react-router-dom";
-import { FaCircleChevronDown } from "react-icons/fa6";
 import LoginDropdown from "./LoginDropDown";
 
 const LandingHeader = () => {

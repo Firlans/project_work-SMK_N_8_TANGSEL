@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axiosClient from "../../../../axiosClient";
 
 const EditKelas = ({ onClose, refreshData, initialData, siswaList }) => {
@@ -17,10 +17,8 @@ const EditKelas = ({ onClose, refreshData, initialData, siswaList }) => {
     try {
       if (initialData) {
         await axiosClient.put(`/kelas/${initialData.id}`, form);
-        console.log("Data kelas berhasil diperbarui:", form);
       } else {
         await axiosClient.post("/kelas", form);
-        console.log("Data kelas berhasil ditambahkan:", form);
       }
       refreshData();
       onClose();
@@ -36,7 +34,7 @@ const EditKelas = ({ onClose, refreshData, initialData, siswaList }) => {
   };
 
   return (
-   <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto relative transition-all duration-300">
         <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white transition-colors duration-300">
           {initialData ? "Edit Kelas" : "Tambah Kelas"}

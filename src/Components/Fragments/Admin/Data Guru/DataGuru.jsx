@@ -17,6 +17,7 @@ const DataGuru = () => {
   const [message, setMessage] = useState({ text: "", type: "" });
   const [isLoading, setIsLoading] = useState(true);
   const [userPrivilege, setUserPrivilege] = useState(null);
+  const [error, setError] = useState(false);
 
   // pagination & sort
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,7 +31,7 @@ const DataGuru = () => {
       try {
         setUserPrivilege(JSON.parse(privilegeData));
       } catch (error) {
-        console.error("Failed to parse privilege data", error);
+        setError(true);
       }
     }
     fetchData();
@@ -48,7 +49,7 @@ const DataGuru = () => {
       setTeachers(guruRes.data.data);
       setSubjects(subjectsMap);
     } catch (err) {
-      console.error("Fetch Error:", err);
+      setError(true);
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +78,6 @@ const DataGuru = () => {
         setSelectedGuru(null);
       }
     } catch (error) {
-      console.error("Update Error:", error);
       setMessage({ text: "Gagal mengupdate data!", type: "error" });
     }
     setTimeout(() => setMessage({ text: "", type: "" }), 3000);
@@ -90,7 +90,6 @@ const DataGuru = () => {
       fetchData();
       setMessage({ text: "Data berhasil dihapus!", type: "success" });
     } catch (error) {
-      console.error("Delete Error:", error);
       setMessage({ text: "Gagal menghapus data!", type: "error" });
     }
     setTimeout(() => setMessage({ text: "", type: "" }), 3000);

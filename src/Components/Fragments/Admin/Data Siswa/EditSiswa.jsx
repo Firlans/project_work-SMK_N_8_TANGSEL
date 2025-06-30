@@ -30,14 +30,12 @@ const EditSiswa = ({ isOpen, onClose, siswa, kelas, onSubmit }) => {
         semester: siswa.semester,
         id_kelas: siswa.id_kelas,
       };
-      console.log("[EditSiswa] Initial Form Data:", formValues);
       setFormData(formValues);
     }
   }, [siswa]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log("[EditSiswa] Field Change:", { name, value });
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -46,7 +44,6 @@ const EditSiswa = ({ isOpen, onClose, siswa, kelas, onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("[EditSiswa] Submitting Form Data:", formData);
     onSubmit(formData);
   };
 

@@ -21,13 +21,14 @@ const DataUser = () => {
   const [userPrivilege, setUserPrivilege] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState(false);
 
   const fetchUsers = async () => {
     try {
       const response = await axiosClient.get("/user");
       setUsers(response.data.data);
     } catch (error) {
-      console.error("Error fetching users:", error);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -40,7 +41,7 @@ const DataUser = () => {
         const parsedPrivilege = JSON.parse(privilegeData);
         setUserPrivilege(parsedPrivilege);
       } catch (error) {
-        console.error("Error parsing privilege:", error);
+        setError(true);
       }
     }
     fetchUsers();
@@ -73,7 +74,7 @@ const DataUser = () => {
         await axiosClient.delete(`/user/${id}`);
         fetchUsers();
       } catch (error) {
-        console.error("Error deleting user:", error);
+        setError(true);
       }
     }
   };

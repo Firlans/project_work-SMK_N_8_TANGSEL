@@ -11,6 +11,7 @@ const FormPertemuan = ({ isOpen, onClose, data, idJadwal, onSuccess }) => {
     nama_pertemuan: "",
     tanggal: "",
   });
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (data) {
@@ -34,7 +35,7 @@ const FormPertemuan = ({ isOpen, onClose, data, idJadwal, onSuccess }) => {
       onSuccess();
       onClose();
     } catch (err) {
-      console.error("Gagal menyimpan pertemuan:", err);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -54,20 +55,19 @@ const FormPertemuan = ({ isOpen, onClose, data, idJadwal, onSuccess }) => {
         date.setDate(today.getDate() + i * 7);
         const dateStr = date.toISOString().split("T")[0];
 
-        const resPertemuan = await axiosClient.post("/pertemuan", {
+        await axiosClient.post("/pertemuan", {
           nama_pertemuan: `Pertemuan ${i + 1}`,
           tanggal: dateStr,
           id_jadwal: idJadwal,
         });
 
         setGenerateProgress(`Membuat pertemuan ke-${i + 1} dari ${jumlah}`);
-        console.log("Pertemuan:", resPertemuan.data.data);
       }
 
       onSuccess();
       onClose();
     } catch (err) {
-      console.error("Gagal menyimpan pertemuan:", err);
+      setError(true);
     } finally {
       setShowGenerateModal(false);
       setGenerateProgress("");

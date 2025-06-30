@@ -1,11 +1,8 @@
-// PresensiList.jsx
-
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import usePresensiPicker from "./usePresensiPicker";
 import PresensiPickerTable from "./PresensiPickerTable";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 import { IoChevronBackSharp } from "react-icons/io5";
-import { useState } from "react";
 
 const PresensiList = () => {
   const { idJadwal, idPertemuan } = useParams();
