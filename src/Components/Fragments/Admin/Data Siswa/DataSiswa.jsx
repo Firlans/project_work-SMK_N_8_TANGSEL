@@ -42,7 +42,7 @@ const DataSiswa = () => {
         axiosClient.get("/siswa"),
         axiosClient.get("/kelas"),
       ]);
-      setStudents(siswaRes.data.data);
+      setStudents(siswaRes.data.data.sort((a, b) => a.nis - b.nis));
       const kelasMap = {};
       kelasRes.data.data.forEach((k) => (kelasMap[k.id] = k));
       setKelas(kelasMap);
@@ -185,7 +185,10 @@ const DataSiswa = () => {
                   }))
                 }
               >
-                NIS
+                NIS{" "}
+                {sortConfig.key === "nis" && (
+                  <span>{sortConfig.direction === "asc" ? "▲" : "▼"}</span>
+                )}
               </th>
               <th
                 className="p-3 cursor-pointer"
@@ -199,7 +202,10 @@ const DataSiswa = () => {
                   }))
                 }
               >
-                Nama Lengkap
+                Nama Lengkap{" "}
+                {sortConfig.key === "nama_lengkap" && (
+                  <span>{sortConfig.direction === "asc" ? "▲" : "▼"}</span>
+                )}
               </th>
               <th className="p-3">Kelas</th>
               <th className="p-3 text-center">Aksi</th>

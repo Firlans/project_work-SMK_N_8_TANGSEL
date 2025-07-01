@@ -37,7 +37,7 @@ const EditMapel = ({ onClose, refreshData, initialData }) => {
     <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
       <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-6 w-full max-w-md rounded-xl shadow-lg transition-colors duration-300">
         <h3 className="text-xl font-bold mb-4 transition-colors duration-300">
-          {initialData ? "Edit Mapel" : "Tambah Mapel"}
+          {initialData ? "Edit Mata Pelajaran" : "Tambah Mata Pelajaran"}
         </h3>
 
         {error && (

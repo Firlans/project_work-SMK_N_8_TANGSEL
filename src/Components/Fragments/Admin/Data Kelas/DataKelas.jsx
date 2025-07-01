@@ -121,42 +121,50 @@ const DataKelas = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
-                {kelas.map((k) => (
-                  <tr
-                    key={k.id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100">
-                      {k.nama_kelas}
+                {kelas.length === 0 ? (
+                  <tr>
+                    <td colSpan="3" className="px-6 py-4 text-center">
+                      Tidak ada data kelas
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100">
-                      {getNamaKetua(k.ketua_kelas)}
-                    </td>
-                    {!isSuperAdmin() && (
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <div className="flex gap-2 justify-center">
-                          <button
-                            onClick={() => {
-                              setModalData(k);
-                              setIsModalOpen(true);
-                            }}
-                            className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
-                            aria-label="Edit kelas"
-                          >
-                            <FaEdit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(k.id)}
-                            className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
-                            aria-label="Delete kelas"
-                          >
-                            <FaTrash className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    )}
                   </tr>
-                ))}
+                ) : (
+                  kelas.map((k) => (
+                    <tr
+                      key={k.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100">
+                        {k.nama_kelas}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100">
+                        {getNamaKetua(k.ketua_kelas)}
+                      </td>
+                      {!isSuperAdmin() && (
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <div className="flex gap-2 justify-center">
+                            <button
+                              onClick={() => {
+                                setModalData(k);
+                                setIsModalOpen(true);
+                              }}
+                              className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
+                              aria-label="Edit kelas"
+                            >
+                              <FaEdit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(k.id)}
+                              className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+                              aria-label="Delete kelas"
+                            >
+                              <FaTrash className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

@@ -127,7 +127,7 @@ const DataAdmin = () => {
                     colSpan="2"
                     className="px-6 py-4 text-center text-gray-500 dark:text-gray-300 transition-colors"
                   >
-                    Tidak ada Data Admin
+                    Tidak ada Data Admin.
                   </td>
                 </tr>
               )}

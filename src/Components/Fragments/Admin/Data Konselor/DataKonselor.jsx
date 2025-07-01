@@ -148,13 +148,6 @@ const DataKonselor = () => {
                           >
                             <FaEdit className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => handleDelete(teacher.id)}
-                            className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
-                            aria-label="Delete konselor"
-                          >
-                            <FaTrash className="w-4 h-4" />
-                          </button>
                         </div>
                       </td>
                     </tr>

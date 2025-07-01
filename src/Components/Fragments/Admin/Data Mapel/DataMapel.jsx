@@ -21,7 +21,11 @@ const DataMapel = () => {
   const fetchMapel = async () => {
     try {
       const response = await axiosClient.get("/mata-pelajaran");
-      setMapel(response.data.data);
+      setMapel(
+        response.data.data.sort((a, b) =>
+          a.nama_pelajaran.localeCompare(b.nama_pelajaran)
+        )
+      );
     } catch (err) {
       setError("Gagal memuat data mata pelajaran");
     } finally {
@@ -53,7 +57,7 @@ const DataMapel = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Yakin ingin menghapus kelas ini?")) return;
+    if (!window.confirm("Yakin ingin menghapus mata pelajaran ini?")) return;
     try {
       await axiosClient.delete(`/mata-pelajaran/${id}`);
       fetchMapel();
@@ -95,19 +99,13 @@ const DataMapel = () => {
     });
   };
 
-  const getSortIcon = () => {
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return null;
     return sortConfig.direction === "ascending" ? "↑" : "↓";
   };
 
   if (loading) return <LoadingSpinner text={"Memuat data mata pelajaran..."} />;
   if (error) return <div className="text-red-500">{error}</div>;
-  if (mapel.length === 0) {
-    return (
-      <div className="text-center py-8 text-gray-500">
-        Tidak ada data mata pelajaran
-      </div>
-    );
-  }
 
   return (
     <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-colors duration-300">
@@ -139,11 +137,8 @@ const DataMapel = () => {
             <table className="min-w-full text-sm divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 rounded-lg overflow-hidden transition-colors duration-300">
               <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
                 <tr>
-                  <th
-                    className="px-6 py-3 text-left font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                    onClick={() => requestSort("id")}
-                  >
-                    No {getSortIcon("id")}
+                  <th className="px-6 py-3 text-left font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    No.
                   </th>
                   <th
                     className="px-6 py-3 text-left font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -159,42 +154,53 @@ const DataMapel = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
-                {getSortedData().map((m) => (
-                  <tr
-                    key={m.id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <td className="px-6 py-4 text-gray-800 dark:text-white text-center">
-                      {m.id}
+                {getSortedData().length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="8"
+                      className="text-center px-6 py-4 text-gray-500 dark:text-gray-400"
+                    >
+                      Tidak ada data mata pelajaran.
                     </td>
-                    <td className="px-6 py-4 text-gray-800 dark:text-white">
-                      {capitalizeEachWord(m.nama_pelajaran)}
-                    </td>
-                    {!isSuperAdmin() && (
-                      <td className="px-6 py-4 text-center">
-                        <div className="flex gap-2 justify-center">
-                          <button
-                            onClick={() => {
-                              setModalData(m);
-                              setIsModalOpen(true);
-                            }}
-                            className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
-                            aria-label="Edit mapel"
-                          >
-                            <FaEdit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(m.id)}
-                            className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
-                            aria-label="Hapus mapel"
-                          >
-                            <FaTrash className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    )}
                   </tr>
-                ))}
+                ) : (
+                  getSortedData().map((m, idx) => (
+                    <tr
+                      key={m.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      <td className="px-6 py-4 text-gray-800 dark:text-white text-center">
+                        {idx + 1}
+                      </td>
+                      <td className="px-6 py-4 text-gray-800 dark:text-white">
+                        {capitalizeEachWord(m.nama_pelajaran)}
+                      </td>
+                      {!isSuperAdmin() && (
+                        <td className="px-6 py-4 text-center">
+                          <div className="flex gap-2 justify-center">
+                            <button
+                              onClick={() => {
+                                setModalData(m);
+                                setIsModalOpen(true);
+                              }}
+                              className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
+                              aria-label="Edit mapel"
+                            >
+                              <FaEdit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(m.id)}
+                              className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+                              aria-label="Hapus mapel"
+                            >
+                              <FaTrash className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

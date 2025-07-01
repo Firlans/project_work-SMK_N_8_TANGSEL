@@ -134,98 +134,111 @@ const DataPelanggaran = () => {
           </div>
 
           {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
-              <thead className="">
-                <tr>
-                  {[
-                    "No",
-                    "Nama Terlapor",
-                    "Tanggal",
-                    "Jenis Pelanggaran",
-                    "Bukti",
-                    "Deskripsi",
-                    "Status",
-                    "Aksi",
-                  ].map((head, i) => (
-                    <th
-                      key={i}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap"
-                    >
-                      {head}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
-                {data.map((item, idx) => (
-                  <tr
-                    key={item.id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <td className="px-6 py-4 text-center text-gray-700 dark:text-gray-100">
-                      {idx + 1}
-                    </td>
-                    <td className="px-6 py-4 text-gray-700 dark:text-gray-100">
-                      {item.nama_terlapor}
-                    </td>
-                    <td className="px-6 py-4 text-gray-700 dark:text-gray-100">
-                      {formatTanggal(item.created_at)}
-                    </td>
-                    <td className="px-6 py-4 text-gray-700 dark:text-gray-100">
-                      {item.nama_pelanggaran}
-                    </td>
-                    <td className="px-6 py-4">
-                      {item.nama_foto ? (
-                        <button
-                          onClick={() =>
-                            setPreviewImage(
-                              getBuktiPelanggaranURL(item.nama_foto)
-                            )
-                          }
-                          className="text-blue-600 hover:underline dark:text-blue-400 transition-colors"
-                        >
-                          <FaEye />
-                        </button>
-                      ) : (
-                        <span className="text-gray-400 dark:text-gray-500">
-                          -
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-gray-700 dark:text-gray-100">
-                      <div className="max-w-xs break-words">
-                        {item.deskripsi}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <Badge status={item.status} />
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      {canModifyData(item) && (
-                        <div className="flex gap-2 justify-center">
-                          <button
-                            onClick={() => {
-                              setSelected(item);
-                              setShowModal(true);
-                            }}
-                            className="text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(item.id)}
-                            className="text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
-                          >
-                            <FaTrash />
-                          </button>
-                        </div>
-                      )}
-                    </td>
+          <div className="-mx-4 sm:mx-0 overflow-x-auto">
+            <div className="inline-block min-w-full align-middle">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
+                <thead className="">
+                  <tr>
+                    {[
+                      "No",
+                      "Nama Terlapor",
+                      "Tanggal",
+                      "Jenis Pelanggaran",
+                      "Bukti",
+                      "Deskripsi",
+                      "Status",
+                      "Aksi",
+                    ].map((head, i) => (
+                      <th
+                        key={i}
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap"
+                      >
+                        {head}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
+                  {data.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan="8"
+                        className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
+                      >
+                        Tidak ada data pelanggaran.
+                      </td>
+                    </tr>
+                  ) : (
+                    data.map((item, idx) => (
+                      <tr
+                        key={item.id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      >
+                        <td className="px-6 py-4 text-center text-gray-700 dark:text-gray-100">
+                          {idx + 1}
+                        </td>
+                        <td className="px-6 py-4 text-gray-700 dark:text-gray-100">
+                          {item.nama_terlapor}
+                        </td>
+                        <td className="px-6 py-4 text-gray-700 dark:text-gray-100">
+                          {formatTanggal(item.created_at)}
+                        </td>
+                        <td className="px-6 py-4 text-gray-700 dark:text-gray-100">
+                          {item.nama_pelanggaran}
+                        </td>
+                        <td className="px-6 py-4">
+                          {item.nama_foto ? (
+                            <button
+                              onClick={() =>
+                                setPreviewImage(
+                                  getBuktiPelanggaranURL(item.nama_foto)
+                                )
+                              }
+                              className="text-blue-600 hover:underline dark:text-blue-400 transition-colors"
+                            >
+                              <FaEye />
+                            </button>
+                          ) : (
+                            <span className="text-gray-400 dark:text-gray-500">
+                              -
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-gray-700 dark:text-gray-100">
+                          <div className="max-w-xs break-words">
+                            {item.deskripsi}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <Badge status={item.status} />
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          {canModifyData(item) && (
+                            <div className="flex gap-2 justify-center">
+                              <button
+                                onClick={() => {
+                                  setSelected(item);
+                                  setShowModal(true);
+                                }}
+                                className="text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
+                              >
+                                <FaEdit />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(item.id)}
+                                className="text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+                              >
+                                <FaTrash />
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Modal & Preview */}

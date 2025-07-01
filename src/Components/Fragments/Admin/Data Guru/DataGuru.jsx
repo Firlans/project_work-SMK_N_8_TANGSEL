@@ -259,7 +259,7 @@ const DataGuru = () => {
                     colSpan={4}
                     className="text-center py-4 text-gray-500 dark:text-gray-400 italic"
                   >
-                    Tidak ada data guru ditemukan.
+                    Tidak ada data guru.
                   </td>
                 </tr>
               )}

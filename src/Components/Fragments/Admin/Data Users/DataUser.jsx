@@ -173,52 +173,63 @@ const DataUser = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
-                  {paginatedUsers.map((user, idx) => (
-                    <tr
-                      key={user.id}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                    >
-                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-center whitespace-nowrap text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
-                        {(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}
-                      </td>
-                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
-                        {user.name}
-                      </td>
-                      <td className="px-3 sm:px-6 py-2 sm:py-4 capitalize whitespace-nowrap text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
-                        {user.profile}
-                      </td>
-                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
-                        <div className="flex gap-2 justify-center">
-                          <button
-                            onClick={() => handleDetail(user)}
-                            className="p-1 text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
-                            aria-label="View details"
-                          >
-                            <FaEye className="w-4 h-4" />
-                          </button>
-
-                          {isAdminOnly() && (
-                            <>
-                              <button
-                                onClick={() => handleEdit(user)}
-                                className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
-                                aria-label="Edit user"
-                              >
-                                <FaEdit className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(user.id)}
-                                className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
-                                aria-label="Delete user"
-                              >
-                                <FaTrash className="w-4 h-4" />
-                              </button>
-                            </>
-                          )}
-                        </div>
+                  {paginatedUsers.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan="4"
+                        className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors"
+                      >
+                        Tidak ada data yang ditemukan
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    paginatedUsers.map((user, idx) => (
+                      <tr
+                        key={user.id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      >
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 text-center whitespace-nowrap text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
+                          {(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}
+                        </td>
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
+                          {user.name}
+                        </td>
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 capitalize whitespace-nowrap text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
+                          {user.profile}
+                        </td>
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
+                          <div className="flex gap-2 justify-center">
+                            <button
+                              onClick={() => handleDetail(user)}
+                              className="p-1 text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+                              aria-label="View details"
+                            >
+                              <FaEye className="w-4 h-4" />
+                            </button>
+
+                            {isAdminOnly() && (
+                              <>
+                                <button
+                                  onClick={() => handleEdit(user)}
+                                  className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
+                                  aria-label="Edit user"
+                                >
+                                  <FaEdit className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(user.id)}
+                                  className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+                                  aria-label="Delete user"
+                                >
+                                  <FaTrash className="w-4 h-4" />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

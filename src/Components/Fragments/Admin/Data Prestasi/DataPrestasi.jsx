@@ -127,66 +127,74 @@ const DataPrestasi = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
-                  {data.map((item, index) => (
-                    <tr
-                      key={item.id}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
-                    >
-                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
-                        {index + 1}
+                  {data.length === 0 ? (
+                    <tr>
+                      <td colSpan="6" className="text-center py-4">
+                        Tidak ada data prestasi.
                       </td>
-                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
-                        {item.nama_siswa_id}
-                      </td>
-                      <td className="px-6 py-4 text-gray-800 dark:text-gray-100">
-                        {item.nama_foto ? (
-                          <button
-                            onClick={() =>
-                              setPreviewImage(
-                                getBuktiPrestasiURL(item.nama_foto)
-                              )
-                            }
-                            className="text-blue-600 dark:text-blue-400 hover:underline"
-                          >
-                            <FaEye />
-                          </button>
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
-                        <div className="max-w-xs sm:max-w-sm line-clamp-2">
-                          {item.deskripsi}
-                        </div>
-                      </td>
-                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
-                        <Badge status={item.status} />
-                      </td>
-                      {!isSuperAdmin() && (
-                        <td className="px-3 sm:px-6 py-2 sm:py-4">
-                          <div className="flex gap-2 justify-center">
+                    </tr>
+                  ) : (
+                    data.map((item, index) => (
+                      <tr
+                        key={item.id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
+                      >
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
+                          {index + 1}
+                        </td>
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
+                          {item.nama_siswa_id}
+                        </td>
+                        <td className="px-6 py-4 text-gray-800 dark:text-gray-100">
+                          {item.nama_foto ? (
                             <button
-                              onClick={() => {
-                                setSelected(item);
-                                setShowModal(true);
-                              }}
-                              className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
-                              aria-label="Edit prestasi"
+                              onClick={() =>
+                                setPreviewImage(
+                                  getBuktiPrestasiURL(item.nama_foto)
+                                )
+                              }
+                              className="text-blue-600 dark:text-blue-400 hover:underline"
                             >
-                              <FaEdit className="w-4 h-4" />
+                              <FaEye />
                             </button>
-                            <button
-                              onClick={() => handleDelete(item.id)}
-                              className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
-                              aria-label="Hapus prestasi"
-                            >
-                              <FaTrash className="w-4 h-4" />
-                            </button>
+                          ) : (
+                            "-"
+                          )}
+                        </td>
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
+                          <div className="max-w-xs sm:max-w-sm line-clamp-2">
+                            {item.deskripsi}
                           </div>
                         </td>
-                      )}
-                    </tr>
-                  ))}
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
+                          <Badge status={item.status} />
+                        </td>
+                        {!isSuperAdmin() && (
+                          <td className="px-3 sm:px-6 py-2 sm:py-4">
+                            <div className="flex gap-2 justify-center">
+                              <button
+                                onClick={() => {
+                                  setSelected(item);
+                                  setShowModal(true);
+                                }}
+                                className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
+                                aria-label="Edit prestasi"
+                              >
+                                <FaEdit className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(item.id)}
+                                className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+                                aria-label="Hapus prestasi"
+                              >
+                                <FaTrash className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
