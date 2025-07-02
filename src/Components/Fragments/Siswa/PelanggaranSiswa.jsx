@@ -157,9 +157,6 @@ const PelanggaranSiswa = () => {
                     <th className="px-6 py-3">Bukti</th>
                     <th className="px-6 py-3">Deskripsi</th>
                     <th className="px-6 py-3 text-center">Status</th>
-                    {!isReadOnly && (
-                      <th className="px-6 py-3 text-center">Aksi</th>
-                    )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
@@ -214,27 +211,6 @@ const PelanggaranSiswa = () => {
                         <td className="px-6 py-4 text-center">
                           <Badge status={item.status?.toLowerCase()} />
                         </td>
-                        {!isReadOnly && (
-                          <td className="px-6 py-4">
-                            <div className="flex gap-2 justify-center">
-                              <button
-                                onClick={() => {
-                                  setSelected(item);
-                                  setShowModal(true);
-                                }}
-                                className="text-yellow-500 hover:text-yellow-600 transition"
-                              >
-                                <FaEdit />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(item.id)}
-                                className="text-red-500 hover:text-red-600 transition"
-                              >
-                                <FaTrash />
-                              </button>
-                            </div>
-                          </td>
-                        )}
                       </tr>
                     ))
                   )}

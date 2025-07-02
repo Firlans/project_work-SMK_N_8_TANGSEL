@@ -61,58 +61,76 @@ const PrestasiSiswa = () => {
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 transition-all duration-300 ease-in-out">
             <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
               <tr>
-                {["No", "Nama Siswa", "Foto", "Deskripsi", "Status"].map(
-                  (label, i) => (
-                    <th
-                      key={i}
-                      className={`${
-                        label === "Status" ? "text-center" : "text-left"
-                      } px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors`}
-                    >
-                      {label}
-                    </th>
-                  )
-                )}
+                {[
+                  "No",
+                  "Nama Siswa",
+                  "Foto",
+                  "Nama Prestasi",
+                  "Deskripsi",
+                  "Status",
+                ].map((label, i) => (
+                  <th
+                    key={i}
+                    className={`${
+                      label === "Status" ? "text-center" : "text-left"
+                    } px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors`}
+                  >
+                    {label}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
-              {data.map((item, index) => (
-                <tr
-                  key={item.id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                >
-                  <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
-                    {index + 1}
-                  </td>
-                  <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
-                    {namaSiswa}
-                  </td>
-                  <td className="px-6 py-4">
-                    {item.nama_foto ? (
-                      <button
-                        onClick={() =>
-                          setPreviewImage(getBuktiPrestasiURL(item.nama_foto))
-                        }
-                        className="text-blue-600 hover:underline dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-300"
-                      >
-                        <FaEye />
-                      </button>
-                    ) : (
-                      <span className="text-gray-500 dark:text-gray-400 text-sm">
-                        -
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
-                    <div className="max-w-xs sm:max-w-sm line-clamp-2">
-                      {item.deskripsi}
-                    </div>
-                  </td>
-                  <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
-                    <Badge status={item.status?.toLowerCase()} />
+              {data.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-4">
+                    Tidak ada data prestasi.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                data.map((item, index) => (
+                  <tr
+                    key={item.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
+                      {index + 1}
+                    </td>
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
+                      {namaSiswa}
+                    </td>
+                    <td className="px-6 py-4">
+                      {item.nama_foto ? (
+                        <button
+                          onClick={() =>
+                            setPreviewImage(getBuktiPrestasiURL(item.nama_foto))
+                          }
+                          className="text-blue-600 hover:underline dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-300"
+                        >
+                          <FaEye />
+                        </button>
+                      ) : (
+                        <span className="text-gray-500 dark:text-gray-400 text-sm">
+                          -
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
+                      <div className="max-w-xs sm:max-w-sm line-clamp-2">
+                        {item.nama_prestasi}
+                      </div>
+                    </td>
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
+                      <div className="max-w-xs sm:max-w-sm line-clamp-2">
+                        {item.deskripsi}
+                      </div>
+                    </td>
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
+                      <Badge status={item.status?.toLowerCase()} />
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

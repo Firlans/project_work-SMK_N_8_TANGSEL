@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../../../../axiosClient";
+import Cookies from "js-cookie";
 
 const defaultFormData = {
   id: "",
@@ -16,6 +17,19 @@ export const usePrestasiForm = (isOpen, initialData, onSuccess) => {
   const [previewImage, setPreviewImage] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [userPrivilege, setUserPrivilege] = useState(null);
+
+  useEffect(() => {
+    const privilegeData = Cookies.get("userPrivilege");
+    if (privilegeData) {
+      try {
+        const parsed = JSON.parse(privilegeData);
+        setUserPrivilege(parsed);
+      } catch (err) {
+        setError(true);
+      }
+    }
+  }, []);
 
   // Fetch data siswa
   useEffect(() => {
@@ -68,7 +82,7 @@ export const usePrestasiForm = (isOpen, initialData, onSuccess) => {
     form.append("siswa_id", formData.siswa_id);
     form.append("nama_prestasi", formData.nama_prestasi);
     form.append("deskripsi", formData.deskripsi);
-    form.append("status", formData.status);
+    form.append("status", formData.status || "pengajuan");
     if (formData.nama_foto) {
       form.append("bukti_gambar", formData.nama_foto);
     }
@@ -95,6 +109,16 @@ export const usePrestasiForm = (isOpen, initialData, onSuccess) => {
     }
   };
 
+  const getUserRole = () => {
+    if (!userPrivilege) return null;
+    if (userPrivilege.is_superadmin) return "superadmin";
+    if (userPrivilege.is_admin) return "admin";
+    if (userPrivilege.is_conselor) return "conselor";
+    if (userPrivilege.is_guru) return "guru";
+    if (userPrivilege.is_siswa) return "siswa";
+    return null;
+  };
+
   return {
     formData,
     siswaOptions,
@@ -103,5 +127,6 @@ export const usePrestasiForm = (isOpen, initialData, onSuccess) => {
     loading,
     handleChange,
     handleSubmit,
+    getUserRole,
   };
 };

@@ -66,7 +66,6 @@ const JadwalGuru = () => {
         setMapelMap(mapelLookup);
         setLoading(false);
       } catch (error) {
-        alert("Gagal mengambil data");
         setLoading(false);
       }
     };
@@ -179,75 +178,82 @@ const JadwalGuru = () => {
           onClick={handleExport}
           disabled={!!exportProgress}
           className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700 text-sm font-semibold transition
-            ${exportProgress ? "opacity-60 cursor-not-allowed" : ""}`}
+        ${exportProgress ? "opacity-60 cursor-not-allowed" : ""}`}
         >
           <PiExportBold size={18} />
           {exportProgress ? "Mengekspor..." : "Export Jadwal"}
         </button>
       </div>
 
-      {Object.entries(hariMap).map(([hariId, namaHari]) => {
-        const rows = allRows.filter((row) => row.hari === parseInt(hariId));
-        if (rows.length === 0) return null;
+      {allRows.length === 0 ? (
+        <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm text-center">
+          <p className="text-gray-500 dark:text-gray-400">
+            Tidak ada jadwal mengajar.
+          </p>
+        </div>
+      ) : (
+        Object.entries(hariMap).map(([hariId, namaHari]) => {
+          const rows = allRows.filter((row) => row.hari === parseInt(hariId));
+          if (rows.length === 0) return null;
 
-        return (
-          <div
-            key={hariId}
-            className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 ease-in-out"
-          >
-            <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-800 dark:text-white">
-              {namaHari}
-            </h3>
-
-            <div className="overflow-x-auto w-full">
-              <table className="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700 transition-all duration-300 ease-in-out">
-                <thead className="bg-gray-50 dark:bg-gray-800 transition-all duration-300 ease-in-out">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300 transition-all duration-300 ease-in-out">
-                      Waktu
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300 transition-all duration-300 ease-in-out">
-                      Kelas
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300 transition-all duration-300 ease-in-out">
-                      Mata Pelajaran
-                    </th>
-                    <th className="px-4 py-3 text-center text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300 transition-all duration-300 ease-in-out">
-                      Presensi
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-all duration-300 ease-in-out">
-                  {rows.map((row, index) => (
-                    <tr
-                      key={index}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 ease-in-out"
-                    >
-                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 transition-all duration-300 ease-in-out">
-                        {row.waktu}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 transition-all duration-300 ease-in-out">
-                        {row.kelas}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 transition-all duration-300 ease-in-out">
-                        {row.mapel}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <button
-                          onClick={() => handleLihatPertemuan(row.idUtama)}
-                          className="text-blue-600 hover:underline text-sm"
-                        >
-                          <FaEye size={16} />
-                        </button>
-                      </td>
+          return (
+            <div
+              key={hariId}
+              className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 ease-in-out"
+            >
+              <h3 className="text-base sm:text-lg font-bold mb-4 text-gray-800 dark:text-white">
+                {namaHari}
+              </h3>
+              <div className="overflow-x-auto w-full">
+                <table className="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300">
+                        Waktu
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300">
+                        Kelas
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300">
+                        Mata Pelajaran
+                      </th>
+                      <th className="px-4 py-3 text-center text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-300">
+                        Presensi
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900">
+                    {rows.map((row, index) => (
+                      <tr
+                        key={index}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-800"
+                      >
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                          {row.waktu}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                          {row.kelas}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                          {row.mapel}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <button
+                            onClick={() => handleLihatPertemuan(row.idUtama)}
+                            className="text-blue-600 hover:underline text-sm"
+                          >
+                            <FaEye size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })
+      )}
 
       {exportProgress && <ExportLoadingModal progress={exportProgress} />}
     </div>

@@ -10,12 +10,15 @@ const ModalPrestasi = ({ isOpen, onClose, onSuccess, initialData }) => {
     loading,
     handleChange,
     handleSubmit,
+    getUserRole,
   } = usePrestasiForm(isOpen, initialData, () => {
     onSuccess();
     onClose();
   });
 
   if (!isOpen) return null;
+
+  const role = getUserRole();
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-all duration-300">
@@ -43,17 +46,19 @@ const ModalPrestasi = ({ isOpen, onClose, onSuccess, initialData }) => {
             onChange={handleChange}
           />
 
-          <SelectField
-            label="Status"
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            options={[
-              { label: "Pengajuan", value: "pengajuan" },
-              { label: "Disetujui", value: "disetujui" },
-              { label: "Ditolak", value: "ditolak" },
-            ]}
-          />
+          {(role === "admin" || role === "conselor") && (
+            <SelectField
+              label="Status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              options={[
+                { label: "Pengajuan", value: "pengajuan" },
+                { label: "Disetujui", value: "disetujui" },
+                { label: "Ditolak", value: "ditolak" },
+              ]}
+            />
+          )}
 
           <SelectField
             label="Siswa"
@@ -98,7 +103,7 @@ const ModalPrestasi = ({ isOpen, onClose, onSuccess, initialData }) => {
             </button>
             <button
               type="submit"
-             className="px-4 py-2 bg-amber-500 dark:bg-zinc-800 text-white dark:text-white rounded-lg hover:bg-amber-600 dark:hover:bg-zinc-500 transition-colors"
+              className="px-4 py-2 bg-amber-500 dark:bg-zinc-800 text-white dark:text-white rounded-lg hover:bg-amber-600 dark:hover:bg-zinc-500 transition-colors"
               disabled={loading}
             >
               {loading ? "Menyimpan..." : "Simpan"}

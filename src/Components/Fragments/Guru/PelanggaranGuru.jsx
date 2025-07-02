@@ -3,9 +3,8 @@ import Cookies from "js-cookie";
 import axiosClient from "../../../axiosClient";
 import ModalPelanggaran from "../Admin/Data Pelanggaran/FormPelanggaran";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
-import { FaEye, FaPlus, FaTrash } from "react-icons/fa6";
+import { FaEye, FaPlus } from "react-icons/fa6";
 import Badge from "../../Elements/Badges/Index";
-import { FaEdit } from "react-icons/fa";
 import { formatTanggal } from "../../../utils/dateFormatter";
 import ImagePreview from "../../Elements/Image Pop Up/ImagePreview";
 
@@ -103,7 +102,6 @@ const PelanggaranGuru = () => {
                     <th className="px-6 py-3">Bukti</th>
                     <th className="px-6 py-3">Deskripsi</th>
                     <th className="px-6 py-3">Status</th>
-                    <th className="px-6 py-3">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
@@ -157,25 +155,6 @@ const PelanggaranGuru = () => {
                         </td>
                         <td className="px-6 py-4 text-center">
                           <Badge status={item.status} />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                          <div className="flex gap-2 justify-center">
-                            <button
-                              onClick={() => {
-                                setSelected(item);
-                                setShowModal(true);
-                              }}
-                              className="text-yellow-500 hover:text-yellow-700"
-                            >
-                              <FaEdit />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(item.id)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <FaTrash />
-                            </button>
-                          </div>
                         </td>
                       </tr>
                     ))

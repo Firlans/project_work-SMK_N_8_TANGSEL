@@ -107,6 +107,7 @@ const DataPrestasi = () => {
                       "No",
                       "Nama Siswa",
                       "Foto",
+                      "Nama Prestasi",
                       "Deskripsi",
                       "Status",
                       !isSuperAdmin() && "Aksi",
@@ -160,6 +161,11 @@ const DataPrestasi = () => {
                           ) : (
                             "-"
                           )}
+                        </td>
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
+                          <div className="max-w-xs sm:max-w-sm line-clamp-2">
+                            {item.nama_prestasi}
+                          </div>
                         </td>
                         <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
                           <div className="max-w-xs sm:max-w-sm line-clamp-2">
