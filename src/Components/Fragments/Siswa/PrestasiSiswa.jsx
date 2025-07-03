@@ -5,6 +5,8 @@ import Badge from "../../Elements/Badges/Index";
 import { FaEye, FaPlus } from "react-icons/fa";
 import ImagePreview from "../../Elements/Image Pop Up/ImagePreview";
 import ModalPrestasi from "../Admin/Data Prestasi/FormPrestasi";
+import useReadOnlyRole from "../../../hooks/useReadOnlyRole";
+import Cookies from "js-cookie";
 
 const getBuktiPrestasiURL = (filename) =>
   axiosClient.defaults.baseURL + "/images/prestasi/" + filename;
@@ -17,9 +19,35 @@ const PrestasiSiswa = () => {
   const [namaSiswa, setNamaSiswa] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
   const [error, setError] = useState(false);
+  const isReadOnly = useReadOnlyRole();
 
   const fetchData = async () => {
+    setLoading(true);
     try {
+      let id_user, id_siswa;
+
+      if (isReadOnly) {
+        id_user = Cookies.get("user_id");
+        id_siswa = Cookies.get("id_siswa");
+        if (!id_user || !id_siswa) {
+          throw new Error("User atau siswa tidak ditemukan di cookie");
+        }
+      } else {
+        const cookie = Cookies.get("userPrivilege");
+        if (!cookie) throw new Error("User tidak ditemukan di cookie");
+        const parsed = JSON.parse(cookie);
+        id_user = parsed.id_user;
+
+        const siswaRes = await axiosClient.get("/siswa");
+        const semuaSiswa = siswaRes.data.data;
+        const siswaLogin = semuaSiswa.find((s) => s.user_id === id_user);
+        if (!siswaLogin) {
+          setLoading(false);
+          return;
+        }
+        id_siswa = siswaLogin.id;
+      }
+
       const { data: profileData } = await axiosClient.get("/profile");
       const idSiswa = profileData.data.id;
       setNamaSiswa(profileData.data.nama_lengkap);
@@ -45,15 +73,17 @@ const PrestasiSiswa = () => {
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
           Daftar Prestasi
         </h2>
-        <button
-          className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2  flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
-          onClick={() => {
-            setSelected(null);
-            setShowModal(true);
-          }}
-        >
-          <FaPlus className="w-4 h-4" /> Tambah Prestasi
-        </button>
+        {!isReadOnly && (
+          <button
+            className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2  flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
+            onClick={() => {
+              setSelected(null);
+              setShowModal(true);
+            }}
+          >
+            <FaPlus className="w-4 h-4" /> Tambah Prestasi
+          </button>
+        )}
       </div>
 
       <div className="-mx-4 sm:mx-0 overflow-x-auto">

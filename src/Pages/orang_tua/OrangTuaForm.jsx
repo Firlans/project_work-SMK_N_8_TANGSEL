@@ -111,17 +111,17 @@ const OrangTuaForm = () => {
                     : "text-gray-700 hover:text-yellow-700"
                 }`}
               >
-                No Telp
+                No WhatsApp
               </button>
             </div>
           </div>
 
           <InputForm
-            label={loginType === "email" ? "Email" : "No Telp"}
+            label={loginType === "email" ? "Email" : "No WhatsApp"}
             labelColor="text-slate-900"
             type="text"
             placeholder={
-              loginType === "email" ? "Masukkan Email" : "Masukkan No Telp"
+              loginType === "email" ? "Masukkan Email" : "Masukkan No WhatsApp"
             }
             name="identifier"
             value={identifier}

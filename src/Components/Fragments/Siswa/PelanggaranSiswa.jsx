@@ -3,9 +3,8 @@ import Cookies from "js-cookie";
 import axiosClient from "../../../axiosClient";
 import ModalPelanggaran from "../Admin/Data Pelanggaran/FormPelanggaran";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
-import { FaEye, FaPlus, FaTrash } from "react-icons/fa6";
+import { FaEye, FaPlus } from "react-icons/fa6";
 import Badge from "../../Elements/Badges/Index";
-import { FaEdit } from "react-icons/fa";
 import { formatTanggal } from "../../../utils/dateFormatter";
 import useReadOnlyRole from "../../../hooks/useReadOnlyRole";
 import ImagePreview from "../../Elements/Image Pop Up/ImagePreview";
@@ -110,16 +109,6 @@ const PelanggaranSiswa = () => {
   useEffect(() => {
     fetchData();
   }, []);
-
-  const handleDelete = async (id) => {
-    if (!confirm("Yakin ingin menghapus data ini?")) return;
-    try {
-      await axiosClient.delete(`/pelanggaran/${id}`);
-      fetchData();
-    } catch (err) {
-      alert("Gagal menghapus data.");
-    }
-  };
 
   return (
     <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm transition-all duration-300 ease-in-out">
