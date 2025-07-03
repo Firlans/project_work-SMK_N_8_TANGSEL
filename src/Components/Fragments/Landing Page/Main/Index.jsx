@@ -28,7 +28,8 @@ const MainSplitLayout = () => {
         }`}
       >
         <h2 className="text-4xl font-extrabold mb-4 text-slate-50">
-          CRM Sekolah
+          SIMPUL8 - Sistem Informasi Manajemen Pemantauan untuk
+          Lingkungan SMK Negeri 8 Kota Tangerang Selatan
         </h2>
         <p className="max-w-3xl mx-auto text-lg text-slate-200">
           Satu platform terintegrasi untuk mengelola data siswa, guru, konselor,
@@ -42,7 +43,7 @@ const MainSplitLayout = () => {
         {roleFeatures.map((item, index) => {
           const [ref, inView] = useInView({
             triggerOnce: true,
-            threshold: 0.5,
+            threshold: 0.1,
           });
 
           return (
