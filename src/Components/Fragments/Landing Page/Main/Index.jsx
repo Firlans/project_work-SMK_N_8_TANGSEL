@@ -21,17 +21,18 @@ const MainSplitLayout = () => {
       {/* SECTION 1 */}
       <section
         ref={section1Ref}
-        className={`relative z-20 py-20 px-6 text-center max-w-5xl mx-auto mt-4 transition-all duration-700 ease-out ${
+        className={`relative z-20 py-14 px-3 sm:py-16 sm:px-6 md:py-20 md:px-8 text-center max-w-2xl sm:max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto mt-4 transition-all duration-700 ease-out ${
           section1InView
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-8"
         }`}
       >
-        <h2 className="text-4xl font-extrabold mb-4 text-slate-50">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 text-slate-50 leading-tight">
           SIMPUL8 - Sistem Informasi Manajemen Pemantauan untuk
+          <br className="hidden md:block" />
           Lingkungan SMK Negeri 8 Kota Tangerang Selatan
         </h2>
-        <p className="max-w-3xl mx-auto text-lg text-slate-200">
+        <p className="max-w-xl sm:max-w-2xl md:max-w-3xl mx-auto text-base sm:text-lg md:text-xl text-slate-200">
           Satu platform terintegrasi untuk mengelola data siswa, guru, konselor,
           admin, dan wali murid. Pantau jadwal, pelanggaran, prestasi, dan
           komunikasi bimbingan konseling secara real-time.
