@@ -30,6 +30,7 @@ const FormJadwal = ({
     { id: 4, nama: "Kamis" },
     { id: 5, nama: "Jumat" },
     { id: 6, nama: "Sabtu" },
+    { id: 7, nama: "Minggu" },
   ];
 
   const handleSubmit = async (e) => {
