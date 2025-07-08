@@ -77,5 +77,9 @@ class ProductionSeeder extends Seeder
                 'no_telp' => $profile['no_telp']
             ]);
         }
+        $this->call([
+            WaktuSeeder::class,
+            HariSeeder::class
+        ]);
     }
 }
