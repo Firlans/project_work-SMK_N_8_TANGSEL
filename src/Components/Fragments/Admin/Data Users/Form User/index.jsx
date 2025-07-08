@@ -78,7 +78,11 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
               {["is_admin", "is_conselor"].map((key) => (
                 <CheckboxField
                   key={key}
-                  label={key.replace("is_", "").replace("_", " ")}
+                  label={
+                    key === "is_conselor"
+                      ? "Konselor"
+                      : key.replace("is_", "").replace("_", " ")
+                  }
                   checked={privileges[key]}
                   onChange={() => handlePrivilegeChange(key)}
                 />

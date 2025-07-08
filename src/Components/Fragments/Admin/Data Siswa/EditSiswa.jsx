@@ -74,22 +74,10 @@ const EditSiswa = ({ isOpen, onClose, siswa, kelas, onSubmit }) => {
                   type="text"
                   name={field}
                   value={formData[field]}
-                  readOnly
-                  className="mt-1 block w-full rounded-md border border-gray-200 dark:border-gray-700 px-3 py-2 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 pointer-events-none select-none cursor-not-allowed transition-all duration-300"
+                  onChange={handleChange}
+                  required
+                  className="mt-1 block w-full rounded-md border border-gray-200 dark:border-gray-700 px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 transition-all duration-300"
                 />
-                <span className="absolute inset-y-0 right-0 flex items-center pr-3 mt-1 text-gray-400">
-                  <svg
-                    className="h-5 w-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </span>
               </div>
             </div>
           ))}

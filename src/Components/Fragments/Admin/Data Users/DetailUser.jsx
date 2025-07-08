@@ -44,23 +44,6 @@ const DetailUser = ({ user, onClose }) => {
             </label>
             <p>{userData.email}</p>
           </div>
-          <div>
-            <label className="font-bold dark:text-white transition-colors duration-300">
-              Privilege:
-            </label>
-            <p className="capitalize">{userData.profile}</p>
-            {userData.privileges && (
-              <div className="pl-4 space-y-1">
-                {userData.privileges.is_admin === 1 && <p>- Admin</p>}
-                {userData.privileges.is_guru === 1 && <p>- Guru</p>}
-                {userData.privileges.is_siswa === 1 && <p>- Siswa</p>}
-                {userData.privileges.is_conselor === 1 && <p>- Konselor</p>}
-                {userData.privileges.is_superadmin === 1 && (
-                  <p>- Super Admin</p>
-                )}
-              </div>
-            )}
-          </div>
         </div>
 
         <div className="mt-6 flex justify-end">

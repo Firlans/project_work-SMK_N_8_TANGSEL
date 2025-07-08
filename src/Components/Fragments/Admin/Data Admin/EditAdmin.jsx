@@ -41,7 +41,7 @@ const EditAdmin = ({ isOpen, onClose, admin, onSubmit }) => {
   if (!isOpen) return null;
 
   return (
-     <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
       <div className="relative top-20 mx-2 sm:mx-auto p-5 border border-gray-200 dark:border-gray-700 w-full max-w-lg shadow-lg rounded-md bg-white dark:bg-gray-900 transition-all duration-300">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
@@ -71,23 +71,10 @@ const EditAdmin = ({ isOpen, onClose, admin, onSubmit }) => {
                 type="text"
                 name="nip"
                 value={formData.nip}
-                readOnly
-                className="mt-1 block w-full rounded-md border border-gray-200 dark:border-gray-700 px-3 py-2 bg-gray-50 dark:bg-gray-800 pr-10 pointer-events-none select-none cursor-not-allowed transition-all duration-300"
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full rounded-md border border-gray-200 dark:border-gray-700 px-3 py-2 bg-white dark:bg-gray-800 pr-10 transition-all duration-300"
               />
-              <span className="absolute inset-y-0 right-0 flex items-center pr-3 mt-1 text-gray-400">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </span>
             </div>
           </div>
 
