@@ -58,15 +58,15 @@ const PelanggaranGuru = () => {
     fetchPelanggaran();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!confirm("Yakin ingin menghapus data ini?")) return;
-    try {
-      await axiosClient.delete(`/pelanggaran/${id}`);
-      fetchData();
-    } catch (err) {
-      alert("Gagal menghapus data.");
-    }
-  };
+  // const handleDelete = async (id) => {
+  //   if (!confirm("Yakin ingin menghapus data ini?")) return;
+  //   try {
+  //     await axiosClient.delete(`/pelanggaran/${id}`);
+  //     fetchData();
+  //   } catch (err) {
+  //     alert("Gagal menghapus data.");
+  //   }
+  // };
 
   return (
     <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm transition-all duration-300 ease-in-out">
@@ -78,7 +78,7 @@ const PelanggaranGuru = () => {
           <div className="mb-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
-                Pelanggaran yang Dilaporkan
+                Data Poin Negatif
               </h2>
               <button
                 className="px-4 py-2 rounded flex items-center gap-2 bg-amber-500 dark:bg-slate-600 text-white hover:bg-amber-600 dark:hover:bg-slate-700 transition-colors duration-300"
@@ -87,7 +87,7 @@ const PelanggaranGuru = () => {
                   setShowModal(true);
                 }}
               >
-                <FaPlus /> Tambah Pelanggaran
+                <FaPlus /> Tambah Poin Negatif
               </button>
             </div>
 
@@ -96,9 +96,9 @@ const PelanggaranGuru = () => {
                 <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
                   <tr className="text-left text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-all duration-300 ease-in-out">
                     <th className="px-6 py-3">No</th>
-                    <th className="px-6 py-3">Nama Terlapor</th>
+                    <th className="px-6 py-3">Nama Siswa</th>
                     <th className="px-6 py-3">Tanggal</th>
-                    <th className="px-6 py-3">Jenis Pelanggaran</th>
+                    <th className="px-6 py-3">Jenis Poin Negatif</th>
                     <th className="px-6 py-3">Bukti</th>
                     <th className="px-6 py-3">Deskripsi</th>
                     <th className="px-6 py-3">Status</th>
@@ -111,7 +111,7 @@ const PelanggaranGuru = () => {
                         colSpan="8"
                         className="text-center px-6 py-4 text-gray-500 dark:text-gray-400"
                       >
-                        Tidak ada data pelanggaran yang Bapak/Ibu laporkan.
+                        Tidak ada data poin negatif yang Bapak/Ibu ajukan.
                       </td>
                     </tr>
                   ) : (

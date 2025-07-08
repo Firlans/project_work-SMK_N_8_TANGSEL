@@ -23,7 +23,7 @@ const DataPrestasi = () => {
   const fetchData = async () => {
     try {
       const res = await axiosClient.get("/prestasi");
-      const pelanggaranWithNama = await Promise.all(
+      const prestasiWithNama = await Promise.all(
         res.data.data.map(async (item) => {
           const siswa = await axiosClient.get(`/siswa/${item.siswa_id}`);
           return {
@@ -32,7 +32,7 @@ const DataPrestasi = () => {
           };
         })
       );
-      setData(pelanggaranWithNama);
+      setData(prestasiWithNama);
     } catch (err) {
       setError(true);
     } finally {
@@ -82,7 +82,7 @@ const DataPrestasi = () => {
           {/* Header Section */}
           <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6 transition-all duration-300">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
-              Daftar Prestasi
+              Data Poin Positif
             </h2>
             {!isSuperAdmin() && (
               <button
@@ -92,7 +92,7 @@ const DataPrestasi = () => {
                   setShowModal(true);
                 }}
               >
-                <FaPlus className="w-4 h-4" /> Tambah Prestasi
+                <FaPlus className="w-4 h-4" /> Tambah Poin Positif
               </button>
             )}
           </div>
@@ -131,7 +131,7 @@ const DataPrestasi = () => {
                   {data.length === 0 ? (
                     <tr>
                       <td colSpan="6" className="text-center py-4">
-                        Tidak ada data prestasi.
+                        Tidak ada data Poin Positif.
                       </td>
                     </tr>
                   ) : (
@@ -140,11 +140,17 @@ const DataPrestasi = () => {
                         key={item.id}
                         className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
                       >
-                        <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
-                          {index + 1}
+                        <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
+                          <div className="max-w-xs break-words">
+                            {" "}
+                            {index + 1}
+                          </div>{" "}
                         </td>
-                        <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
-                          {item.nama_siswa_id}
+                        <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
+                          <div className="max-w-xs break-words">
+                            {" "}
+                            {item.nama_siswa_id}
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-gray-800 dark:text-gray-100">
                           {item.nama_foto ? (
@@ -162,13 +168,13 @@ const DataPrestasi = () => {
                             "-"
                           )}
                         </td>
-                        <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
-                          <div className="max-w-xs sm:max-w-sm line-clamp-2">
+                        <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
+                          <div className="max-w-xs break-words">
                             {item.nama_prestasi}
                           </div>
                         </td>
-                        <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100">
-                          <div className="max-w-xs sm:max-w-sm line-clamp-2">
+                        <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
+                          <div className="max-w-xs break-words">
                             {item.deskripsi}
                           </div>
                         </td>

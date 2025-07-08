@@ -4,7 +4,7 @@ import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 import Badge from "../../Elements/Badges/Index";
 import { FaEye, FaPlus } from "react-icons/fa";
 import ImagePreview from "../../Elements/Image Pop Up/ImagePreview";
-import ModalPrestasi from "../Admin/Data Prestasi/FormPrestasi";
+// import ModalPrestasi from "../Admin/Data Prestasi/FormPrestasi";
 import useReadOnlyRole from "../../../hooks/useReadOnlyRole";
 import Cookies from "js-cookie";
 
@@ -14,8 +14,8 @@ const getBuktiPrestasiURL = (filename) =>
 const PrestasiSiswa = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [selected, setSelected] = useState(null);
+  // const [showModal, setShowModal] = useState(false);
+  // const [selected, setSelected] = useState(null);
   const [namaSiswa, setNamaSiswa] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
   const [error, setError] = useState(false);
@@ -71,9 +71,9 @@ const PrestasiSiswa = () => {
     <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-all duration-300 ease-in-out">
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
-          Daftar Prestasi
+          Daftar Poin Positif
         </h2>
-        {!isReadOnly && (
+        {/* {!isReadOnly && (
           <button
             className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2  flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
             onClick={() => {
@@ -83,7 +83,7 @@ const PrestasiSiswa = () => {
           >
             <FaPlus className="w-4 h-4" /> Tambah Prestasi
           </button>
-        )}
+        )} */}
       </div>
 
       <div className="-mx-4 sm:mx-0 overflow-x-auto">
@@ -166,7 +166,7 @@ const PrestasiSiswa = () => {
         </div>
       </div>
 
-      {showModal && (
+      {/* {showModal && (
         <ModalPrestasi
           isOpen={showModal}
           onClose={() => {
@@ -179,7 +179,7 @@ const PrestasiSiswa = () => {
           }}
           initialData={selected}
         />
-      )}
+      )} */}
 
       <ImagePreview
         isOpen={!!previewImage}

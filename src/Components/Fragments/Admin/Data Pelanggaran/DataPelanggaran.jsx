@@ -117,7 +117,7 @@ const DataPelanggaran = () => {
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
-              Daftar Pelanggaran
+              Data Poin Negatif
             </h2>
             {canAddData() && (
               <button
@@ -128,7 +128,7 @@ const DataPelanggaran = () => {
                 }}
               >
                 <FaPlus className="w-4 h-4" />
-                Tambah Pelanggaran
+                Tambah Poin Negatif
               </button>
             )}
           </div>
@@ -141,9 +141,9 @@ const DataPelanggaran = () => {
                   <tr>
                     {[
                       "No",
-                      "Nama Terlapor",
+                      "Nama Siswa",
                       "Tanggal",
-                      "Jenis Pelanggaran",
+                      "Jenis Poin Negatif",
                       "Bukti",
                       "Deskripsi",
                       "Status",
@@ -151,7 +151,11 @@ const DataPelanggaran = () => {
                     ].map((head, i) => (
                       <th
                         key={i}
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap"
+                        className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium ${
+                          head === "Status" || head === "Aksi"
+                            ? "text-center"
+                            : "text-left"
+                        } text-gray-500 dark:text-gray-300 transition-colors`}
                       >
                         {head}
                       </th>
@@ -174,17 +178,23 @@ const DataPelanggaran = () => {
                         key={item.id}
                         className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                       >
-                        <td className="px-6 py-4 text-center text-gray-700 dark:text-gray-100">
-                          {idx + 1}
+                        <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
+                          <div className="max-w-xs break-words"> {idx + 1}</div>{" "}
                         </td>
-                        <td className="px-6 py-4 text-gray-700 dark:text-gray-100">
-                          {item.nama_terlapor}
+                        <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
+                          <div className="max-w-xs break-words">
+                            {item.nama_terlapor}
+                          </div>
                         </td>
-                        <td className="px-6 py-4 text-gray-700 dark:text-gray-100">
-                          {formatTanggal(item.created_at)}
+                        <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
+                          <div className="max-w-xs break-words">
+                            {formatTanggal(item.created_at)}
+                          </div>
                         </td>
-                        <td className="px-6 py-4 text-gray-700 dark:text-gray-100">
-                          {item.nama_pelanggaran}
+                        <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
+                          <div className="max-w-xs break-words">
+                            {item.nama_pelanggaran}
+                          </div>
                         </td>
                         <td className="px-6 py-4">
                           {item.nama_foto ? (
@@ -204,7 +214,7 @@ const DataPelanggaran = () => {
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-gray-700 dark:text-gray-100">
+                        <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
                           <div className="max-w-xs break-words">
                             {item.deskripsi}
                           </div>

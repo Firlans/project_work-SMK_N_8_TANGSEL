@@ -69,14 +69,14 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
       {loading && <LoadingSpinner text="Menyimpan data..." />}
       <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-xl shadow-lg relative transition-all duration-300 ease-in-out">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors">
-          {isEdit ? "Edit Pelanggaran" : "Tambah Pelanggaran"}
+          {isEdit ? "Edit Poin Negatif" : "Tambah Poin Negatif"}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Terlapor */}
           <div>
             <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors">
-              Terlapor
+              Nama Siswa
             </label>
             <select
               name="terlapor"
@@ -98,7 +98,7 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
           {/* Jenis Pelanggaran */}
           <div>
             <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors">
-              Jenis Pelanggaran
+              Jenis Poin Negatif
             </label>
             <input
               type="text"

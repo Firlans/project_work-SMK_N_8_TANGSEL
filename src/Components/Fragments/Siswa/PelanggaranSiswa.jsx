@@ -120,7 +120,7 @@ const PelanggaranSiswa = () => {
           <div className="mb-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
-                Pelanggaran yang Dilaporkan
+                Poin Negatif yang Dilaporkan
               </h2>
               {!isReadOnly && (
                 <button
@@ -130,7 +130,7 @@ const PelanggaranSiswa = () => {
                     setShowModal(true);
                   }}
                 >
-                  <FaPlus /> Tambah Pelanggaran
+                  <FaPlus /> Tambah Poin Negatif
                 </button>
               )}
             </div>
@@ -140,9 +140,9 @@ const PelanggaranSiswa = () => {
                 <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
                   <tr className="text-left text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-all duration-300 ease-in-out">
                     <th className="px-6 py-3">No</th>
-                    <th className="px-6 py-3">Nama Terlapor</th>
+                    <th className="px-6 py-3">Nama Siswa</th>
                     <th className="px-6 py-3">Tanggal</th>
-                    <th className="px-6 py-3">Jenis Pelanggaran</th>
+                    <th className="px-6 py-3">Jenis Poin Negatif</th>
                     <th className="px-6 py-3">Bukti</th>
                     <th className="px-6 py-3">Deskripsi</th>
                     <th className="px-6 py-3 text-center">Status</th>
@@ -155,7 +155,7 @@ const PelanggaranSiswa = () => {
                         colSpan={isReadOnly ? 7 : 8}
                         className="text-center px-6 py-4 text-gray-500 dark:text-gray-400"
                       >
-                        Tidak ada data pelanggaran yang kamu laporkan.
+                        Tidak ada data poin negatif yang kamu laporkan.
                       </td>
                     </tr>
                   ) : (
@@ -211,7 +211,7 @@ const PelanggaranSiswa = () => {
           {/* BAGIAN TERLAPOR */}
           <div>
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 transition-colors duration-300">
-              Pelanggaran yang Menimpa Kamu
+              Poin Negatif yang Menimpa Kamu
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full divide-y divide-gray-200 dark:divide-gray-700 transition-all duration-300 ease-in-out">
@@ -219,7 +219,7 @@ const PelanggaranSiswa = () => {
                   <tr className="text-left text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-all duration-300 ease-in-out">
                     <th className="px-6 py-3">No</th>
                     <th className="px-6 py-3">Tanggal</th>
-                    <th className="px-6 py-3">Jenis Pelanggaran</th>
+                    <th className="px-6 py-3">Jenis Poin Negatif</th>
                     <th className="px-6 py-3">Bukti</th>
                     <th className="px-6 py-3">Deskripsi</th>
                     <th className="px-6 py-3 text-center">Status</th>
@@ -232,7 +232,7 @@ const PelanggaranSiswa = () => {
                         colSpan={isReadOnly ? 7 : 8}
                         className="text-center px-6 py-4 text-gray-500 dark:text-gray-400"
                       >
-                        Tidak ada data pelanggaran yang menimpa kamu.
+                        Tidak ada data poin negatif yang menimpa kamu.
                       </td>
                     </tr>
                   ) : (

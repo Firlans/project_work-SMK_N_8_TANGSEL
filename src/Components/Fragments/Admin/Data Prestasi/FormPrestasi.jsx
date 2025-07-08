@@ -25,15 +25,16 @@ const ModalPrestasi = ({ isOpen, onClose, onSuccess, initialData }) => {
       {loading && <LoadingSpinner text="Menyimpan data..." />}
       <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg shadow-lg relative transition-colors duration-300">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors">
-          {initialData ? "Edit Prestasi" : "Tambah Prestasi"}
+          {initialData ? "Edit Poin Positif" : "Tambah Poin Positif"}
         </h2>
 
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <InputField
-            label="Nama Prestasi"
+            label="Jenis Poin Positif"
             name="nama_prestasi"
+            placeholder="Contoh: Prestasi Bidang Akademik"
             value={formData.nama_prestasi}
             onChange={handleChange}
             disabled={!!initialData}
@@ -42,6 +43,7 @@ const ModalPrestasi = ({ isOpen, onClose, onSuccess, initialData }) => {
           <InputField
             label="Deskripsi"
             name="deskripsi"
+            placeholder="Contoh: Menjuarai lomba matematika tingkat nasional"
             value={formData.deskripsi}
             onChange={handleChange}
           />
@@ -115,7 +117,14 @@ const ModalPrestasi = ({ isOpen, onClose, onSuccess, initialData }) => {
   );
 };
 
-const InputField = ({ label, name, value, onChange, disabled }) => (
+const InputField = ({
+  label,
+  name,
+  placeholder,
+  value,
+  onChange,
+  disabled,
+}) => (
   <div>
     <label className="block text-sm text-gray-700 dark:text-gray-300">
       {label}
@@ -123,6 +132,7 @@ const InputField = ({ label, name, value, onChange, disabled }) => (
     <input
       type="text"
       name={name}
+      placeholder={placeholder}
       value={value}
       onChange={onChange}
       disabled={disabled}
