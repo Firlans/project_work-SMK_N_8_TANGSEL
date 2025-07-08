@@ -231,7 +231,6 @@ class AbsenController extends Controller
                 return $validationResult;
             }
 
-            $user = JWTAuth::parseToken()->authenticate();
             $kehadiran = Kehadiran::find($id);
 
             if (!$kehadiran) {
@@ -288,7 +287,7 @@ class AbsenController extends Controller
         $validator = Validator::make($data, [
             'id_siswa' => 'required|exists:siswa,id',
             'tanggal' => 'required|date',
-            'status' => 'nullable|in:hadir,izin,sakit,alpha',
+            'status' => 'nullable|in:hadir,izin,sakit,alpha,ojt,ijt',
             'id_pertemuan' => 'required|exists:pertemuan,id',
             'keterangan' => 'nullable|string',
         ]);

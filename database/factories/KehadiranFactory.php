@@ -21,7 +21,7 @@ class KehadiranFactory extends Factory
         return [
             'id_siswa' => Siswa::factory(),
             'tanggal' => $this->faker->dateTimeBetween('-3 months', 'now'),
-            'status' => $this->faker->randomElement(['Hadir', 'Izin', 'Sakit', 'Alfa']),
+            'status' => $this->faker->randomElement(['Hadir', 'Izin', 'Sakit', 'Alfa', "Ojt", "Ijt"]),
             'guru_id' => Guru::factory(),
             'jam' => $this->faker->time(),
             'keterangan' => $this->faker->optional()->sentence()

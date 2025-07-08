@@ -12,7 +12,7 @@ class KehadiranSeeder extends Seeder
     public function run(): void
     {
         $pertemuans = Pertemuan::with('jadwal')->get();
-        $statusKehadiran = ['Hadir', 'Izin', 'Sakit', 'Alfa'];
+        $statusKehadiran = ['Hadir', 'Izin', 'Sakit', 'Alfa', "Ojt", "Ijt"];
 
         foreach ($pertemuans as $pertemuan) {
             // Get the class ID from the related schedule
