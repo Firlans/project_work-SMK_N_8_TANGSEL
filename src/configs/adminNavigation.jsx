@@ -25,8 +25,8 @@ export const adminMenuItems = [
     label: "Jadwal Pelajaran dan Presensi",
     icon: <GrSchedules />,
   },
-  { id: "achievement", label: "Prestasi", icon: <FiAward /> },
-  { id: "violation", label: "Pelanggaran", icon: <MdOutlineReport /> },
+  { id: "achievement", label: "Data Poin Positif", icon: <FiAward /> },
+  { id: "violation", label: "Data Poin Negatif", icon: <MdOutlineReport /> },
 ];
 
 export const adminPageRoutes = {
@@ -44,6 +44,6 @@ export const adminPageRoutes = {
   presensi: (idJadwal, idPertemuan) =>
     `/dashboard-admin/data-jadwal/${idJadwal}/pertemuan/${idPertemuan}/presensi`,
 
-  achievement: "/dashboard-admin/data-prestasi",
-  violation: "/dashboard-admin/data-pelanggaran",
+  achievement: "/dashboard-admin/data-poin-positif",
+  violation: "/dashboard-admin/data-poin-negatif",
 };

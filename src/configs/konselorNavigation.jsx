@@ -3,8 +3,8 @@ import { FaCommentDots, FaUser } from "react-icons/fa6";
 
 export const konselorMenuItems = [
   { id: "profile", label: "Profile", icon: <FaUser /> },
-  { id: "konseling", label: "Chat Konseling", icon: <FaCommentDots /> },
-  { id: "pelaporan", label: "Pelanggaran", icon: <FaExclamationCircle /> },
+  { id: "konseling", label: "Layanan dan Bimbingan Konseling", icon: <FaCommentDots /> },
+  // { id: "pelaporan", label: "Pelanggaran", icon: <FaExclamationCircle /> },
 ];
 
 export const konselorPageRoutes = {
@@ -14,5 +14,5 @@ export const konselorPageRoutes = {
   "konseling-public": "/dashboard-konselor/konseling/public",
   "konseling-private": "/dashboard-konselor/konseling/private",
 
-  pelaporan: "/dashboard-konselor/pelaporan",
+  // pelaporan: "/dashboard-konselor/pelaporan",
 };

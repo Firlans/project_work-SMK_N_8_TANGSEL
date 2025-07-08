@@ -61,9 +61,10 @@ import JadwalGuruPage from "./Pages/guru/jadwalGuruPage";
 import PelaporanGuruPage from "./Pages/guru/pelaporanGuruPage";
 import PertemuanGuruPage from "./Pages/guru/pertemuanGuruPage";
 import PresensiGuruPage from "./Pages/guru/PresensiGuruPage";
+import PrestasiGuruPage from "./Pages/guru/prestasiGuruPage";
 
 // Konselor Pages
-import PelaporanKonselorPage from "./Pages/konselor/pelaporanKonselorPage";
+// import PelaporanKonselorPage from "./Pages/konselor/pelaporanKonselorPage";
 import KonselingPage from "./Pages/konselor/konselingPage";
 import KoselingPuclicPage from "./Pages/konselor/konselingPublicPage";
 import KonselingPrivatePage from "./Pages/konselor/konselingPrivatePage";
@@ -89,9 +90,9 @@ const adminDataRoutes = [
     path: "/dashboard-admin/data-jadwal/:idJadwal/pertemuan/:idPertemuan/presensi",
     element: <DataPresensiPage />,
   },
-  { path: "/dashboard-admin/data-prestasi", element: <DataPrestasiPage /> },
+  { path: "/dashboard-admin/data-poin-positif", element: <DataPrestasiPage /> },
   {
-    path: "/dashboard-admin/data-pelanggaran",
+    path: "/dashboard-admin/data-poin-negatif",
     element: <DataPelanggaranPage />,
   },
 ];
@@ -99,8 +100,8 @@ const adminDataRoutes = [
 const siswaRoutes = [
   { path: "/dashboard-siswa/jadwal-siswa", element: <JadwalSiswaPage /> },
   { path: "/dashboard-siswa/kehadiran", element: <KehadiranSiswaPage /> },
-  { path: "/dashboard-siswa/pelaporan", element: <PelaporanSiswaPage /> },
-  { path: "/dashboard-siswa/prestasi", element: <PrestasiSiswaPage /> },
+  { path: "/dashboard-siswa/poin-negatif", element: <PelaporanSiswaPage /> },
+  { path: "/dashboard-siswa/poin-positif", element: <PrestasiSiswaPage /> },
   { path: "/dashboard-siswa/konseling", element: <KonselingSiswaPage /> },
   {
     path: "/dashboard-siswa/konseling/public",
@@ -130,11 +131,12 @@ const guruRoutes = [
     path: "/dashboard-guru/jadwal-guru/:idJadwal/pertemuan/:idPertemuan/presensi",
     element: <PresensiGuruPage />,
   },
-  { path: "/dashboard-guru/pelaporan", element: <PelaporanGuruPage /> },
+  { path: "/dashboard-guru/poin-negatif", element: <PelaporanGuruPage /> },
+  { path: "/dashboard-guru/poin-positif", element: <PrestasiGuruPage /> },
 ];
 
 const konselorRoutes = [
-  { path: "/dashboard-konselor/pelaporan", element: <PelaporanKonselorPage /> },
+  // { path: "/dashboard-konselor/pelaporan", element: <PelaporanKonselorPage /> },
   { path: "/dashboard-konselor/konseling", element: <KonselingPage /> },
   {
     path: "/dashboard-konselor/konseling/public",
