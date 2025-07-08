@@ -124,6 +124,8 @@ const useFormUser = ({ mode, user, onSuccess, onClose }) => {
 
   const togglePassword = () => setShowPassword((prev) => !prev);
 
+  const isValidNumber = (val) => /^\d{4,}$/.test(val);
+
   const validateForm = () => {
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = "Nama harus diisi";
@@ -138,11 +140,19 @@ const useFormUser = ({ mode, user, onSuccess, onClose }) => {
 
     if (formData.profile === "siswa") {
       if (!formData.data.nisn) newErrors.nisn = "NISN harus diisi";
+      else if (!isValidNumber(formData.data.nisn))
+        newErrors.nisn = "NISN berupa angka dan minimal 4 karakter";
+
       if (!formData.data.nis) newErrors.nis = "NIS harus diisi";
+      else if (!isValidNumber(formData.data.nis))
+        newErrors.nis = "NIS berupa angka dan minimal 4 karakter";
+
       if (!formData.data.semester) newErrors.semester = "Semester harus diisi";
       if (!formData.data.id_kelas) newErrors.id_kelas = "Kelas harus dipilih";
     } else if (formData.profile === "guru") {
       if (!formData.data.nip) newErrors.nip = "NIP harus diisi";
+      else if (!isValidNumber(formData.data.nip))
+        newErrors.nip = "NIP berupa angka dan minimal 4 karakter";
     }
 
     setErrors(newErrors);

@@ -33,12 +33,14 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <InputField
             label="Nama Lengkap"
+            placeholder="Contoh: John Doe"
             value={formData.name}
             onChange={(val) => handleChange("name", val)}
             error={errors.name}
           />
           <InputField
             label="Email"
+            placeholder="Contoh: mail@example.com"
             type="email"
             value={formData.email}
             onChange={(val) => handleChange("email", val)}
@@ -73,7 +75,7 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
               <label className="block font-medium text-gray-700 dark:text-gray-300">
                 Privileges
               </label>
-              {["is_admin", "is_guru", "is_conselor"].map((key) => (
+              {["is_admin", "is_conselor"].map((key) => (
                 <CheckboxField
                   key={key}
                   label={key.replace("is_", "").replace("_", " ")}
@@ -96,12 +98,14 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
               />
               <TextareaField
                 label="Alamat"
+                placeholder="Contoh: 081234567890"
                 value={formData.data.alamat}
                 onChange={(val) => handleDataChange("alamat", val)}
                 error={errors.alamat}
               />
               <InputField
                 label="No. Telepon"
+                placeholder="Contoh: 1234567890"
                 value={formData.data.no_telp}
                 onChange={(val) => handleDataChange("no_telp", val)}
                 error={errors.no_telp}
@@ -118,6 +122,7 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
               {formData.profile === "guru" ? (
                 <InputField
                   label="NIP"
+                  placeholder="Contoh: 1234567890"
                   value={formData.data.nip}
                   onChange={(val) => handleDataChange("nip", val)}
                   error={errors.nip}
@@ -126,18 +131,21 @@ const FormUser = ({ mode, user, onClose, onSuccess }) => {
                 <>
                   <InputField
                     label="NISN"
+                    placeholder="Contoh: 1234567890"
                     value={formData.data.nisn}
                     onChange={(val) => handleDataChange("nisn", val)}
                     error={errors.nisn}
                   />
                   <InputField
                     label="NIS"
+                    placeholder="Contoh: 1234567890"
                     value={formData.data.nis}
                     onChange={(val) => handleDataChange("nis", val)}
                     error={errors.nis}
                   />
                   <InputField
                     label="Semester"
+                    placeholder="Contoh: 1"
                     value={formData.data.semester}
                     onChange={(val) => handleDataChange("semester", val)}
                     error={errors.semester}

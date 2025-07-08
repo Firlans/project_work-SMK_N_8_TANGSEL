@@ -9,6 +9,7 @@ const InputField = ({
   showToggle = false,
   togglePassword,
   mode,
+  placeholder,
 }) => {
   return (
     <div>
@@ -22,6 +23,7 @@ const InputField = ({
         <input
           type={type}
           value={value}
+          placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
           className={`w-full border rounded p-2 pr-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white transition-colors ${
             error ? "border-red-500" : ""
