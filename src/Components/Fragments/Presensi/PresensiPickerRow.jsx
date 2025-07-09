@@ -1,7 +1,7 @@
 import { FaEdit, FaTrash } from "react-icons/fa";
 import Badge from "../../Elements/Badges/Index";
 
-const statusOptions = ["Hadir", "Izin", "Sakit", "Alpha"];
+const statusOptions = ["Hadir", "Izin", "Sakit", "Alpha", "OJT", "IJT"];
 
 const PresensiPickerRow = ({
   idx,

@@ -9,6 +9,8 @@ const Badge = ({ status }) => {
     izin: "bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-400",
     sakit: "bg-blue-100 text-blue-800 dark:bg-blue-800/30 dark:text-blue-400",
     alpha: "bg-red-100 text-red-800 dark:bg-red-800/30 dark:text-red-400",
+    ojt: "bg-green-100 text-green-800 dark:bg-green-800/30 dark:text-green-400",
+    ijt: "bg-green-100 text-green-800 dark:bg-green-800/30 dark:text-green-400",
 
     // Pelanggaran/Prestasi
     pengajuan:
@@ -21,7 +23,9 @@ const Badge = ({ status }) => {
   };
 
   const label =
-    status?.charAt(0).toUpperCase() + status?.slice(1) || "Tidak diketahui";
+    status === "ijt" || status === "ojt"
+      ? status.toUpperCase()
+      : status?.charAt(0).toUpperCase() + status?.slice(1) || "Tidak diketahui";
 
   return (
     <span
