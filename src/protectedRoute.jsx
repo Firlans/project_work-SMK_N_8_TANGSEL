@@ -2,16 +2,33 @@ import { Navigate, Outlet } from "react-router-dom";
 import Cookies from "js-cookie";
 import axiosClient from "./axiosClient";
 import { isTokenExpired } from "./utils/jwt";
+import { useEffect, useState } from "react";
 
 const ProtectedRoute = ({ allowedRoles }) => {
+  const [valid, setValid] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const token = Cookies.get("token");
+      if (!token || isTokenExpired(token)) {
+        setValid(false);
+      }
+    }, 1000); // cek setiap 1 detik
+
+    return () => clearInterval(interval);
+  }, []);
+
   const token = Cookies.get("token");
   const role = Cookies.get("userRole");
   const asSiswa = Cookies.get("as_siswa") === "true";
 
-  if (!token || isTokenExpired(token)) {
+  if (!valid || !token || isTokenExpired(token)) {
     Cookies.remove("token");
     Cookies.remove("userRole");
     Cookies.remove("as_siswa");
+    Cookies.remove("userPrivilege");
+    Cookies.remove("user_id");
+    Cookies.remove("id_siswa");
     return <Navigate to="/unauthorized" replace />;
   }
 
