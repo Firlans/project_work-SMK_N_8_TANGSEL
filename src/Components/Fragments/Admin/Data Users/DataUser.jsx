@@ -199,31 +199,34 @@ const DataUser = () => {
                         </td>
                         <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
                           <div className="flex gap-2 justify-center">
-                            <button
-                              onClick={() => handleDetail(user)}
-                              className="p-1 text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
-                              aria-label="View details"
-                            >
-                              <FaEye className="w-4 h-4" />
-                            </button>
+                            {(isSuperAdmin() || isAdminOnly()) && (
+                              <button
+                                onClick={() => handleDetail(user)}
+                                className="p-1 text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+                                aria-label="View details"
+                              >
+                                <FaEye className="w-4 h-4" />
+                              </button>
+                            )}
 
                             {isAdminOnly() && (
-                              <>
-                                <button
-                                  onClick={() => handleEdit(user)}
-                                  className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
-                                  aria-label="Edit user"
-                                >
-                                  <FaEdit className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleDelete(user.id)}
-                                  className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
-                                  aria-label="Delete user"
-                                >
-                                  <FaTrash className="w-4 h-4" />
-                                </button>
-                              </>
+                              <button
+                                onClick={() => handleEdit(user)}
+                                className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
+                                aria-label="Edit user"
+                              >
+                                <FaEdit className="w-4 h-4" />
+                              </button>
+                            )}
+                            
+                            {isSuperAdmin() && (
+                              <button
+                                onClick={() => handleDelete(user.id)}
+                                className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+                                aria-label="Delete user"
+                              >
+                                <FaTrash className="w-4 h-4" />
+                              </button>
                             )}
                           </div>
                         </td>
