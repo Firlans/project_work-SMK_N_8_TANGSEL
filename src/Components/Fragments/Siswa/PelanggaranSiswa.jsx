@@ -9,8 +9,17 @@ import { formatTanggal } from "../../../utils/dateFormatter";
 import useReadOnlyRole from "../../../hooks/useReadOnlyRole";
 import ImagePreview from "../../Elements/Image Pop Up/ImagePreview";
 
-const getBuktiPelanggaranURL = (filename) =>
-  axiosClient.defaults.baseURL + "/images/pelanggaran/" + filename;
+const getBuktiPelanggaranURL = async (filename) => {
+  try {
+    const response = await axiosClient.get(`/images/pelanggaran/${filename}`, {
+      responseType: "blob",
+    });
+    return URL.createObjectURL(response.data);
+  } catch (error) {
+    console.error("Gagal mengambil gambar:", error);
+    return null;
+  }
+};
 
 const PelanggaranSiswa = () => {
   const [dataPelapor, setDataPelapor] = useState([]);
@@ -179,12 +188,13 @@ const PelanggaranSiswa = () => {
                         <td className="px-6 py-4">
                           {item.nama_foto ? (
                             <button
-                              onClick={() =>
-                                setPreviewImage(
-                                  getBuktiPelanggaranURL(item.nama_foto)
-                                )
-                              }
-                              className="text-blue-600 dark:text-blue-400 hover:underline transition"
+                              onClick={async () => {
+                                const imageUrl = await getBuktiPelanggaranURL(
+                                  item.nama_foto
+                                );
+                                if (imageUrl) setPreviewImage(imageUrl);
+                              }}
+                              className="text-blue-600 hover:underline dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-300"
                             >
                               <FaEye />
                             </button>
@@ -253,12 +263,13 @@ const PelanggaranSiswa = () => {
                         <td className="px-6 py-4">
                           {item.nama_foto ? (
                             <button
-                              onClick={() =>
-                                setPreviewImage(
-                                  getBuktiPelanggaranURL(item.nama_foto)
-                                )
-                              }
-                              className="text-blue-600 dark:text-blue-400 hover:underline transition"
+                              onClick={async () => {
+                                const imageUrl = await getBuktiPelanggaranURL(
+                                  item.nama_foto
+                                );
+                                if (imageUrl) setPreviewImage(imageUrl);
+                              }}
+                              className="text-blue-600 hover:underline dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-300"
                             >
                               <FaEye />
                             </button>

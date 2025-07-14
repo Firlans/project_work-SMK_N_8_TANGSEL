@@ -8,8 +8,17 @@ import ImagePreview from "../../Elements/Image Pop Up/ImagePreview";
 import useReadOnlyRole from "../../../hooks/useReadOnlyRole";
 import Cookies from "js-cookie";
 
-const getBuktiPrestasiURL = (filename) =>
-  axiosClient.defaults.baseURL + "/images/prestasi/" + filename;
+const getBuktiPrestasiURL = async (filename) => {
+  try {
+    const response = await axiosClient.get(`/images/prestasi/${filename}`, {
+      responseType: "blob",
+    });
+    return URL.createObjectURL(response.data);
+  } catch (error) {
+    console.error("Gagal mengambil gambar:", error);
+    return null;
+  }
+};
 
 const PrestasiSiswa = () => {
   const [loading, setLoading] = useState(true);
@@ -132,9 +141,12 @@ const PrestasiSiswa = () => {
                     <td className="px-6 py-4">
                       {item.nama_foto ? (
                         <button
-                          onClick={() =>
-                            setPreviewImage(getBuktiPrestasiURL(item.nama_foto))
-                          }
+                          onClick={async () => {
+                            const imageUrl = await getBuktiPrestasiURL(
+                              item.nama_foto
+                            );
+                            if (imageUrl) setPreviewImage(imageUrl);
+                          }}
                           className="text-blue-600 hover:underline dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-300"
                         >
                           <FaEye />
