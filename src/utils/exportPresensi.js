@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { capitalizeEachWord } from "./capitalizeEachWord";
 
 export async function exportPresensiPDF({
   axiosClient,
@@ -48,7 +49,7 @@ export async function exportPresensiPDF({
     doc.text("REKAP PRESENSI SISWA", 140, 35, { align: "center" });
     doc.setFont("helvetica", "normal");
     doc.text(`KELAS: ${info.namaKelas}`, 140, 42, { align: "center" });
-    doc.text(`MATA PELAJARAN: ${info.namaMapel}`, 140, 49, { align: "center" });
+    doc.text(`MATA PELAJARAN: ${capitalizeEachWord(info.namaMapel)}`, 140, 49, { align: "center" });
 
     const headRow = [
       "No",

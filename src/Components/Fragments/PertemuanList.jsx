@@ -10,6 +10,7 @@ import FormPertemuan from "./Admin/Data Jadwal/FormPertemuan";
 import { exportPresensiPDF } from "../../utils/exportPresensi";
 import ExportLoadingModal from "../Elements/Loading/ExportLoadingModal";
 import { PiExportBold } from "react-icons/pi";
+import { capitalizeEachWord } from "../../utils/capitalizeEachWord";
 
 const PertemuanList = () => {
   const { idJadwal } = useParams();
@@ -126,7 +127,7 @@ const PertemuanList = () => {
             Daftar Pertemuan
           </h3>
           <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
-            Mata Pelajaran: <strong>{info.namaMapel}</strong> | Kelas:{" "}
+            Mata Pelajaran: <strong>{capitalizeEachWord(info.namaMapel)}</strong> | Kelas:{" "}
             <strong>{info.namaKelas}</strong>
           </p>
         </div>

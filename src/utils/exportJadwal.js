@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { capitalizeEachWord } from "./capitalizeEachWord";
 
 export function exportJadwalPDF({
   profile,
@@ -52,7 +53,7 @@ export function exportJadwalPDF({
     autoTable(doc, {
       startY: currentY,
       head: [tableHeaders],
-      body: rows.map((r) => [r.waktu, r.mapel, r.guru]), // tetap pakai .guru karena di JadwalGuru lo spoof
+      body: rows.map((r) => [r.waktu, capitalizeEachWord(r.mapel), r.guru]),
       styles: { fontSize: 9, cellPadding: 3, valign: "middle" },
       headStyles: {
         fillColor: [200, 200, 200],

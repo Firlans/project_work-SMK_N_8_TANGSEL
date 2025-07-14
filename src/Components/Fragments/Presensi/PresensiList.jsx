@@ -3,6 +3,7 @@ import usePresensiPicker from "./usePresensiPicker";
 import PresensiPickerTable from "./PresensiPickerTable";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 import { IoChevronBackSharp } from "react-icons/io5";
+import { capitalizeEachWord } from "../../../utils/capitalizeEachWord";
 
 const PresensiList = () => {
   const { idJadwal, idPertemuan } = useParams();
@@ -44,7 +45,7 @@ const PresensiList = () => {
               Presensi Siswa
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-              Mapel: <strong>{namaMapel || "-"}</strong> | Kelas:{" "}
+              Mapel: <strong>{capitalizeEachWord(namaMapel || "-")}</strong> | Kelas:{" "}
               <strong>{namaKelas || "-"}</strong> | Pertemuan:{" "}
               <strong>{namaPertemuan || "-"}</strong>
             </p>

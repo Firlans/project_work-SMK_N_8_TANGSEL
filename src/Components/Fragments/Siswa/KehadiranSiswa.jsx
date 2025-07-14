@@ -3,6 +3,7 @@ import axiosClient from "../../../axiosClient";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 import { formatTanggal } from "../../../utils/dateFormatter";
 import Badge from "../../Elements/Badges/Index";
+import { capitalizeEachWord } from "../../../utils/capitalizeEachWord";
 
 const PresensiSiswa = () => {
   const [presensi, setPresensi] = useState([]);
@@ -98,7 +99,7 @@ const PresensiSiswa = () => {
                 <option value="">Semua Mata Pelajaran</option>
                 {mataPelajaranList.map((mapel) => (
                   <option key={mapel.id} value={mapel.id}>
-                    {mapel.nama}
+                    {capitalizeEachWord(mapel.nama)}
                   </option>
                 ))}
               </select>
@@ -130,18 +131,31 @@ const PresensiSiswa = () => {
                   {filteredPresensi.length > 0 ? (
                     filteredPresensi.map((item) => {
                       const jadwal = jadwalMap[item.id_jadwal];
-                      const namaMapel =
-                        mapelMap[jadwal?.id_mata_pelajaran] ||
-                        "Tidak ditemukan";
+                      const isJadwalLama = !jadwal;
+
+                      const namaMapel = isJadwalLama
+                        ? "Mata pelajaran tidak ditemukan"
+                        : mapelMap[jadwal.id_mata_pelajaran] ||
+                          "Tidak diketahui";
+
                       const status = item.status?.toLowerCase();
 
                       return (
                         <tr
                           key={item.id}
-                          className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                          className={`hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
+                            isJadwalLama
+                              ? "bg-yellow-50 dark:bg-yellow-900"
+                              : ""
+                          }`}
                         >
                           <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
-                            {namaMapel}
+                            {capitalizeEachWord(namaMapel)}
+                            {isJadwalLama && (
+                              <span className="text-red-500 text-xs ml-2">
+                                (jadwal lama)
+                              </span>
+                            )}
                           </td>
                           <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-800 dark:text-gray-100 whitespace-nowrap transition-colors">
                             {formatTanggal(item.tanggal)}
@@ -150,9 +164,8 @@ const PresensiSiswa = () => {
                             {item.nama_pertemuan}
                           </td>
                           <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
-                            <Badge status={item.status?.toLowerCase()} />
+                            <Badge status={status} />
                           </td>
-
                           <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors">
                             {item.keterangan || "-"}
                           </td>

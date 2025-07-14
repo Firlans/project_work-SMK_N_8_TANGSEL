@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axiosClient from "../../../../axiosClient";
 import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
+import { capitalizeEachWord } from "../../../../utils/capitalizeEachWord";
 
 const FormJadwal = ({
   isOpen,
@@ -244,7 +245,7 @@ const FormJadwal = ({
               <option value="">Pilih Mata Pelajaran</option>
               {mapel.map((m) => (
                 <option key={m.id} value={m.id}>
-                  {m.nama_pelajaran}
+                  {capitalizeEachWord(m.nama_pelajaran)}
                 </option>
               ))}
             </select>

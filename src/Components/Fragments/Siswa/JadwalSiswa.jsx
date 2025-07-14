@@ -4,6 +4,7 @@ import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 import { exportJadwalPDF } from "../../../utils/exportJadwal";
 import ExportLoadingModal from "../../Elements/Loading/ExportLoadingModal";
 import { PiExportBold } from "react-icons/pi";
+import { capitalizeEachWord } from "../../../utils/capitalizeEachWord";
 
 const hariMap = {
   1: "Senin",
@@ -175,7 +176,7 @@ const JadwalSiswa = () => {
                             {row.waktu}
                           </td>
                           <td className="w-2/5 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 dark:text-gray-100 truncate transition-colors duration-300 ease-in-out">
-                            {row.mapel}
+                            {capitalizeEachWord(row.mapel)}
                           </td>
                           <td className="w-1/3 px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 dark:text-gray-100 truncate transition-colors duration-300 ease-in-out">
                             {row.guru}

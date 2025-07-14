@@ -1,3 +1,4 @@
+import { capitalizeEachWord } from "../../../../utils/capitalizeEachWord";
 import { formatTanggal } from "../../../../utils/dateFormatter";
 
 const DetailGuru = ({ isOpen, onClose, guru }) => {
@@ -66,7 +67,7 @@ const DetailGuru = ({ isOpen, onClose, guru }) => {
               Mata Pelajaran
             </label>
             <p className="px-3 py-2 w-full rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 transition-all duration-300">
-              {guru.nama_pelajaran?.join(", ") || "-"}
+              {capitalizeEachWord(guru.nama_pelajaran?.join(", ") || "-")}
             </p>
           </div>
         </div>

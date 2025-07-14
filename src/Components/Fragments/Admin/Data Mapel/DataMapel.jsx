@@ -5,6 +5,7 @@ import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import EditMapel from "./EditMapel";
 import Cookies from "js-cookie";
+import { capitalizeEachWord } from "../../../../utils/capitalizeEachWord";
 
 const DataMapel = () => {
   const [mapel, setMapel] = useState([]);
@@ -64,14 +65,6 @@ const DataMapel = () => {
     } catch (err) {
       setError(true);
     }
-  };
-
-  const capitalizeEachWord = (text) => {
-    return text
-      .toLowerCase()
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
   };
 
   const requestSort = (key) => {

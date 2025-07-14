@@ -6,6 +6,7 @@ import { exportJadwalPDF } from "../../../utils/exportJadwal";
 import ExportLoadingModal from "../../Elements/Loading/ExportLoadingModal";
 import { PiExportBold } from "react-icons/pi";
 import { FaEye } from "react-icons/fa";
+import { capitalizeEachWord } from "../../../utils/capitalizeEachWord";
 
 const hariMap = {
   1: "Senin",
@@ -235,7 +236,7 @@ const JadwalGuru = () => {
                           {row.kelas}
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                          {row.mapel}
+                          {capitalizeEachWord(row.mapel)}
                         </td>
                         <td className="px-4 py-3 text-center">
                           <button

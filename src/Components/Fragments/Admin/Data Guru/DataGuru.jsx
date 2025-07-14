@@ -5,6 +5,7 @@ import EditGuru from "./EditGuru";
 import DetailGuru from "./DetailGuru";
 import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 import Cookies from "js-cookie";
+import { capitalizeEachWord } from "../../../../utils/capitalizeEachWord";
 
 const DataGuru = () => {
   const [teachers, setTeachers] = useState([]);
@@ -220,7 +221,7 @@ const DataGuru = () => {
                       {teacher.nama}
                     </td>
                     <td className="px-3 py-2 text-gray-800 dark:text-gray-100">
-                      {teacher.nama_pelajaran?.join(", ") || "-"}
+                      {capitalizeEachWord(teacher.nama_pelajaran?.join(", ") || "-")}
                     </td>
                     <td className="px-3 py-2 text-center">
                       <div className="flex gap-2 justify-center">

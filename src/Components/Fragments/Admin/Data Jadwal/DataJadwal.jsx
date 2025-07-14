@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import autoTable from "jspdf-autotable";
 import jsPDF from "jspdf";
 import { PiExportBold } from "react-icons/pi";
+import { capitalizeEachWord } from "../../../../utils/capitalizeEachWord";
 
 const DataJadwal = () => {
   const [jadwal, setJadwal] = useState([]);
@@ -433,7 +434,7 @@ const DataJadwal = () => {
                 <div className="grid grid-cols-1 xs:grid-cols-2 gap-1 sm:gap-2 text-gray-700 dark:text-gray-200">
                   {mapel.map((m, i) => (
                     <div key={m.id} className="text-xs sm:text-sm">
-                      M{i + 1}: {m.nama_pelajaran}
+                      M{i + 1}: {capitalizeEachWord(m.nama_pelajaran)}
                     </div>
                   ))}
                 </div>
