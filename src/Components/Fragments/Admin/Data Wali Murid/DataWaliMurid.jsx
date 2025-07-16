@@ -158,82 +158,110 @@ const DataWaliMurid = () => {
           </div>
 
           {/* Table Container */}
-          <div className="relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 transition-colors duration-300">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left text-gray-700 dark:text-gray-100 transition-colors duration-300">
-                <thead className="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors duration-300">
+
+          <div className="-mx-4 sm:mx-0 overflow-x-auto">
+            <div className="inline-block min-w-full align-middle">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
+                <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
                   <tr>
-                    <th className="px-4 py-3 font-medium">No.</th>
+                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
+                      No.
+                    </th>
                     <th
-                      className="px-4 py-3 font-medium cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300"
+                      className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors cursor-pointer select-none"
                       onClick={() => handleSort("nama_lengkap")}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-center gap-2">
+                        {" "}
+                        {/* Mengatur teks dan ikon di tengah */}
                         Nama Wali
                         {sortBy === "nama_lengkap" && (
                           <span>{sortOrder === "asc" ? "↑" : "↓"}</span>
                         )}
                       </div>
                     </th>
-                    <th className="px-4 py-3 font-medium">Nama Siswa</th>
-                    <th className="px-4 py-3 font-medium">Status</th>
-                    <th className="px-4 py-3 font-medium">No Telp</th>
-                    <th className="px-4 py-3 font-medium">Email</th>
-                    <th className="px-4 py-3 font-medium">Alamat</th>
-                    <th className="px-4 py-3 font-medium text-center">Aksi</th>
+                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
+                      Nama Siswa
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
+                      Status
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
+                      No Telp
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
+                      Email
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
+                      Alamat
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
+                      Aksi
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
-                  {paginatedData.map((wali, index) => (
-                    <tr
-                      key={wali.id}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
-                    >
-                      <td className="px-4 py-3 text-center">
-                        {(currentPage - 1) * perPage + index + 1}
-                      </td>
-                      <td className="px-4 py-3 font-medium">
-                        {wali.nama_lengkap}
-                      </td>
-                      <td className="px-4 py-3">
-                        {getNamaSiswa(wali.id_siswa)}
-                      </td>
-                      <td className="px-4 py-3 capitalize">{wali.status}</td>
-                      <td className="px-4 py-3">{wali.no_telp}</td>
-                      <td className="px-4 py-3">{wali.email}</td>
-                      <td className="px-4 py-3">{wali.alamat}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-center gap-3">
-                          {isAdminOnly() && (
-                            <>
-                              <button
-                                onClick={() => {
-                                  setEditingWali(wali);
-                                  setModalOpen(true);
-                                }}
-                                className="p-1.5 rounded-lg text-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-900 transition-colors duration-300"
-                              >
-                                <FaEdit className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(wali.id)}
-                                className="p-1.5 rounded-lg text-red-500 hover:bg-red-100 dark:hover:bg-red-900 transition-colors duration-300"
-                              >
-                                <FaTrash className="w-4 h-4" />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                  {paginatedData.length === 0 && (
+                <tbody className="divide-y text-xs sm:text-sm divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
+                  {paginatedData.length > 0 ? (
+                    paginatedData.map((wali, index) => (
+                      <tr
+                        key={wali.id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
+                      >
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 text-center whitespace-nowrap text-gray-800 dark:text-gray-100 transition-colors duration-300">
+                          {(currentPage - 1) * perPage + index + 1}
+                        </td>
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-gray-800 dark:text-gray-100 transition-colors duration-300 font-medium">
+                          {wali.nama_lengkap}
+                        </td>
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-gray-800 dark:text-gray-100 transition-colors duration-300">
+                          {getNamaSiswa(wali.id_siswa)}
+                        </td>
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 capitalize whitespace-nowrap text-gray-800 dark:text-gray-100 transition-colors duration-300">
+                          {wali.status}
+                        </td>
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-gray-800 dark:text-gray-100 transition-colors duration-300">
+                          {wali.no_telp}
+                        </td>
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-gray-800 dark:text-gray-100 transition-colors duration-300">
+                          {wali.email}
+                        </td>
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-gray-800 dark:text-gray-100 transition-colors duration-300">
+                          {wali.alamat}
+                        </td>
+                        <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
+                          <div className="flex gap-2 justify-center">
+                            {isAdminOnly() && (
+                              <>
+                                <button
+                                  onClick={() => {
+                                    setEditingWali(wali);
+                                    setModalOpen(true);
+                                  }}
+                                  className="p-1.5 rounded-lg text-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-900 transition-colors duration-300"
+                                  title="Edit Wali"
+                                >
+                                  <FaEdit className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(wali.id)}
+                                  className="p-1.5 rounded-lg text-red-500 hover:bg-red-100 dark:hover:bg-red-900 transition-colors duration-300"
+                                  title="Hapus Wali"
+                                >
+                                  <FaTrash className="w-4 h-4" />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
                     <tr>
                       <td
-                        colSpan="8"
-                        className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
+                        colSpan={8}
+                        className="px-3 sm:px-6 py-4 text-center text-gray-500 dark:text-gray-400 italic transition-colors duration-300"
                       >
-                        Tidak ada data Orang Tua/Wali Murid.
+                        Tidak ada data Orang Tua/Wali Murid yang ditemukan.
                       </td>
                     </tr>
                   )}

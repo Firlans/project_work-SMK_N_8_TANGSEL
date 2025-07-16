@@ -141,13 +141,6 @@ const DataKonselor = () => {
                           >
                             <FaEye className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => handleEdit(teacher)}
-                            className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
-                            aria-label="Edit konselor"
-                          >
-                            <FaEdit className="w-4 h-4" />
-                          </button>
                         </div>
                       </td>
                     </tr>

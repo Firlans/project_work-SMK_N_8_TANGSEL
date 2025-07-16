@@ -78,62 +78,68 @@ const DataAdmin = () => {
         <div className="w-64" />
       </div>
 
-      <div className="overflow-x-auto">
-        {isLoading ? (
-          <LoadingSpinner />
-        ) : (
-          <table className="w-full transition-all duration-300">
-            <thead>
-              <tr className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 transition-colors duration-300">
-                  Nama Admin
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 transition-colors duration-300">
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
-              {admin.length > 0 ? (
-                admin.map((a) => (
-                  <tr
-                    key={a.id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-800 dark:text-gray-100 transition-colors duration-300">
-                      {a.nama}
-                    </td>
-                    <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
-                      <div className="p-1 flex gap-2 justify-center">
-                        <button
-                          onClick={() => handleDetail(a)}
-                          className="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
-                        >
-                          <FaEye />
-                        </button>
-                        <button
-                          onClick={() => handleEdit(a)}
-                          className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
-                        >
-                          <FaEdit />
-                        </button>
-                      </div>
+      <div className="-mx-4 sm:mx-0 overflow-x-auto">
+        <div className="inline-block min-w-full align-middle">
+          {isLoading ? (
+            <LoadingSpinner />
+          ) : (
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
+              <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
+                <tr>
+                  <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
+                    Nama Admin
+                  </th>
+                  <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
+                    Aksi
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
+                {admin.length > 0 ? (
+                  admin.map((a) => (
+                    <tr
+                      key={a.id}
+                      className="text-xs sm:text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
+                    >
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-800 dark:text-gray-100 transition-colors duration-300">
+                        {a.nama}
+                      </td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() => handleDetail(a)}
+                            className="p-1 text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-300"
+                            title="Lihat Detail"
+                          >
+                            <FaEye className="w-4 h-4" />{" "}
+                            {/* Menambahkan ukuran ikon */}
+                          </button>
+                          <button
+                            onClick={() => handleEdit(a)}
+                            className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors duration-300"
+                            title="Edit"
+                          >
+                            <FaEdit className="w-4 h-4" />{" "}
+                            {/* Menambahkan ukuran ikon */}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={2}
+                      className="px-3 sm:px-6 py-4 text-center text-gray-500 dark:text-gray-400 italic transition-colors duration-300"
+                    >
+                      Tidak ada data admin yang ditemukan.
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan="2"
-                    className="px-6 py-4 text-center text-gray-500 dark:text-gray-300 transition-colors"
-                  >
-                    Tidak ada Data Admin.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
 
       {/* Add Modal Component */}

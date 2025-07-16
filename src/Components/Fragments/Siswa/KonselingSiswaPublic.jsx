@@ -8,8 +8,7 @@ import { IoChevronBackSharp } from "react-icons/io5";
 
 const KonselingSiswaPublic = () => {
   const navigate = useNavigate();
-  const privilege = JSON.parse(Cookies.get("userPrivilege") || "{}");
-  const idSiswa = privilege?.user_id || privilege?.id;
+  const idSiswa = JSON.parse(Cookies.get("user_id") || "{}");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editRoom, setEditRoom] = useState(null);

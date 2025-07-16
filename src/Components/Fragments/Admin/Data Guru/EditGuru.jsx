@@ -10,6 +10,7 @@ const EditGuru = ({ isOpen, onClose, guru, subjects, onSubmit }) => {
     alamat: "",
     no_telp: "",
   });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (guru) {
@@ -22,6 +23,7 @@ const EditGuru = ({ isOpen, onClose, guru, subjects, onSubmit }) => {
         alamat: guru.alamat,
         no_telp: guru.no_telp,
       });
+      setErrors({});
     }
   }, [guru]);
 
@@ -31,11 +33,40 @@ const EditGuru = ({ isOpen, onClose, guru, subjects, onSubmit }) => {
       ...prev,
       [name]: value,
     }));
+    // Hapus error spesifik saat user mulai mengetik lagi
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const validateForm = () => {
+    let newErrors = {};
+
+    // 1. Validasi NIP: Hanya angka dan minimal 4 angka
+    if (!/^\d+$/.test(formData.nip)) {
+      newErrors.nip = "NIP hanya boleh berisi angka.";
+    } else if (formData.nip.length < 4) {
+      newErrors.nip = "NIP minimal 4 angka.";
+    }
+
+    // 2. Validasi No. Telepon: Hanya angka
+    if (!/^\d+$/.test(formData.no_telp)) {
+      newErrors.no_telp = "Nomor Telepon hanya boleh berisi angka.";
+    }
+
+    setErrors(newErrors);
+    // Mengembalikan true jika tidak ada error, false jika ada error
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    if (validateForm()) {
+      onSubmit(formData);
+    } else {
+      // Jika ada error, tampilkan alert umum atau biarkan pesan error di bawah input
+      alert("Mohon periksa kembali data Anda. Ada kesalahan input.");
+    }
   };
 
   if (!isOpen) return null;
@@ -66,8 +97,13 @@ const EditGuru = ({ isOpen, onClose, guru, subjects, onSubmit }) => {
                 value={formData.nip}
                 onChange={handleChange}
                 required
-                className="block w-full rounded-md border border-gray-200 dark:border-gray-700 px-3 py-2 pr-10 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 transition-all duration-300"
+                className={`block w-full rounded-md border px-3 py-2 pr-10 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 transition-all duration-300 ${
+                  errors.nip ? "border-red-500" : "border-gray-200 dark:border-gray-700"
+                }`}
               />
+              {errors.nip && (
+                <p className="text-red-500 text-xs mt-1">{errors.nip}</p>
+              )}
             </div>
           </div>
 
@@ -130,8 +166,13 @@ const EditGuru = ({ isOpen, onClose, guru, subjects, onSubmit }) => {
               value={formData.no_telp}
               onChange={handleChange}
               required
-              className="block w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 transition-colors duration-300"
+              className={`block w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 transition-colors duration-300 ${
+                errors.no_telp ? "border-red-500" : "border-gray-300 dark:border-gray-700"
+              }`}
             />
+            {errors.no_telp && (
+              <p className="text-red-500 text-xs mt-1">{errors.no_telp}</p>
+            )}
           </div>
 
           {/* Alamat */}

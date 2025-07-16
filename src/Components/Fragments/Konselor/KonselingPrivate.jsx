@@ -7,9 +7,7 @@ import { IoChevronBackSharp } from "react-icons/io5";
 
 const KonselingPrivate = () => {
   const navigate = useNavigate();
-  const privilege = JSON.parse(Cookies.get("userPrivilege") || "{}");
-  const idConselor = privilege?.user_id || privilege?.id;
-
+  const idConselor = JSON.parse(Cookies.get("user_id") || "{}");
   const [showEditModal, setShowEditModal] = useState(false);
   const [editRoom, setEditRoom] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);

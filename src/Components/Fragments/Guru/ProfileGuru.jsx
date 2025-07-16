@@ -24,6 +24,13 @@ const ProfileGuru = () => {
       try {
         const response = await axiosClient.get("/profile");
         setProfileData(response.data);
+        const profile = response.data.data;
+        if (profile?.user_id) {
+          Cookies.set("user_id", profile.user_id, { path: "/" });
+        }
+        if (profile?.id) {
+          Cookies.set("id_guru", profile.id, { path: "/" });
+        }
         setLoading(false);
       } catch (error) {
         if (

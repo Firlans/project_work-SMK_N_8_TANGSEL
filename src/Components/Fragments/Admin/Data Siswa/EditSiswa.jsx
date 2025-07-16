@@ -14,6 +14,8 @@ const EditSiswa = ({ isOpen, onClose, siswa, kelas, onSubmit }) => {
     semester: "",
     id_kelas: "",
   });
+  // State untuk menyimpan pesan error
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (siswa) {
@@ -31,6 +33,7 @@ const EditSiswa = ({ isOpen, onClose, siswa, kelas, onSubmit }) => {
         id_kelas: siswa.id_kelas,
       };
       setFormData(formValues);
+      setErrors({}); // Reset errors saat siswa berubah
     }
   }, [siswa]);
 
@@ -40,11 +43,51 @@ const EditSiswa = ({ isOpen, onClose, siswa, kelas, onSubmit }) => {
       ...prev,
       [name]: value,
     }));
+    // Hapus error spesifik saat user mulai mengetik lagi
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const validateForm = () => {
+    let newErrors = {};
+    const numericRegex = /^\d+$/; // Regex untuk hanya angka
+    const minLength = 4; // Minimal 4 angka
+
+    // Validasi NISN
+    if (!numericRegex.test(formData.nisn)) {
+      newErrors.nisn = "NISN hanya boleh berisi angka.";
+    } else if (formData.nisn.length < minLength) {
+      newErrors.nisn = `NISN minimal ${minLength} angka.`;
+    }
+
+    // Validasi NIS
+    if (!numericRegex.test(formData.nis)) {
+      newErrors.nis = "NIS hanya boleh berisi angka.";
+    } else if (formData.nis.length < minLength) {
+      newErrors.nis = `NIS minimal ${minLength} angka.`;
+    }
+
+    // Validasi No. Telepon
+    if (!numericRegex.test(formData.no_telp)) {
+      newErrors.no_telp = "Nomor Telepon hanya boleh berisi angka.";
+    } else if (formData.no_telp.length < minLength) {
+      newErrors.no_telp = `Nomor Telepon minimal ${minLength} angka.`;
+    }
+
+    setErrors(newErrors);
+    // Mengembalikan true jika tidak ada error, false jika ada error
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    if (validateForm()) {
+      onSubmit(formData);
+    } else {
+      // Jika ada error, tampilkan alert umum
+      alert("Mohon periksa kembali data Anda. Ada kesalahan input.");
+    }
   };
 
   if (!isOpen) return null;
@@ -76,8 +119,15 @@ const EditSiswa = ({ isOpen, onClose, siswa, kelas, onSubmit }) => {
                   value={formData[field]}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full rounded-md border border-gray-200 dark:border-gray-700 px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 transition-all duration-300"
+                  className={`mt-1 block w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 transition-all duration-300 ${
+                    errors[field]
+                      ? "border-red-500"
+                      : "border-gray-200 dark:border-gray-700"
+                  }`}
                 />
+                {errors[field] && (
+                  <p className="text-red-500 text-xs mt-1">{errors[field]}</p>
+                )}
               </div>
             </div>
           ))}
@@ -157,8 +207,15 @@ const EditSiswa = ({ isOpen, onClose, siswa, kelas, onSubmit }) => {
               value={formData.no_telp}
               onChange={handleChange}
               required
-              className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 transition-all"
+              className={`mt-1 block w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 transition-all ${
+                errors.no_telp
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-700"
+              }`}
             />
+            {errors.no_telp && (
+              <p className="text-red-500 text-xs mt-1">{errors.no_telp}</p>
+            )}
           </div>
 
           {/* Semester */}

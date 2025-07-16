@@ -84,18 +84,6 @@ const DataGuru = () => {
     setTimeout(() => setMessage({ text: "", type: "" }), 3000);
   };
 
-  const handleDelete = async (guru) => {
-    if (!window.confirm("Yakin hapus guru ini?")) return;
-    try {
-      await axiosClient.delete(`/guru/${guru.id}`);
-      fetchData();
-      setMessage({ text: "Data berhasil dihapus!", type: "success" });
-    } catch (error) {
-      setMessage({ text: "Gagal menghapus data!", type: "error" });
-    }
-    setTimeout(() => setMessage({ text: "", type: "" }), 3000);
-  };
-
   const handleSort = (field) => {
     if (sortField === field) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -183,90 +171,102 @@ const DataGuru = () => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        {isLoading ? (
-          <LoadingSpinner />
-        ) : (
-          <table className="min-w-full text-sm">
-            <thead className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors duration-300">
-              <tr>
-                <th
-                  className="px-3 py-2 text-left cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
-                  onClick={() => handleSort("nip")}
-                >
-                  NIP {sortField === "nip" && (sortOrder === "asc" ? "↑" : "↓")}
-                </th>
-                <th
-                  className="px-3 py-2 text-left cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
-                  onClick={() => handleSort("nama")}
-                >
-                  Nama Guru{" "}
-                  {sortField === "nama" && (sortOrder === "asc" ? "↑" : "↓")}
-                </th>
-                <th className="px-3 py-2 text-left">Mata Pelajaran</th>
-                <th className="px-3 py-2 text-center">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedTeachers.length > 0 ? (
-                paginatedTeachers.map((teacher) => (
-                  <tr
-                    key={teacher.id}
-                    className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
+      <div className="-mx-4 sm:mx-0 overflow-x-auto">
+        <div className="inline-block min-w-full align-middle">
+          {isLoading ? (
+            <LoadingSpinner />
+          ) : (
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
+              <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
+                <tr>
+                  <th
+                    className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors cursor-pointer select-none"
+                    onClick={() => handleSort("nip")}
                   >
-                    <td className="px-3 py-2 text-gray-800 dark:text-gray-100">
-                      {teacher.nip}
-                    </td>
-                    <td className="px-3 py-2 text-gray-800 dark:text-gray-100">
-                      {teacher.nama}
-                    </td>
-                    <td className="px-3 py-2 text-gray-800 dark:text-gray-100">
-                      {capitalizeEachWord(teacher.nama_pelajaran?.join(", ") || "-")}
-                    </td>
-                    <td className="px-3 py-2 text-center">
-                      <div className="flex gap-2 justify-center">
-                        <button
-                          onClick={() => handleDetail(teacher)}
-                          className="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-300"
-                          title="Lihat Detail"
-                        >
-                          <FaEye />
-                        </button>
-                        {!isSuperAdmin() && (
-                          <>
-                            <button
-                              onClick={() => handleEdit(teacher)}
-                              className="text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors duration-300"
-                              title="Edit"
-                            >
-                              <FaEdit />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(teacher)}
-                              className="text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors duration-300"
-                              title="Hapus"
-                            >
-                              <FaTrash />
-                            </button>
-                          </>
+                    NIP{" "}
+                    {sortField === "nip" && (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                  <th
+                    className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors cursor-pointer select-none"
+                    onClick={() => handleSort("nama")}
+                  >
+                    Nama Guru{" "}
+                    {sortField === "nama" && (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                  <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
+                    Mata Pelajaran
+                  </th>
+                  <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
+                    Aksi
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
+                {paginatedTeachers.length > 0 ? (
+                  paginatedTeachers.map((teacher) => (
+                    <tr
+                      key={teacher.id}
+                      className="hover:bg-gray-50 text-xs sm:text-sm dark:hover:bg-gray-800 transition-colors duration-300" // Kelas border-b dihilangkan karena divide-y pada tbody sudah cukup
+                    >
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100 whitespace-nowrap">
+                        {teacher.nip}
+                      </td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100 whitespace-nowrap">
+                        {teacher.nama}
+                      </td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-800 dark:text-gray-100 whitespace-nowrap">
+                        {capitalizeEachWord(
+                          teacher.nama_pelajaran?.join(", ") || "-"
                         )}
-                      </div>
+                      </td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() => handleDetail(teacher)}
+                            className="p-1 text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-300"
+                            title="Lihat Detail"
+                          >
+                            <FaEye className="w-4 h-4" />{" "}
+                            {/* Menambahkan ukuran ikon */}
+                          </button>
+                          {!isSuperAdmin() && ( // Asumsi hanya admin biasa yang bisa edit/hapus
+                            <>
+                              <button
+                                onClick={() => handleEdit(teacher)}
+                                className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors duration-300"
+                                title="Edit"
+                              >
+                                <FaEdit className="w-4 h-4" />{" "}
+                                {/* Menambahkan ukuran ikon */}
+                              </button>
+                              {/* Jika ada tombol hapus, tambahkan di sini dengan kondisi isSuperAdmin */}
+                              {/* <button
+                                onClick={() => handleDelete(teacher.id)}
+                                className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors duration-300"
+                                title="Hapus"
+                              >
+                                <FaTrash className="w-4 h-4" />
+                            </button> */}
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={4} // Sesuaikan dengan jumlah kolom total di tabel
+                      className="px-3 sm:px-6 py-4 text-center text-gray-500 dark:text-gray-400 italic transition-colors duration-300"
+                    >
+                      Tidak ada data guru yang ditemukan.
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="text-center py-4 text-gray-500 dark:text-gray-400 italic"
-                  >
-                    Tidak ada data guru.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
 
       {/* Pagination */}

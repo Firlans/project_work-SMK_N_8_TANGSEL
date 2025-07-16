@@ -10,6 +10,8 @@ const EditAdmin = ({ isOpen, onClose, admin, onSubmit }) => {
     alamat: "",
     no_telp: "",
   });
+  // State baru untuk menyimpan pesan error validasi
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (admin) {
@@ -22,6 +24,7 @@ const EditAdmin = ({ isOpen, onClose, admin, onSubmit }) => {
         alamat: admin.alamat,
         no_telp: admin.no_telp,
       });
+      setErrors({}); // Reset errors saat data admin berubah
     }
   }, [admin]);
 
@@ -31,11 +34,50 @@ const EditAdmin = ({ isOpen, onClose, admin, onSubmit }) => {
       ...prev,
       [name]: value,
     }));
+    // Hapus error spesifik saat user mulai mengetik lagi
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  // Fungsi validasi baru
+  const validateForm = () => {
+    let newErrors = {};
+    const numericRegex = /^\d+$/; // Regex untuk hanya angka
+    const minLength = 4; // Minimal 4 angka
+
+    // 1. Validasi NIP
+    if (!formData.nip) {
+      newErrors.nip = "NIP tidak boleh kosong.";
+    } else if (!numericRegex.test(formData.nip)) {
+      newErrors.nip = "NIP hanya boleh berisi angka.";
+    } else if (formData.nip.length < minLength) {
+      newErrors.nip = `NIP minimal ${minLength} angka.`;
+    }
+
+    // 2. Validasi No. Telepon
+    if (!formData.no_telp) {
+      newErrors.no_telp = "Nomor Telepon tidak boleh kosong.";
+    } else if (!numericRegex.test(formData.no_telp)) {
+      newErrors.no_telp = "Nomor Telepon hanya boleh berisi angka.";
+    } else if (formData.no_telp.length < minLength) {
+      newErrors.no_telp = `Nomor Telepon minimal ${minLength} angka.`;
+    }
+
+    setErrors(newErrors);
+    // Mengembalikan true jika tidak ada error, false jika ada error
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    if (validateForm()) {
+      // Panggil validasi sebelum submit
+      onSubmit(formData);
+    } else {
+      // Jika ada error, tampilkan alert
+      alert("Mohon periksa kembali data Anda. Ada kesalahan input.");
+    }
   };
 
   if (!isOpen) return null;
@@ -73,8 +115,15 @@ const EditAdmin = ({ isOpen, onClose, admin, onSubmit }) => {
                 value={formData.nip}
                 onChange={handleChange}
                 required
-                className="mt-1 block w-full rounded-md border border-gray-200 dark:border-gray-700 px-3 py-2 bg-white dark:bg-gray-800 pr-10 transition-all duration-300"
+                className={`mt-1 block w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-800 pr-10 transition-all duration-300 ${
+                  errors.nip
+                    ? "border-red-500"
+                    : "border-gray-200 dark:border-gray-700"
+                }`}
               />
+              {errors.nip && (
+                <p className="text-red-500 text-xs mt-1">{errors.nip}</p>
+              )}
             </div>
           </div>
 
@@ -137,8 +186,15 @@ const EditAdmin = ({ isOpen, onClose, admin, onSubmit }) => {
               value={formData.no_telp}
               onChange={handleChange}
               required
-              className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 bg-white dark:bg-gray-800 transition-all duration-300"
+              className={`mt-1 block w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-800 transition-all duration-300 ${
+                errors.no_telp
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-700"
+              }`}
             />
+            {errors.no_telp && (
+              <p className="text-red-500 text-xs mt-1">{errors.no_telp}</p>
+            )}
           </div>
 
           {/* Alamat */}

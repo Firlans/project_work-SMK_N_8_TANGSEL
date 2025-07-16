@@ -23,6 +23,10 @@ const DataUser = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState(false);
 
+  // States baru untuk sorting
+  const [sortColumn, setSortColumn] = useState("name"); // Default sort by 'name'
+  const [sortOrder, setSortOrder] = useState("asc"); // Default sort order 'asc' (A-Z)
+
   const fetchUsers = async () => {
     try {
       const response = await axiosClient.get("/user");
@@ -79,17 +83,47 @@ const DataUser = () => {
     }
   };
 
+  // Fungsi baru untuk menangani klik sort
+  const handleSort = (column) => {
+    // Jika kolom yang diklik sama dengan kolom yang sedang diurutkan, toggle urutan
+    if (sortColumn === column) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      // Jika kolom berbeda, atur kolom baru dan urutkan secara 'asc'
+      setSortColumn(column);
+      setSortOrder("asc");
+    }
+    setCurrentPage(1); // Kembali ke halaman 1 setelah mengurutkan
+  };
+
+  // Filter users berdasarkan peran dan pencarian
   const filteredUsers = users
     .filter((user) =>
       selectedRole === "all" ? true : user.profile === selectedRole
     )
     .filter((user) =>
       user.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => a.name.localeCompare(b.name));
+    );
 
-  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
-  const paginatedUsers = filteredUsers.slice(
+  // Terapkan sorting berdasarkan sortColumn dan sortOrder
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    const nameA = a.name.toLowerCase();
+    const nameB = b.name.toLowerCase();
+
+    if (sortColumn === "name") {
+      if (sortOrder === "asc") {
+        return nameA.localeCompare(nameB);
+      } else {
+        return nameB.localeCompare(nameA);
+      }
+    }
+    // Jika tidak ada kolom yang dipilih untuk sorting (atau kolom lain),
+    // kembali ke sorting default (misalnya, nama A-Z)
+    return nameA.localeCompare(nameB); // Default sorting tetap nama A-Z
+  });
+
+  const totalPages = Math.ceil(sortedUsers.length / ITEMS_PER_PAGE);
+  const paginatedUsers = sortedUsers.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -161,8 +195,17 @@ const DataUser = () => {
                     <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
                       No
                     </th>
-                    <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
+                    {/* Header Kolom Nama Lengkap dengan fungsi sorting */}
+                    <th
+                      className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors cursor-pointer select-none"
+                      onClick={() => handleSort("name")}
+                    >
                       Nama Lengkap
+                      {sortColumn === "name" && (
+                        <span className="ml-1">
+                          {sortOrder === "asc" ? "↑" : "↓"}
+                        </span>
+                      )}
                     </th>
                     <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
                       Profile
@@ -218,7 +261,7 @@ const DataUser = () => {
                                 <FaEdit className="w-4 h-4" />
                               </button>
                             )}
-                            
+
                             {isSuperAdmin() && (
                               <button
                                 onClick={() => handleDelete(user.id)}

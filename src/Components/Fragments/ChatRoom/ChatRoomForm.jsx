@@ -12,9 +12,8 @@ const ChatRoomForm = ({
   onRoomCreated,
   isPrivate = false,
 }) => {
-  const user = JSON.parse(Cookies.get("userPrivilege") || "{}");
-  const idSiswa = user?.user_id || user?.id;
-
+  const idSiswa = JSON.parse(Cookies.get("user_id") || "{}");
+  // const idSiswa = user?.user_id || user?.id;
   const [roomName, setRoomName] = useState("");
   const [selectedConselorId, setSelectedConselorId] = useState("");
   const [counselors, setCounselors] = useState([]);

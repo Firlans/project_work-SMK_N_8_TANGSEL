@@ -77,18 +77,6 @@ const DataSiswa = () => {
     setTimeout(() => setMessage({ text: "", type: "" }), 3000);
   };
 
-  const handleDelete = async (siswa) => {
-    if (!window.confirm("Yakin hapus siswa ini?")) return;
-    try {
-      await axiosClient.delete(`/siswa/${siswa.id}`);
-      await fetchData();
-      setMessage({ text: "Data berhasil dihapus!", type: "success" });
-    } catch (err) {
-      setMessage({ text: "Gagal menghapus data.", type: "error" });
-    }
-    setTimeout(() => setMessage({ text: "", type: "" }), 3000);
-  };
-
   // Filter & sort
   const filtered = students
     .filter(
@@ -169,75 +157,83 @@ const DataSiswa = () => {
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full table-auto text-sm">
-          <thead>
-            <tr className="bg-gray-100 dark:bg-gray-800 text-left text-gray-700 dark:text-gray-300 transition-colors duration-300">
-              <th
-                className="p-3 cursor-pointer"
-                onClick={() =>
-                  setSortConfig((prev) => ({
-                    key: "nis",
-                    direction:
-                      prev.key === "nis" && prev.direction === "asc"
-                        ? "desc"
-                        : "asc",
-                  }))
-                }
-              >
-                NIS{" "}
-                {sortConfig.key === "nis" && (
-                  <span>{sortConfig.direction === "asc" ? "▲" : "▼"}</span>
-                )}
-              </th>
-              <th
-                className="p-3 cursor-pointer"
-                onClick={() =>
-                  setSortConfig((prev) => ({
-                    key: "nama_lengkap",
-                    direction:
-                      prev.key === "nama_lengkap" && prev.direction === "asc"
-                        ? "desc"
-                        : "asc",
-                  }))
-                }
-              >
-                Nama Lengkap{" "}
-                {sortConfig.key === "nama_lengkap" && (
-                  <span>{sortConfig.direction === "asc" ? "▲" : "▼"}</span>
-                )}
-              </th>
-              <th className="p-3">Kelas</th>
-              <th className="p-3 text-center">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginated.length > 0 ? (
-              paginated.map((siswa) => (
-                <tr
-                  key={siswa.id}
-                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
+      <div className="-mx-4 sm:mx-0 overflow-x-auto">
+        <div className="inline-block min-w-full align-middle">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
+            <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
+              <tr>
+                <th
+                  className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors cursor-pointer select-none"
+                  onClick={() =>
+                    setSortConfig((prev) => ({
+                      key: "nis",
+                      direction:
+                        prev.key === "nis" && prev.direction === "asc"
+                          ? "desc"
+                          : "asc",
+                    }))
+                  }
                 >
-                  <td className="p-3 text-gray-900 dark:text-gray-200">
-                    {siswa.nis}
-                  </td>
-                  <td className="p-3 text-gray-900 dark:text-gray-200">
-                    {siswa.nama_lengkap}
-                  </td>
-                  <td className="p-3 text-gray-900 dark:text-gray-200">
-                    {kelas[siswa.id_kelas]?.nama_kelas || "-"}
-                  </td>
-                  <td className="p-3 text-center">
-                    <div className="flex gap-2 justify-center">
-                      <button
-                        onClick={() => handleDetail(siswa)}
-                        className="p-1 text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-300"
-                        aria-label="View details"
-                      >
-                        <FaEye className="w-4 h-4" />
-                      </button>
-                      {!isSuperAdmin() && (
-                        <>
+                  NIS{" "}
+                  {sortConfig.key === "nis" && (
+                    <span className="ml-1">
+                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                    </span>
+                  )}
+                </th>
+                <th
+                  className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors cursor-pointer select-none"
+                  onClick={() =>
+                    setSortConfig((prev) => ({
+                      key: "nama_lengkap",
+                      direction:
+                        prev.key === "nama_lengkap" && prev.direction === "asc"
+                          ? "desc"
+                          : "asc",
+                    }))
+                  }
+                >
+                  Nama Lengkap{" "}
+                  {sortConfig.key === "nama_lengkap" && (
+                    <span className="ml-1">
+                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                    </span>
+                  )}
+                </th>
+                <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
+                  Kelas
+                </th>
+                <th className="px-3 sm:px-6 py-3 text-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors">
+                  Aksi
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y  text-xs sm:text-sm divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
+              {paginated.length > 0 ? (
+                paginated.map((siswa) => (
+                  <tr
+                    key={siswa.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
+                  >
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-gray-800 dark:text-gray-100 transition-colors duration-300">
+                      {siswa.nis}
+                    </td>
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-gray-800 dark:text-gray-100 transition-colors duration-300">
+                      {siswa.nama_lengkap}
+                    </td>
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-gray-800 dark:text-gray-100 transition-colors duration-300">
+                      {kelas[siswa.id_kelas]?.nama_kelas || "-"}
+                    </td>
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 text-center">
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          onClick={() => handleDetail(siswa)}
+                          className="p-1 text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-300"
+                          aria-label="View details"
+                        >
+                          <FaEye className="w-4 h-4" />
+                        </button>
+                        {!isSuperAdmin() && ( // Menampilkan tombol edit jika bukan SuperAdmin
                           <button
                             onClick={() => handleEdit(siswa)}
                             className="p-1 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors duration-300"
@@ -245,31 +241,24 @@ const DataSiswa = () => {
                           >
                             <FaEdit className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => handleDelete(siswa.id)}
-                            className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors duration-300"
-                            aria-label="Delete user"
-                          >
-                            <FaTrash className="w-4 h-4" />
-                          </button>
-                        </>
-                      )}
-                    </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="px-3 sm:px-6 py-4 text-center text-gray-500 dark:text-gray-400 italic transition-colors duration-300"
+                  >
+                    Tidak ada data siswa yang ditemukan.
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan="4"
-                  className="p-4 text-center text-gray-500 dark:text-gray-400"
-                >
-                  Tidak ada data siswa.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Pagination */}
