@@ -214,7 +214,7 @@ class PrestasiController extends Controller
 
             $prestasi->delete();
 
-            return $this->handleDeleted('Prestasi');
+            return $this->handleDeleted('Prestasi', $prestasi->id);
         } catch (\Exception $e) {
             return $this->handleError($e, 'deletePrestasi');
         }

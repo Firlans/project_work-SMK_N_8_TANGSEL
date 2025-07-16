@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->foreign('id_kelas')
                 ->references('id')
                 ->on('kelas')
-                ->onDelete('cascade');
+                ->onDelete('set null');
             $table->rememberToken();
         });
 
