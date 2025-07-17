@@ -3,6 +3,7 @@ import axiosClient from "../../../axiosClient";
 import Button from "../../Elements/Button";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
 import { formatTanggal } from "../../../utils/dateFormatter";
+import Cookies from "js-cookie"; // Pastikan Cookies di-import
 
 const ProfileGuru = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -18,25 +19,26 @@ const ProfileGuru = () => {
     type: "",
   });
   const [error, setError] = useState(false);
+  // State baru untuk menyimpan pesan error validasi
+  const [validationErrors, setValidationErrors] = useState({});
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await axiosClient.get("/profile");
         setProfileData(response.data);
-        const profile = response.data.data;
-        if (profile?.user_id) {
-          Cookies.set("user_id", profile.user_id, { path: "/" });
-        }
-        if (profile?.id) {
-          Cookies.set("id_guru", profile.id, { path: "/" });
-        }
-        setLoading(false);
+        // Inisialisasi editedData saat profileData berhasil diambil
+        setEditedData({
+          alamat: response.data.data.alamat,
+          no_telp: response.data.data.no_telp,
+        });
       } catch (error) {
         if (
           error.response?.data?.status === "Token is Expired" ||
           error.response?.status === 401
         ) {
+          // Handle token expiration/unauthorized appropriately (e.g., redirect to login)
+          console.error("Token Expired or Unauthorized:", error);
           return;
         }
         setError(true);
@@ -45,8 +47,28 @@ const ProfileGuru = () => {
       }
     };
 
+    setLoading(true); // Set loading true before fetching
     fetchProfile();
   }, []);
+
+  // Fungsi untuk validasi input
+  const validateInput = () => {
+    let errors = {};
+    const numericRegex = /^\d+$/; // Regex untuk hanya angka
+    const minLength = 4; // Minimal 4 angka
+
+    // Validasi No. Telepon
+    if (!editedData.no_telp) {
+      errors.no_telp = "Nomor Telepon tidak boleh kosong.";
+    } else if (!numericRegex.test(editedData.no_telp)) {
+      errors.no_telp = "Nomor Telepon hanya boleh berisi angka.";
+    } else if (editedData.no_telp.length < minLength) {
+      errors.no_telp = `Nomor Telepon minimal ${minLength} angka.`;
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0; // Return true jika tidak ada error
+  };
 
   // Helper function to mask phone number
   const maskPhoneNumber = (phone) => {
@@ -58,17 +80,45 @@ const ProfileGuru = () => {
     return `${first4}${masked}${last4}`;
   };
 
+  // Fungsi untuk menangani perubahan input pada form
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditedData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    // Hapus error spesifik saat user mulai mengetik lagi
+    if (validationErrors[name]) {
+      setValidationErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  };
+
   const handleEdit = () => {
     setIsEditing(true);
+    // Pastikan editedData diisi dengan nilai saat ini agar user bisa langsung mengedit
     if (profileData) {
       setEditedData({
         alamat: profileData.data.alamat,
         no_telp: profileData.data.no_telp,
       });
     }
+    setValidationErrors({}); // Bersihkan error saat memulai edit
   };
 
   const handleSave = async () => {
+    if (!validateInput()) {
+      // Jika validasi gagal, tampilkan notifikasi error umum
+      setNotification({
+        show: true,
+        message: "Periksa kembali input Anda. Ada kesalahan.",
+        type: "error",
+      });
+      setTimeout(() => {
+        setNotification({ show: false, message: "", type: "" });
+      }, 3000);
+      return; // Hentikan proses save
+    }
+
     try {
       setLoading(true);
       // Siapkan payload dengan field yang dibutuhkan
@@ -89,10 +139,12 @@ const ProfileGuru = () => {
       const refreshed = await axiosClient.get("/profile");
       setProfileData(refreshed.data);
       setIsEditing(false);
+      // Reset editedData setelah berhasil disimpan
       setEditedData({
-        alamat: "",
-        no_telp: "",
+        alamat: refreshed.data.data.alamat,
+        no_telp: refreshed.data.data.no_telp,
       });
+      setValidationErrors({}); // Bersihkan error setelah save berhasil
 
       setNotification({
         show: true,
@@ -105,17 +157,31 @@ const ProfileGuru = () => {
         setNotification({ show: false, message: "", type: "" });
       }, 3000);
     } catch (error) {
+      console.error("Failed to update profile:", error);
+      let errorMessage = "Gagal memperbarui profile. Silakan coba lagi.";
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
       setNotification({
         show: true,
-        message: "Gagal memperbarui profile. Silakan coba lagi.",
+        message: errorMessage,
         type: "error",
       });
+      setTimeout(() => {
+        setNotification({ show: false, message: "", type: "" });
+      }, 3000);
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) return <LoadingSpinner text={"Memperbarui data..."} />;
+  if (loading && !profileData)
+    return <LoadingSpinner text={"Memuat data..."} />; // Perbaiki text spinner
+
+  // Pastikan profileData ada sebelum merender konten
+  if (!profileData && !loading && !error)
+    return <div>Data profil tidak ditemukan.</div>;
+  if (error) return <div>Terjadi kesalahan saat memuat data profil.</div>;
 
   return (
     <div className="relative">
@@ -150,7 +216,17 @@ const ProfileGuru = () => {
           ) : (
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <Button
-                onClick={() => setIsEditing(false)}
+                onClick={() => {
+                  setIsEditing(false);
+                  // Pastikan editedData kembali ke nilai asli saat cancel
+                  if (profileData) {
+                    setEditedData({
+                      alamat: profileData.data.alamat,
+                      no_telp: profileData.data.no_telp,
+                    });
+                  }
+                  setValidationErrors({}); // Bersihkan error saat cancel
+                }}
                 className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200"
               >
                 Cancel
@@ -186,23 +262,27 @@ const ProfileGuru = () => {
               label="Tempat, Tanggal Lahir"
               value={formatTanggal(profileData?.data?.tanggal_lahir)}
             />
+            <ProfileField
+              label="Mata Pelajaran"
+              value={profileData?.data?.mata_pelajaran?.nama_pelajaran || "-"}
+            />
           </div>
 
           {/* Right Column - Editable fields */}
           <div className="space-y-4">
+            {/* Alamat */}
             {isEditing ? (
               <div className="flex flex-col">
-                <span className="text-sm text-gray-500 dark:text-gray-300 flex items-center gap-1">
+                <label className="text-sm text-gray-500 dark:text-gray-300 mb-1">
                   Alamat{" "}
-                </span>
+                </label>
                 <textarea
+                  name="alamat" // Tambahkan atribut name
                   value={editedData.alamat}
-                  onChange={(e) =>
-                    setEditedData({ ...editedData, alamat: e.target.value })
-                  }
-                  className="mt-1 block w-full rounded-md border-2 border-amber-400 dark:border-amber-500 shadow-sm 
-          bg-amber-50 dark:bg-gray-800 text-sm sm:text-base text-gray-900 dark:text-white
-          focus:border-blue-500 focus:ring-blue-500 transition resize-none"
+                  onChange={handleChange} // Gunakan handleChange
+                  className="mt-1 block w-full rounded-md border-2 border-amber-400 dark:border-amber-500 shadow-sm
+                  bg-amber-50 dark:bg-gray-800 text-sm sm:text-base text-gray-900 dark:text-white
+                  focus:border-blue-500 focus:ring-blue-500 transition resize-none"
                   rows={2}
                   style={{ outline: "none" }}
                 />
@@ -214,25 +294,35 @@ const ProfileGuru = () => {
               <ProfileField label="Alamat" value={profileData?.data?.alamat} />
             )}
 
+            {/* Nomor Telepon */}
             {isEditing ? (
               <div className="flex flex-col">
-                <span className="text-sm text-gray-500 dark:text-gray-300 flex items-center gap-1">
+                <label className="text-sm text-gray-500 dark:text-gray-300 mb-1">
                   Nomor Telepon
-                </span>
+                </label>
                 <input
                   type="tel"
+                  name="no_telp" // Tambahkan atribut name
                   value={editedData.no_telp}
-                  onChange={(e) =>
-                    setEditedData({ ...editedData, no_telp: e.target.value })
-                  }
-                  className="mt-1 block w-full rounded-md border-2 border-amber-400 dark:border-amber-500 shadow-sm 
-          bg-amber-50 dark:bg-gray-800 text-sm sm:text-base text-gray-900 dark:text-white
-          focus:border-blue-500 focus:ring-blue-500 transition resize-none"
+                  onChange={handleChange} // Gunakan handleChange
+                  className={`mt-1 block w-full rounded-md border-2 shadow-sm
+                    bg-amber-50 dark:bg-gray-800 text-sm sm:text-base text-gray-900 dark:text-white
+                    focus:border-blue-500 focus:ring-blue-500 transition ${
+                      validationErrors.no_telp
+                        ? "border-red-500"
+                        : "border-amber-400 dark:border-amber-500"
+                    }`}
                   style={{ outline: "none" }}
                 />
-                <span className="text-xs text-amber-600 mt-1">
-                  * Ganti nomor telepon
-                </span>
+                {validationErrors.no_telp ? (
+                  <p className="text-red-500 text-xs mt-1">
+                    {validationErrors.no_telp}
+                  </p>
+                ) : (
+                  <span className="text-xs text-amber-600 mt-1">
+                    * Ganti nomor telepon
+                  </span>
+                )}
               </div>
             ) : (
               <ProfileField
@@ -253,22 +343,12 @@ const ProfileGuru = () => {
 };
 
 // Helper component for profile fields
-const ProfileField = ({ label, value, isEditing, editValue, onChange }) => (
+const ProfileField = ({ label, value }) => (
   <div className="flex flex-col">
     <span className="text-sm text-gray-500 dark:text-gray-300">{label}</span>
-    {isEditing && onChange ? (
-      <input
-        type={label.toLowerCase().includes("email") ? "email" : "text"}
-        value={editValue}
-        onChange={onChange}
-        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-          focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
-      />
-    ) : (
-      <span className="font-medium text-sm sm:text-base text-gray-800 dark:text-white">
-        {value}
-      </span>
-    )}
+    <span className="font-medium text-sm sm:text-base text-gray-800 dark:text-white">
+      {value}
+    </span>
   </div>
 );
 

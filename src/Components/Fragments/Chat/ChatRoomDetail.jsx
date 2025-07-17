@@ -55,7 +55,7 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
   const [error, setError] = useState(null);
   const bottomRef = useRef(null);
   const user = JSON.parse(Cookies.get("userPrivilege") || "{}");
-  const userId = user?.user_id || user?.id;
+  const userId = user?.id_user
 
   const scrollToBottom = useCallback(() => {
     setTimeout(() => {
