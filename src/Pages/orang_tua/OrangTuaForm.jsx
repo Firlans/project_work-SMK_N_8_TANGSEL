@@ -119,7 +119,7 @@ const OrangTuaForm = () => {
           <InputForm
             label={loginType === "email" ? "Email" : "No WhatsApp"}
             labelColor="text-slate-900"
-            type="text"
+            type={loginType === "email" ? "email" : "tel"}
             placeholder={
               loginType === "email" ? "Masukkan Email" : "Masukkan No WhatsApp"
             }

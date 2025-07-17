@@ -11,6 +11,17 @@ const defaultFormData = {
   siswa_id: "",
 };
 
+const getBuktiPrestasiURL = async (filename) => {
+  try {
+    const response = await axiosClient.get(`/images/prestasi/${filename}`, {
+      responseType: "blob", // Penting untuk mendapatkan data biner
+    });
+    return URL.createObjectURL(response.data);
+  } catch (error) {
+    return null;
+  }
+};
+
 export const usePrestasiForm = (isOpen, initialData, onSuccess) => {
   const [formData, setFormData] = useState(defaultFormData);
   const [siswaOptions, setSiswaOptions] = useState([]);
@@ -28,7 +39,6 @@ export const usePrestasiForm = (isOpen, initialData, onSuccess) => {
         setUserPrivilege(parsed);
       } catch (err) {
         // Jika parsing gagal, set error atau log
-        console.error("Failed to parse user privilege from cookie", err);
         setBackendError("Gagal memuat privilege pengguna."); // Set error jika ada masalah parsing
       }
     }
@@ -36,7 +46,14 @@ export const usePrestasiForm = (isOpen, initialData, onSuccess) => {
 
   // Fetch data siswa dan inisialisasi form
   useEffect(() => {
-    if (!isOpen) return; // Hanya fetch saat modal terbuka
+    if (!isOpen) {
+      // Cleanup URL Blob saat modal ditutup
+      if (previewImage && previewImage.startsWith("blob:")) {
+        URL.revokeObjectURL(previewImage);
+      }
+      setPreviewImage(null); // Reset previewImage saat modal ditutup
+      return;
+    }
 
     const fetchSiswa = async () => {
       try {
@@ -47,27 +64,30 @@ export const usePrestasiForm = (isOpen, initialData, onSuccess) => {
         setSiswaOptions(sorted);
       } catch (err) {
         setBackendError("Gagal memuat data siswa."); // Set error jika fetch gagal
-        console.error("Error fetching siswa:", err);
       }
     };
 
     fetchSiswa();
 
     // Inisialisasi formData dan previewImage
-    if (initialData) {
-      setFormData({ ...initialData, nama_foto: null }); // nama_foto akan diisi File object
-      if (initialData.nama_foto) {
-        setPreviewImage(
-          axiosClient.defaults.baseURL +
-            `/images/prestasi/${initialData.nama_foto}`
-        );
+    const initializeFormAndPreview = async () => {
+      if (initialData) {
+        setFormData({ ...initialData, nama_foto: null });
+        if (initialData.nama_foto) {
+          const imageUrlBlob = await getBuktiPrestasiURL(initialData.nama_foto);
+          setPreviewImage(imageUrlBlob);
+        } else {
+          setPreviewImage(null);
+        }
+      } else {
+        setFormData(defaultFormData);
+        setPreviewImage(null);
       }
-    } else {
-      setFormData(defaultFormData);
-      setPreviewImage(null);
-    }
-    setValidationErrors({}); 
-    setBackendError(""); 
+      setValidationErrors({});
+      setBackendError("");
+    };
+
+    initializeFormAndPreview();
   }, [isOpen, initialData]);
 
   const handleChange = (e) => {
@@ -179,7 +199,6 @@ export const usePrestasiForm = (isOpen, initialData, onSuccess) => {
             "Terjadi kesalahan saat menyimpan data."
         );
       }
-      console.error("Error saving prestasi:", err);
     } finally {
       setLoading(false);
     }
@@ -194,6 +213,14 @@ export const usePrestasiForm = (isOpen, initialData, onSuccess) => {
     if (userPrivilege.is_siswa) return "siswa";
     return null;
   };
+
+  useEffect(() => {
+    return () => {
+      if (previewImage && previewImage.startsWith("blob:")) {
+        URL.revokeObjectURL(previewImage);
+      }
+    };
+  }, [previewImage]);
 
   return {
     formData,

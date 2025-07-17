@@ -115,7 +115,7 @@ const DataPrestasi = () => {
                       "No",
                       "Nama Siswa",
                       "Foto",
-                      "Nama Prestasi",
+                      "Jenis Poin Positif",
                       "Deskripsi",
                       "Status",
                       !isSuperAdmin() && "Aksi",
@@ -138,7 +138,7 @@ const DataPrestasi = () => {
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
                   {data.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="text-center py-4">
+                      <td colSpan="6" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                         Tidak ada data Poin Positif.
                       </td>
                     </tr>
