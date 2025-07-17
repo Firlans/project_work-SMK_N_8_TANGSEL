@@ -31,7 +31,10 @@ const DataWaliMurid = () => {
 
   const fetchSiswa = async () => {
     const res = await axiosClient.get("/siswa");
-    setSiswaList(res.data.data);
+    const sortedSiswa = res.data.data.sort((a, b) =>
+      a.nama_lengkap.localeCompare(b.nama_lengkap)
+    );
+    setSiswaList(sortedSiswa);
   };
 
   useEffect(() => {

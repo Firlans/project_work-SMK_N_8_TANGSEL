@@ -1,7 +1,5 @@
 import { usePelanggaranForm } from "./usePelanggaranForm";
-import axiosClient from "../../../../axiosClient";
-import { useState } from "react";
-import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner"; 
 
 const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
   const {
@@ -9,55 +7,21 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
     handleChange,
     previewImage,
     siswaList,
-    userPrivilege,
     getUserRole,
     isEdit,
+    isSaving, // Ambil state isSaving dari hook
+    isFetchingSiswa, // Ambil state isFetchingSiswa dari hook
+    backendError, // Ambil error dari hook
+    validationErrors, // Ambil validationErrors dari hook
+    handleSubmit: hookHandleSubmit, // Ganti nama agar tidak konflik dengan handleSubmit lokal
   } = usePelanggaranForm(initialData, isOpen);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!userPrivilege?.id_user) {
-      alert("Pelapor tidak ditemukan. Silakan login ulang.");
-      return;
-    }
-
-    const form = new FormData();
-    form.append("pelapor", isEdit ? formData.pelapor : userPrivilege?.id_user);
-    form.append("terlapor", formData.terlapor);
-    form.append("nama_pelanggaran", formData.nama_pelanggaran);
-    form.append("deskripsi", formData.deskripsi);
-    form.append("status", formData.status || "pengajuan");
-
-    if (formData.nama_foto) {
-      form.append("bukti_gambar", formData.nama_foto);
-    }
-
-    setLoading(true);
-    try {
-      if (initialData) {
-        await axiosClient.post(
-          `/pelanggaran/${initialData.id}?_method=PUT`,
-          form,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
-        );
-      } else {
-        await axiosClient.post("/pelanggaran", form, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      }
-
+    // Memanggil handleSubmit dari hook, meneruskan e dan onSuccess sebagai callback
+    await hookHandleSubmit(e, () => {
       onSuccess();
-    } catch (err) {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
+      onClose();
+    });
   };
 
   if (!isOpen) return null;
@@ -66,25 +30,42 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center transition-colors duration-300">
-      {loading && <LoadingSpinner text="Menyimpan data..." />}
+      {(isSaving || isFetchingSiswa) && (
+        <LoadingSpinner
+          text={isSaving ? "Menyimpan data..." : "Memuat data siswa..."}
+        />
+      )}
       <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-xl shadow-lg relative transition-all duration-300 ease-in-out">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors">
           {isEdit ? "Edit Poin Negatif" : "Tambah Poin Negatif"}
         </h2>
 
+        {/* Tampilkan error umum dari backend jika ada */}
+        {backendError && (
+          <p className="text-red-500 text-sm mb-3 p-2 bg-red-100 dark:bg-red-900 rounded">
+            {backendError}
+          </p>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Terlapor */}
+          {/* Terlapor (Nama Siswa) */}
           <div>
-            <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors">
+            <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors mb-1">
               Nama Siswa
             </label>
             <select
               name="terlapor"
               value={formData.terlapor}
               onChange={handleChange}
-              disabled={isEdit}
+              disabled={isEdit || isFetchingSiswa} // Disable saat edit atau sedang fetch siswa
               required
-              className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-3 py-2 rounded transition-all"
+              className={`w-full border px-3 py-2 rounded transition-all
+                ${
+                  validationErrors.terlapor
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
+                }
+                bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100`}
             >
               <option value="">-- Pilih Siswa --</option>
               {siswaList.map((s) => (
@@ -93,11 +74,16 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
                 </option>
               ))}
             </select>
+            {validationErrors.terlapor && (
+              <p className="text-red-600 text-sm mt-1">
+                {validationErrors.terlapor}
+              </p>
+            )}
           </div>
 
           {/* Jenis Pelanggaran */}
           <div>
-            <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors">
+            <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors mb-1">
               Jenis Poin Negatif
             </label>
             <input
@@ -107,13 +93,24 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
               onChange={handleChange}
               disabled={isEdit}
               required
-              className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-3 py-2 rounded transition-all"
+              className={`w-full border px-3 py-2 rounded transition-all
+                ${
+                  validationErrors.nama_pelanggaran
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
+                }
+                bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100`}
             />
+            {validationErrors.nama_pelanggaran && (
+              <p className="text-red-600 text-sm mt-1">
+                {validationErrors.nama_pelanggaran}
+              </p>
+            )}
           </div>
 
           {/* Deskripsi */}
           <div>
-            <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors">
+            <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors mb-1">
               Deskripsi
             </label>
             <textarea
@@ -121,14 +118,26 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
               value={formData.deskripsi}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-3 py-2 rounded transition-all"
+              rows="3" // Menambahkan rows untuk textarea
+              className={`w-full border px-3 py-2 rounded transition-all resize-none
+                ${
+                  validationErrors.deskripsi
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
+                }
+                bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100`}
             />
+            {validationErrors.deskripsi && (
+              <p className="text-red-600 text-sm mt-1">
+                {validationErrors.deskripsi}
+              </p>
+            )}
           </div>
 
           {/* Status - hanya admin/konselor */}
           {(role === "admin" || role === "conselor") && (
             <div>
-              <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors">
+              <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors mb-1">
                 Status
               </label>
               <select
@@ -143,21 +152,37 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
                 <option value="ditolak">Ditolak</option>
                 <option value="selesai">Selesai</option>
               </select>
+              {validationErrors.status && ( // Tambahkan validasi untuk status jika diperlukan
+                <p className="text-red-600 text-sm mt-1">
+                  {validationErrors.status}
+                </p>
+              )}
             </div>
           )}
 
-          {/* Upload */}
+          {/* Upload Bukti Foto */}
           <div>
-            <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors">
+            <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors mb-1">
               Bukti Foto
             </label>
             <input
               type="file"
               name="nama_foto"
-              accept="image/*"
+              accept="image/jpeg, image/png, image/gif, image/webp" // Hanya jenis file yang diizinkan
               onChange={handleChange}
-              className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-3 py-2 rounded transition-all"
+              className={`w-full border px-3 py-2 rounded transition-all
+                ${
+                  validationErrors.nama_foto
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
+                }
+                bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100`}
             />
+            {validationErrors.nama_foto && (
+              <p className="text-red-600 text-sm mt-1">
+                {validationErrors.nama_foto}
+              </p>
+            )}
             {previewImage && (
               <img
                 src={previewImage}
@@ -173,14 +198,16 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
               type="button"
               onClick={onClose}
               className="px-4 py-2 bg-gray-300 dark:bg-zinc-600 text-gray-800 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-zinc-500 transition-colors"
+              disabled={isSaving}
             >
               Batal
             </button>
             <button
               type="submit"
               className="px-4 py-2 bg-amber-500 dark:bg-zinc-800 text-white dark:text-white rounded-lg hover:bg-amber-600 dark:hover:bg-zinc-500 transition-colors"
+              disabled={isSaving}
             >
-              Simpan
+              {isSaving ? "Menyimpan..." : "Simpan"}
             </button>
           </div>
         </form>
