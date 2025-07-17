@@ -7,7 +7,6 @@ import {
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import ChatRoomHeader from "./ChatRoomHeader";
-import echo from "../../../utils/echo";
 import Cookies from "js-cookie";
 import { decryptMessage, encryptMessage } from "../../../utils/encryption";
 
@@ -55,7 +54,7 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
   const [error, setError] = useState(null);
   const bottomRef = useRef(null);
   const user = JSON.parse(Cookies.get("userPrivilege") || "{}");
-  const userId = user?.id_user
+  const userId = user?.id_user;
 
   const scrollToBottom = useCallback(() => {
     setTimeout(() => {
@@ -89,30 +88,59 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
 
   // Real-time listener (Laravel Echo)
   useEffect(() => {
+    if (!window.Echo) {
+      return;
+    }
+
     if (!id) return;
-    const channel = echo.private(`room.${id}`);
+
+    const channel = window.Echo.private(`room.${id}`);
 
     channel.listen("SendMessageEvent", (e) => {
-      const newMessage = {
-        id: `realtime-${Date.now()}`,
-        id_sender: e.sender?.id,
-        id_chat_room: e.roomId,
-        created_at: new Date().toISOString(),
-        sender: e.sender,
-        pending: false,
-        message: getMessageFromRealtimePayload(e, isPrivate),
-      };
+      // Dapatkan pesan dari payload real-time
+      const realTimeMessageContent = getMessageFromRealtimePayload(
+        e,
+        isPrivate
+      );
 
       setMessages((prev) => {
-        const isDuplicate = prev.some((msg) => {
-          const isSameSender = msg.id_sender === newMessage.id_sender;
-          const isSameMessage = msg.message === newMessage.message;
-          const timeDiff = Math.abs(
-            new Date(msg.created_at) - new Date(newMessage.created_at)
-          );
-          return isSameSender && isSameMessage && timeDiff < 5000;
-        });
-        return isDuplicate ? prev : [...prev, newMessage];
+        // Cari apakah ada pesan 'pending' dengan konten yang sama
+        // atau tempId yang cocok dari sender yang sama
+        const existingMessageIndex = prev.findIndex(
+          (msg) =>
+            msg.pending &&
+            msg.id_sender === e.sender?.id &&
+            msg.message === realTimeMessageContent
+        );
+
+        if (existingMessageIndex !== -1) {
+          // Jika ditemukan pesan pending, perbarui pesan tersebut dengan data final dari backend
+          const updatedMessages = [...prev];
+          updatedMessages[existingMessageIndex] = {
+            ...e.message, // Gunakan data lengkap dari event jika tersedia
+            id: e.message?.id || updatedMessages[existingMessageIndex].id, // Pastikan ID dari backend digunakan
+            tempId: updatedMessages[existingMessageIndex].tempId, // Pertahankan tempId untuk referensi jika perlu
+            id_sender: e.sender?.id,
+            id_chat_room: e.roomId,
+            created_at: e.message?.created_at || new Date().toISOString(),
+            sender: e.sender,
+            pending: false, // Setel pending menjadi false
+            message: realTimeMessageContent,
+          };
+          return updatedMessages;
+        } else {
+          // Jika tidak ada pesan pending yang cocok, tambahkan sebagai pesan baru
+          const newMessage = {
+            id: e.message?.id || `realtime-${Date.now()}`, // Gunakan ID dari backend
+            id_sender: e.sender?.id,
+            id_chat_room: e.roomId,
+            created_at: e.message?.created_at || new Date().toISOString(),
+            sender: e.sender,
+            pending: false,
+            message: realTimeMessageContent,
+          };
+          return [...prev, newMessage];
+        }
       });
 
       scrollToBottom();
@@ -120,7 +148,7 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
 
     return () => {
       channel.stopListening("SendMessageEvent");
-      echo.leave(`room.${id}`);
+      window.Echo.leave(`room.${id}`);
     };
   }, [id, isPrivate, scrollToBottom]);
 
@@ -161,21 +189,21 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
 
       const res = await sendMessage(payload);
 
-      if (res?.data) {
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.tempId === tempId
-              ? {
-                  ...res.data,
-                  tempId,
-                  pending: false,
-                  message: text,
-                  sender: user,
-                }
-              : msg
-          )
-        );
-      }
+      // if (res?.data) {
+      //   setMessages((prev) =>
+      //     prev.map((msg) =>
+      //       msg.tempId === tempId
+      //         ? {
+      //             ...res.data,
+      //             tempId,
+      //             pending: false,
+      //             message: text,
+      //             sender: user,
+      //           }
+      //         : msg
+      //     )
+      //   );
+      // }
     } catch (err) {
       setMessages((prev) =>
         prev.map((msg) =>

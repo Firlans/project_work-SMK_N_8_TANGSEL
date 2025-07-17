@@ -15,7 +15,6 @@ const getBuktiPelanggaranURL = async (filename) => {
     });
     return URL.createObjectURL(response.data);
   } catch (error) {
-    console.error("Gagal mengambil gambar:", error);
     return null;
   }
 };

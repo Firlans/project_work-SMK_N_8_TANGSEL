@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import LoadingSpinner from "../Elements/Loading/LoadingSpinner.jsx";
 import { useProfile } from "../../contexts/ProfileProvider.jsx";
+import { initializeEcho } from "../../utils/echo.js";
 
 const FormLogin = ({ role }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -81,6 +82,7 @@ const FormLogin = ({ role }) => {
       Cookies.set("userRole", role, { expires: 1 });
 
       axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      initializeEcho(token);
 
       await fetchProfile();
 

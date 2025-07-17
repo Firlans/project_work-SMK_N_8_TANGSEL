@@ -3,6 +3,7 @@ import axiosClient from "../../../axiosClient";
 import Button from "../../Elements/Button";
 import { formatTanggal } from "../../../utils/dateFormatter";
 import LoadingSpinner from "../../Elements/Loading/LoadingSpinner";
+import Cookies from "js-cookie";
 
 const ProfileAdmin = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -134,7 +135,6 @@ const ProfileAdmin = () => {
         setNotification({ show: false, message: "", type: "" });
       }, 3000);
     } catch (error) {
-      console.error("Failed to update profile:", error);
       let errorMessage = "Gagal memperbarui profile. Silakan coba lagi.";
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;

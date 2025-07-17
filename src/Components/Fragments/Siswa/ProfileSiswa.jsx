@@ -39,8 +39,6 @@ const ProfileSiswa = () => {
           error.response?.data?.status === "Token is Expired" ||
           error.response?.status === 401
         ) {
-          // Handle token expiration/unauthorized appropriately (e.g., redirect to login)
-          console.error("Token Expired or Unauthorized:", error);
           return;
         }
         setError(true);
@@ -142,7 +140,6 @@ const ProfileSiswa = () => {
         setNotification({ show: false, message: "", type: "" });
       }, 3000);
     } catch (error) {
-      console.error("Failed to update profile:", error);
       let errorMessage = "Gagal memperbarui profile. Silakan coba lagi.";
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;

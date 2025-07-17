@@ -1,7 +1,9 @@
-import { StrictMode } from "react";
+import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import Modal from "react-modal";
 import "./index.css";
+import Cookies from "js-cookie";
+import { initializeEcho } from "./utils/echo";
 
 import {
   createBrowserRouter,
@@ -205,14 +207,27 @@ const router = createBrowserRouter([
   { path: "*", element: <Navigate to="/" replace /> },
 ]);
 
-Modal.setAppElement("#root");
+const AppInitializer = () => {
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token && !window.Echo) {
+      initializeEcho(token);
+    }
+  }, []);
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  return (
     <ThemeProvider>
       <ProfileProvider>
         <RouterProvider router={router} />
       </ProfileProvider>
     </ThemeProvider>
+  );
+};
+
+Modal.setAppElement("#root");
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <AppInitializer />
   </StrictMode>
 );
