@@ -170,8 +170,14 @@ class UserController extends Controller
             }
 
             $user->update($data);
-
-            \Log::info('user' . json_encode($user));
+            if (isset($data['name']) && isset($user->profile)) {
+                \Log::info('user' . json_encode($user));
+                if ($user->profile === 'siswa' && $user->siswa) {
+                    $user->siswa->update(['nama_lengkap' => $data['name']]);
+                } elseif ($user->profile === 'guru' && $user->guru) {
+                    $user->guru->update(['nama' => $data['name']]);
+                }
+            }
             if (isset($request->privileges)) {
                 $privileges = [
                     'is_superadmin' => false,
@@ -231,7 +237,7 @@ class UserController extends Controller
 
             $isDeleted = $user->delete();
 
-            if(!$isDeleted){
+            if (!$isDeleted) {
                 return $this->handleFail('delete', 'user');
             }
 
