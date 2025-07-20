@@ -6,6 +6,7 @@ use App\Http\Controllers\AbsenController;
 use App\Http\Controllers\ChatRoomController;
 use App\Http\Controllers\ConselorController;
 use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JadwalController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\WaliMuridController;
 use App\Http\Middleware\JwtMiddleware;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\SiswaMiddleware;
+use App\Mail\CustomEmail;
 
 
 
@@ -161,4 +163,7 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     // route file
     Route::get('/images/prestasi/{nama_foto}', [FileController::class, 'getBuktiPrestesi']);
     Route::get('/images/pelanggaran/{nama_foto}', [FileController::class, 'getBuktiPelanggaran']);
+
+    // route email
+    Route::post('/send-email/{to}', [EmailController::class, 'sendEmail']);
 });
