@@ -166,4 +166,8 @@ Route::middleware([JwtMiddleware::class])->group(function () {
 
     // route email
     Route::post('/send-email/{to}', [EmailController::class, 'sendEmail']);
+
+    // route file
+    Route::get('/file/{nama_file}', [FileController::class, 'getFile']);
+    Route::post('/file', [FileController::class, 'saveFile']);
 });
