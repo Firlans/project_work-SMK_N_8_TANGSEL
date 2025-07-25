@@ -51,12 +51,11 @@ const DataWaliMurid = () => {
     fetchSiswa();
   }, []);
 
-  const isSuperAdmin = () => userPrivilege?.is_superadmin === 1;
+  // const isSuperAdmin = () => userPrivilege?.is_superadmin === 1;
   const isAdminOnly = () =>
     userPrivilege?.is_admin === 1 && userPrivilege?.is_superadmin !== 1;
 
   const handleDelete = async (id) => {
-    if (!isAdminOnly()) return;
     if (!confirm("Yakin ingin menghapus data ini?")) return;
 
     await axiosClient.delete(`/wali-murid/${id}`);
@@ -245,15 +244,15 @@ const DataWaliMurid = () => {
                                 >
                                   <FaEdit className="w-4 h-4" />
                                 </button>
-                                <button
-                                  onClick={() => handleDelete(wali.id)}
-                                  className="p-1.5 rounded-lg text-red-500 hover:bg-red-100 dark:hover:bg-red-900 transition-colors duration-300"
-                                  title="Hapus Wali"
-                                >
-                                  <FaTrash className="w-4 h-4" />
-                                </button>
                               </>
                             )}
+                            <button
+                              onClick={() => handleDelete(wali.id)}
+                              className="p-1.5 rounded-lg text-red-500 hover:bg-red-100 dark:hover:bg-red-900 transition-colors duration-300"
+                              title="Hapus Wali"
+                            >
+                              <FaTrash className="w-4 h-4" />
+                            </button>
                           </div>
                         </td>
                       </tr>

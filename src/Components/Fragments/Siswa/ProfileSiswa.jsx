@@ -27,6 +27,9 @@ const ProfileSiswa = () => {
         const response = await axiosClient.get("/profile");
         setProfileData(response.data);
         const profile = response.data.data;
+        if (profile?.nama_lengkap) {
+          Cookies.set("name", profile.nama_lengkap, { path: "/" });
+        }
         if (profile?.user_id) {
           Cookies.set("user_id", profile.user_id, { path: "/" });
         }

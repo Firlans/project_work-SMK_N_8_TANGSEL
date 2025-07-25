@@ -27,6 +27,9 @@ const ProfileAdmin = () => {
         const response = await axiosClient.get("/profile");
         setProfileData(response.data);
         const profile = response.data.data;
+        if (profile?.nama) {
+          Cookies.set("name", profile.nama, { path: "/" });
+        }
         if (profile?.user_id) {
           Cookies.set("user_id", profile.user_id, { path: "/" });
         }

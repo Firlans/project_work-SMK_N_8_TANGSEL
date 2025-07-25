@@ -29,6 +29,9 @@ const ProfileGuru = () => {
         setProfileData(response.data);
 
         const profile = response.data.data;
+        if (profile?.nama) {
+          Cookies.set("name", profile.nama, { path: "/" });
+        }
         if (profile?.user_id) {
           Cookies.set("user_id", profile.user_id, { path: "/" });
         }
@@ -266,10 +269,6 @@ const ProfileGuru = () => {
             <ProfileField
               label="Tempat, Tanggal Lahir"
               value={formatTanggal(profileData?.data?.tanggal_lahir)}
-            />
-            <ProfileField
-              label="Mata Pelajaran"
-              value={profileData?.data?.mata_pelajaran?.nama_pelajaran || "-"}
             />
           </div>
 

@@ -130,11 +130,11 @@ const DataMapel = () => {
             <table className="min-w-full text-sm divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 rounded-lg overflow-hidden transition-colors duration-300">
               <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
                 <tr>
-                  <th className="px-6 py-3 text-left font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                  <th className="px-6 py-3 text-center font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     No.
                   </th>
                   <th
-                    className="px-6 py-3 text-left font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="px-6 py-3 text-center font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     onClick={() => requestSort("nama_pelajaran")}
                   >
                     Mata Pelajaran {getSortIcon("nama_pelajaran")}

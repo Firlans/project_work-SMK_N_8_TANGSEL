@@ -107,10 +107,10 @@ const DataKelas = () => {
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
               <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
+                  <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 dark:text-gray-300">
                     Nama Kelas
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
+                  <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 dark:text-gray-300">
                     Ketua Kelas
                   </th>
                   {!isSuperAdmin() && (

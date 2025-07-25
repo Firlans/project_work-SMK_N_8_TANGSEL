@@ -1,7 +1,9 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import {
+  fetchUsersById,
   getChatMessages,
+  getChatRoomById,
   sendMessage,
 } from "../../../services/chatRoomService";
 import ChatMessage from "./ChatMessage";
@@ -9,6 +11,8 @@ import ChatInput from "./ChatInput";
 import ChatRoomHeader from "./ChatRoomHeader";
 import Cookies from "js-cookie";
 import { decryptMessage, encryptMessage } from "../../../utils/encryption";
+import { generateNewMessageNotificationEmail } from "../../../utils/emailNewMessage";
+import { sendEmailNotification } from "../../../services/emailService";
 
 // Dekripsi aman (untuk pesan lama)
 const safeDecryptMessage = (msg, isPrivate) => {
@@ -52,15 +56,77 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [chatRoomInfo, setChatRoomInfo] = useState(null);
+  const [targetUserEmail, setTargetUserEmail] = useState(null);
+  const [targetUserName, setTargetUserName] = useState(null);
+
   const bottomRef = useRef(null);
-  const user = JSON.parse(Cookies.get("userPrivilege") || "{}");
+  const user = useMemo(
+    () => JSON.parse(Cookies.get("userPrivilege") || "{}"),
+    []
+  );
   const userId = user?.id_user;
+  const userProfile = Cookies.get("userRole");
+  const userName = Cookies.get("name");
 
   const scrollToBottom = useCallback(() => {
     setTimeout(() => {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 50);
   }, []);
+
+  const sendNewMessageEmail = useCallback(
+    async (
+      messageContent,
+      senderName,
+      currentChatRoomInfo,
+      recipientEmail,
+      recipientName
+    ) => {
+      if (!currentChatRoomInfo || !recipientEmail) {
+        console.warn("GAGAL KIRIM EMAIL");
+        console.warn("chatRoomInfo:", currentChatRoomInfo);
+        console.warn("recipientEmail:", recipientEmail);
+        return;
+      }
+
+      try {
+        const now = new Date();
+        const options = {
+          day: "2-digit",
+          month: "2-digit",
+          year: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        };
+        let formattedDateTime = now.toLocaleString("id-ID", options);
+        formattedDateTime = formattedDateTime.replace(/\./g, ":");
+
+        const roomTypeDisplay = currentChatRoomInfo.is_private
+          ? "Private"
+          : "Public";
+        const subject = `Pesan Baru di ${currentChatRoomInfo.name}! - ${formattedDateTime}`;
+
+        const emailHtml = generateNewMessageNotificationEmail({
+          chatRoomName: currentChatRoomInfo.name,
+          senderName: senderName,
+          messageContent: messageContent,
+          roomType: roomTypeDisplay,
+          timestamp: formattedDateTime,
+        });
+
+        await sendEmailNotification(recipientEmail, subject, emailHtml);
+        console.log(
+          `Notifikasi email pesan baru berhasil dikirim ke ${recipientName} (${recipientEmail})`
+        );
+      } catch (emailErr) {
+        console.error("Gagal mengirim notifikasi email pesan baru:", emailErr);
+      }
+    },
+    [id]
+  );
 
   // Ambil riwayat chat dari backend
   const fetchMessages = useCallback(async () => {
@@ -69,22 +135,51 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
     setError(null);
 
     try {
-      const res = await getChatMessages(id, 1);
-      const sorted = res.data.data
+      const [messagesRes, chatRoomRes] = await Promise.all([
+        getChatMessages(id, 1),
+        getChatRoomById(id),
+      ]);
+
+      const sortedMessages = messagesRes.data.data
         .filter((msg) => msg.id_chat_room === parseInt(id))
         .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
         .map((msg) => ({
           ...msg,
           message: safeDecryptMessage(msg, isPrivate),
         }));
-      setMessages(sorted);
+      setMessages(sortedMessages);
+
+      const roomInfo = chatRoomRes?.data;
+      setChatRoomInfo(roomInfo);
+
+      // Tentukan lawan bicara (penerima email)
+      let recipientId = null;
+      if (userProfile === "konselor") {
+        recipientId = roomInfo.id_user_siswa;
+      } else if (userProfile === "siswa") {
+        recipientId = roomInfo.id_user_guru;
+      }
+
+      if (!recipientId) {
+        console.warn("Recipient ID tidak ditemukan.");
+        return;
+      }
+
+      const recipientDetail = await fetchUsersById(recipientId);
+      if (!recipientDetail) {
+        console.warn("Gagal ambil detail user:", recipientId);
+        return;
+      }
+
+      setTargetUserEmail(recipientDetail.email);
+      setTargetUserName(recipientDetail.name);
     } catch (err) {
       setError("Gagal memuat pesan.");
     } finally {
       setLoading(false);
       scrollToBottom();
     }
-  }, [id, isPrivate, scrollToBottom]);
+  }, [id, isPrivate, scrollToBottom, user]);
 
   // Real-time listener (Laravel Echo)
   useEffect(() => {
@@ -96,12 +191,41 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
 
     const channel = window.Echo.private(`room.${id}`);
 
-    channel.listen("SendMessageEvent", (e) => {
+    channel.listen("SendMessageEvent", async (e) => {
       // Dapatkan pesan dari payload real-time
       const realTimeMessageContent = getMessageFromRealtimePayload(
         e,
         isPrivate
       );
+
+      // {
+      // // Tentukan pengirim pesan real-time
+      // const eventSenderId = e.sender?.id;
+
+      // // Jika pesan berasal dari BUKAN user yang sedang login, kirim notifikasi
+      // if (
+      //   eventSenderId !== userId &&
+      //   !(isPrivate && userProfile === "konselor")
+      // ) {
+      //   const senderName = isPrivate
+      //     ? "Siswa Anonim"
+      //     : e.sender?.name || "Pengirim Tak Dikenal";
+
+      //   if (chatRoomInfo && targetUserEmail) {
+      //     await sendNewMessageEmail(
+      //       realTimeMessageContent,
+      //       senderName,
+      //       chatRoomInfo,
+      //       targetUserEmail,
+      //       targetUserName
+      //     );
+      //   } else {
+      //     console.warn(
+      //       "Tidak dapat mengirim notifikasi email: chatRoomInfo atau targetUserEmail belum tersedia."
+      //     );
+      //   }
+      // }
+      // }
 
       setMessages((prev) => {
         // Cari apakah ada pesan 'pending' dengan konten yang sama
@@ -131,7 +255,7 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
         } else {
           // Jika tidak ada pesan pending yang cocok, tambahkan sebagai pesan baru
           const newMessage = {
-            id: e.message?.id || `realtime-${Date.now()}`, // Gunakan ID dari backend
+            id: e.message?.id || `realtime-${Date.now()}`,
             id_sender: e.sender?.id,
             id_chat_room: e.roomId,
             created_at: e.message?.created_at || new Date().toISOString(),
@@ -150,7 +274,16 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
       channel.stopListening("SendMessageEvent");
       window.Echo.leave(`room.${id}`);
     };
-  }, [id, isPrivate, scrollToBottom]);
+  }, [
+    id,
+    isPrivate,
+    scrollToBottom,
+    userId,
+    chatRoomInfo,
+    targetUserEmail,
+    targetUserName,
+    sendNewMessageEmail,
+  ]);
 
   // Kirim pesan ke backend
   const handleSend = async (text) => {
@@ -189,21 +322,18 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
 
       const res = await sendMessage(payload);
 
-      // if (res?.data) {
-      //   setMessages((prev) =>
-      //     prev.map((msg) =>
-      //       msg.tempId === tempId
-      //         ? {
-      //             ...res.data,
-      //             tempId,
-      //             pending: false,
-      //             message: text,
-      //             sender: user,
-      //           }
-      //         : msg
-      //     )
-      //   );
-      // }
+      // --- Kirim notifikasi email setelah pesan dikirim (dari sisi pengirim) ---
+      // Pesan dikirim oleh user yang sedang login, notifikasi dikirim ke targetUserEmail
+      if (res?.data && !(isPrivate && userProfile === "konselor")) {
+        await sendNewMessageEmail(
+          text,
+          isPrivate ? "Siswa Anonim" : userName,
+          chatRoomInfo,
+          targetUserEmail,
+          targetUserName
+        );
+      }
+      // --- Akhir notifikasi ---
     } catch (err) {
       setMessages((prev) =>
         prev.map((msg) =>
@@ -221,6 +351,25 @@ const ChatRoomDetail = ({ isPrivate = false }) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
+
+  if (loading && !chatRoomInfo) {
+    // Tampilkan loading sampai chatRoomInfo terisi
+    return (
+      <div className="flex items-center justify-center h-screen w-full">
+        <p className="text-gray-400 dark:text-gray-300 italic">
+          Memuat chat...
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen w-full">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto h-[90vh] p-4 md:p-6 flex flex-col">

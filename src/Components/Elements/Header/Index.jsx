@@ -33,6 +33,7 @@ const Header = ({ onToggleSidebar }) => {
     Cookies.remove("id_siswa");
     Cookies.remove("id_guru");
     Cookies.remove("user_id");
+    Cookies.remove("name");
     setProfile(null);
     delete axiosClient.defaults.headers.common["Authorization"];
     navigate("/login");

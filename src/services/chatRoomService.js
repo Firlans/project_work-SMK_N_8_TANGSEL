@@ -15,6 +15,15 @@ export const fetchChatRoomByAccessCode = async (accessCode) => {
   return res.data;
 };
 
+export const fetchUsersById = async (userId) => {
+  try {
+    const res = await axiosClient.get(`/user/${userId}`);
+    return res.data.data;
+  } catch (error) {
+    return null;
+  }
+}
+
 export const fetchAllConselors = async () => {
   const res = await axiosClient.get("/konselor");
   return res.data;

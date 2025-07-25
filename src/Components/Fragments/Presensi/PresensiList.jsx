@@ -7,6 +7,9 @@ import { capitalizeEachWord } from "../../../utils/capitalizeEachWord";
 
 const PresensiList = () => {
   const { idJadwal, idPertemuan } = useParams();
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  const { namaKelas, namaMapel, namaPertemuan } = state || {};
   const {
     siswaList,
     presensi,
@@ -20,11 +23,7 @@ const PresensiList = () => {
     saveAll,
     editPresensi,
     deletePresensi,
-  } = usePresensiPicker(idJadwal, idPertemuan);
-
-  const navigate = useNavigate();
-  const { state } = useLocation();
-  const { namaKelas, namaMapel, namaPertemuan } = state || {};
+  } = usePresensiPicker(idJadwal, idPertemuan, namaMapel, namaPertemuan);
 
   if (loading) return <LoadingSpinner text={"Memuat presensi..."} />;
 
@@ -45,8 +44,8 @@ const PresensiList = () => {
               Presensi Siswa
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-              Mapel: <strong>{capitalizeEachWord(namaMapel || "-")}</strong> | Kelas:{" "}
-              <strong>{namaKelas || "-"}</strong> | Pertemuan:{" "}
+              Mapel: <strong>{capitalizeEachWord(namaMapel || "-")}</strong> |
+              Kelas: <strong>{namaKelas || "-"}</strong> | Pertemuan:{" "}
               <strong>{namaPertemuan || "-"}</strong>
             </p>
           </div>

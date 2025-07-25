@@ -8,26 +8,71 @@ import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import Cookies from "js-cookie";
 import ImagePreview from "../../../Elements/Image Pop Up/ImagePreview";
 import { FaEye } from "react-icons/fa6";
-
-const getBuktiPelanggaranURL = async (filename) => {
-  try {
-    const response = await axiosClient.get(`/images/pelanggaran/${filename}`, {
-      responseType: "blob",
-    });
-    return URL.createObjectURL(response.data);
-  } catch (error) {
-    return null;
-  }
-};
+import { IoCloudDownloadOutline, IoCloudUploadOutline } from "react-icons/io5";
+import { downloadFile, uploadFile } from "../../../../services/fileService";
 
 const DataPelanggaran = () => {
   const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState({
+    show: false,
+    message: "",
+    type: "success",
+  });
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState(null);
   const [userPrivilege, setUserPrivilege] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [error, setError] = useState(false);
+
+  const getBuktiPelanggaranURL = async (filename) => {
+    try {
+      const response = await axiosClient.get(
+        `/images/pelanggaran/${filename}`,
+        {
+          responseType: "blob",
+        }
+      );
+      return URL.createObjectURL(response.data);
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setLoading(true);
+    const result = await uploadFile(file);
+    setLoading(false);
+
+    if (result.success) {
+      showNotification("File berhasil diupload", "success");
+    } else {
+      showNotification(result.message, "error");
+    }
+  };
+
+  const handleFileDownload = async () => {
+    setLoading(true);
+    const result = await downloadFile();
+    setLoading(false);
+
+    if (result.success) {
+      showNotification("File berhasil didownload", "success");
+    } else {
+      showNotification(result.message, "error");
+    }
+  };
+
+  const showNotification = (message, type = "success") => {
+    setNotification({ show: true, message, type });
+
+    setTimeout(() => {
+      setNotification((prev) => ({ ...prev, show: false }));
+    }, 3000);
+  };
 
   const checkUserRole = () => {
     if (!userPrivilege) return null;
@@ -116,6 +161,11 @@ const DataPelanggaran = () => {
     return checkUserRole() !== "superadmin";
   };
 
+  const canDeleteData = () => {
+    const role = checkUserRole();
+    return role === "superadmin";
+  };
+
   return (
     <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm transition-colors duration-300">
       {loading ? (
@@ -123,21 +173,63 @@ const DataPelanggaran = () => {
       ) : (
         <>
           {/* Header */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
+          <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-6">
+            {/* Title */}
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
               Data Poin Negatif
             </h2>
-            {canAddData() && (
+            <div className="flex flex-wrap gap-2 sm:justify-end">
+              {/* Tambah Poin */}
+              {canAddData() && (
+                <button
+                  className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2  flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
+                  onClick={() => {
+                    setSelected(null);
+                    setShowModal(true);
+                  }}
+                >
+                  <FaPlus className="w-4 h-4" />
+                  Tambah Poin Negatif
+                </button>
+              )}
+
+              {/* Upload Button */}
+              <label className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer transition-colors duration-300">
+                <IoCloudUploadOutline className="w-5 h-5" />
+                Upload Pedoman
+                <input
+                  type="file"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+              </label>
+
+              {/* Download Button */}
               <button
-                className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2  flex items-center justify-center gap-2 transition-colors duration-300 w-full sm:w-auto"
-                onClick={() => {
-                  setSelected(null);
-                  setShowModal(true);
-                }}
+                onClick={handleFileDownload}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors duration-300"
               >
-                <FaPlus className="w-4 h-4" />
-                Tambah Poin Negatif
+                <IoCloudDownloadOutline className="w-5 h-5" />
+                Download Pedoman
               </button>
+            </div>
+
+            {/* Spinner */}
+            {loading && (
+              <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex items-center justify-center">
+                <LoadingSpinner />
+              </div>
+            )}
+
+            {/* Notification */}
+            {notification.show && (
+              <div
+                className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out
+        ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}
+        text-white text-sm font-medium`}
+              >
+                {notification.message}
+              </div>
             )}
           </div>
 
@@ -159,11 +251,7 @@ const DataPelanggaran = () => {
                     ].map((head, i) => (
                       <th
                         key={i}
-                        className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium ${
-                          head === "Status" || head === "Aksi"
-                            ? "text-center"
-                            : "text-left"
-                        } text-gray-500 dark:text-gray-300 transition-colors`}
+                        className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors"
                       >
                         {head}
                       </th>
@@ -205,23 +293,26 @@ const DataPelanggaran = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          {item.nama_foto ? (
-                            <button
-                              onClick={async () => {
-                                const imageUrl = await getBuktiPelanggaranURL(
-                                  item.nama_foto
-                                );
-                                if (imageUrl) setPreviewImage(imageUrl);
-                              }}
-                              className="text-blue-600 hover:underline dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-300"
-                            >
-                              <FaEye />
-                            </button>
-                          ) : (
-                            <span className="text-gray-400 dark:text-gray-500">
-                              -
-                            </span>
-                          )}
+                          <div className="flex justify-center items-center min-h-[1.5rem]">
+                            {item.nama_foto ? (
+                              <button
+                                onClick={async () => {
+                                  const imageUrl = await getBuktiPelanggaranURL(
+                                    item.nama_foto
+                                  );
+                                  if (imageUrl) setPreviewImage(imageUrl);
+                                }}
+                                className="text-blue-600 hover:underline dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-300"
+                                aria-label="Lihat bukti pelanggaran"
+                              >
+                                <FaEye />
+                              </button>
+                            ) : (
+                              <span className="text-gray-400 dark:text-gray-500">
+                                -
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
                           <div className="max-w-xs break-words">
@@ -232,8 +323,8 @@ const DataPelanggaran = () => {
                           <Badge status={item.status} />
                         </td>
                         <td className="px-6 py-4 text-center">
-                          {canModifyData(item) && (
-                            <div className="flex gap-2 justify-center">
+                          <div className="flex gap-2 justify-center">
+                            {canModifyData(item) && (
                               <button
                                 onClick={() => {
                                   setSelected(item);
@@ -243,14 +334,16 @@ const DataPelanggaran = () => {
                               >
                                 <FaEdit />
                               </button>
+                            )}
+                            {canDeleteData() && (
                               <button
                                 onClick={() => handleDelete(item.id)}
                                 className="text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
                               >
                                 <FaTrash />
                               </button>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))

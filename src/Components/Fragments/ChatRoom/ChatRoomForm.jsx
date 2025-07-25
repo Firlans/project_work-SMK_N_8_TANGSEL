@@ -4,7 +4,10 @@ import Cookies from "js-cookie";
 import {
   createChatRoom,
   fetchAllConselors,
+  fetchUsersById,
 } from "../../../services/chatRoomService";
+import { sendEmailNotification } from "../../../services/emailService";
+import { generateChatRoomNotificationEmail } from "../../../utils/emailChatRoomTemplates";
 
 const ChatRoomForm = ({
   isOpen,
@@ -13,7 +16,6 @@ const ChatRoomForm = ({
   isPrivate = false,
 }) => {
   const idSiswa = JSON.parse(Cookies.get("user_id") || "{}");
-  // const idSiswa = user?.user_id || user?.id;
   const [roomName, setRoomName] = useState("");
   const [selectedConselorId, setSelectedConselorId] = useState("");
   const [counselors, setCounselors] = useState([]);
@@ -68,8 +70,73 @@ const ChatRoomForm = ({
       const res = await createChatRoom(payload);
       onRoomCreated?.(res.data);
       onClose();
+
+      let guruEmail = "";
+      let namaSiswa = "";
+
+      try {
+        const guruDetail = await fetchUsersById(selectedConselorId);
+        guruEmail = guruDetail.email;
+        if (!isPrivate && idSiswa) {
+          const siswaDetail = await fetchUsersById(idSiswa);
+          namaSiswa = siswaDetail.name;
+        }
+      } catch (userError) {
+        // console.error(
+        //   "Gagal mengambil detail email konselor atau nama siswa:",
+        //   userError
+        // );
+        // alert(
+        //   "Chat room berhasil dibuat, tetapi gagal mendapatkan email konselor. Notifikasi tidak terkirim."
+        // );
+        setLoading(false);
+        return;
+      }
+
+      if (guruEmail) {
+        const now = new Date();
+        const options = {
+          day: "2-digit",
+          month: "2-digit",
+          year: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        };
+
+        let formattedDateTime = now.toLocaleString("id-ID", options);
+        formattedDateTime = formattedDateTime.replace(/\./g, ":");
+
+        const subject = `Notifikasi: Chat Room Baru Dibuat! - ${formattedDateTime}`;
+        const roomType = isPrivate ? "Private" : "Public";
+
+        const emailTemplate = generateChatRoomNotificationEmail({
+          roomName,
+          roomType,
+          studentName: !isPrivate ? namaSiswa : undefined, // Hanya kirim namaSiswa jika public
+        });
+
+        try {
+          await sendEmailNotification(guruEmail, subject, emailTemplate);
+          // alert("Chat room berhasil dibuat dan notifikasi email dikirim!");
+        } catch (emailError) {
+          // console.error("Gagal mengirim notifikasi email:", emailError);
+          // alert(
+          //   "Chat room berhasil dibuat, tetapi gagal mengirim notifikasi email."
+          // );
+        }
+      } else {
+        // console.warn(
+        //   "Email konselor tidak ditemukan setelah fetch detail user untuk ID:",
+        //   selectedConselorId
+        // );
+        // alert(
+        //   "Chat room berhasil dibuat, tetapi email notifikasi tidak dapat dikirim karena email konselor tidak ditemukan."
+        // );
+      }
     } catch (err) {
-      alert("Gagal membuat chat room. Coba lagi nanti.");
+      // alert("Gagal membuat chat room. Coba lagi nanti.");
     } finally {
       setLoading(false);
     }
