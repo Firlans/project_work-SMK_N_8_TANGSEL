@@ -130,7 +130,7 @@ class AuthController extends Controller
                 'status' => 'success',
                 'message' => 'Login berhasil',
                 'data' => [
-                    'user' => $user->only(['id', 'name', 'email', 'prifile', 'is_active', 'email_verified_at', 'created_at', 'updated_at']),
+                    'user' => $user->only(['id', 'name', 'email', 'profile', 'is_active', 'email_verified_at', 'created_at', 'updated_at']),
                     'privilege' => $user->privileges,
                     'token' => $token
                 ]
@@ -179,7 +179,7 @@ class AuthController extends Controller
                 'status' => 'success',
                 'message' => 'Login berhasil',
                 'data' => [
-                    'user' => $user->only(['id', 'name', 'email', 'prifile', 'is_active', 'email_verified_at', 'created_at', 'updated_at']),
+                    'user' => $user->only(['id', 'name', 'email', 'profile', 'is_active', 'email_verified_at', 'created_at', 'updated_at']),
                     'privilege' => $user->privileges,
                     'token' => $token
                 ]
