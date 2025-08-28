@@ -25,6 +25,7 @@ class DevelopmentSeeder extends Seeder
             JadwalSeeder::class,
             PertemuanSeeder::class,
             KehadiranSeeder::class,
+            JenisPelanggaranSeeder::class,
             PrestasiSeeder::class,
             PelanggaranSeeder::class,
         ]);

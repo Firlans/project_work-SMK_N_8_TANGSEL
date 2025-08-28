@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pelanggaran;
+use App\Models\Siswa;
 use App\Traits\ApiResponseHandler;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -11,10 +13,21 @@ use Illuminate\Support\Facades\Storage;
 class PelanggaranController extends Controller
 {
     use ApiResponseHandler;
-    public function getAllPelanggaran()
+    public function getAllPelanggaran(Request $request)
     {
         try {
-            $pelanggaran = Pelanggaran::all();
+            $query = Pelanggaran::query();
+
+            if ($request->has('per_page')) {
+                $perPage = (int) $request->get('per_page', 10); // default 10
+                $pelanggaran = $query->paginate($perPage, ['*'], 'page', $request->get('page', 1));
+                return response()->json([
+                    'status' => 'success',
+                    'message' => $pelanggaran->isEmpty() ? 'No pelanggaran found' : 'Pelanggaran retrieved successfully',
+                    'data' => $pelanggaran->items()
+                ], 200);
+            }
+            $pelanggaran = $query->get();
 
             return response()->json([
                 'status' => 'success',
@@ -41,7 +54,7 @@ class PelanggaranController extends Controller
                 'data' => $pelanggaran
             ], 200);
         } catch (\Exception $e) {
-            return $this->handleError($e, 'getAllPelanggaran');
+            return $this->handleError($e, 'getPelanggaranById');
         }
     }
     public function getPelanggaranBySiswaId($id)
@@ -54,7 +67,37 @@ class PelanggaranController extends Controller
                 'data' => $pelanggaran
             ], 200);
         } catch (\Exception $e) {
-            return $this->handleError($e, 'getAllPelanggaran');
+            return $this->handleError($e, 'getPelanggaranBySiswaId');
+        }
+    }
+
+    public function getSummaryPelanggar(Request $request)
+    {
+        try {
+            $query = Siswa::select([
+                'siswa.id',
+                'siswa.nama_lengkap',
+                'siswa.nisn',
+                \DB::raw('SUM(jenis_pelanggaran.poin) as total_poin'),
+                \DB::raw('COUNT(pelanggaran.id) as jumlah_pelanggaran')
+            ])
+                ->leftJoin('pelanggaran', 'pelanggaran.terlapor', '=', 'siswa.id')
+                ->leftJoin('jenis_pelanggaran', 'jenis_pelanggaran.id', '=', 'pelanggaran.jenis_pelanggaran_id')
+                ->where('pelanggaran.status', '=', 'proses')
+                ->groupBy('siswa.id', 'siswa.nama_lengkap', 'siswa.nisn');
+
+            // kalau ada ?per_page= di query param → pakai paginate
+            if ($request->has('per_page')) {
+                $perPage = (int) $request->get('per_page', 10); // default 10
+                $pelanggar = $query->paginate($perPage, ['*'], 'page', $request->get('page', 1));
+                return $this->handleReturnData($pelanggar->items(), 'Akumulasi Pelanggar');
+            } else {
+                $pelanggar = $query->get();
+            }
+
+            return $this->handleReturnData($pelanggar, 'Akumulasi Pelanggar');
+        } catch (\Exception $e) {
+            return $this->handleError($e, 'getSummaryPelanggar');
         }
     }
     public function getPelanggaranByUserId($id)
@@ -67,7 +110,7 @@ class PelanggaranController extends Controller
                 'data' => $pelanggaran
             ], 200);
         } catch (\Exception $e) {
-            return $this->handleError($e, 'getAllPelanggaran');
+            return $this->handleError($e, 'getPelanggaranByUserId');
         }
     }
     public function createPelanggaran(Request $request)

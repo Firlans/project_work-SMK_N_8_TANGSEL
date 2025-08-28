@@ -23,6 +23,7 @@ use App\Http\Middleware\JwtMiddleware;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\SiswaMiddleware;
 use App\Mail\CustomEmail;
+use App\Http\Controllers\JenisPelanggaranController;
 
 
 
@@ -129,6 +130,7 @@ Route::middleware([JwtMiddleware::class])->group(function () {
 
     // route pelanggaran
     Route::get('/pelanggaran', [PelanggaranController::class, 'getAllPelanggaran']);
+    Route::get('/pelanggaran/summary', [PelanggaranController::class, 'getSummaryPelanggar']);
     Route::get('/pelanggaran/{id}', [PelanggaranController::class, 'getPelanggaranById']);
     Route::get('/pelanggaran/pelapor/{user_id}', [PelanggaranController::class, 'getPelanggaranByUserId']);
     Route::get('/pelanggaran/terlapor/{id_siswa}', [PelanggaranController::class, 'getPelanggaranBySiswaId']);
@@ -170,4 +172,7 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     // route file
     Route::get('/file/{nama_file}', [FileController::class, 'getFile']);
     Route::post('/file', [FileController::class, 'saveFile']);
+
+    //route file
+    Route::get('/jenis-pelanggaran', [JenisPelanggaranController::class, 'getAllJenisPelanggaran']);
 });

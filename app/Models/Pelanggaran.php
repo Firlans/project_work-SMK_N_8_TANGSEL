@@ -14,6 +14,7 @@ class Pelanggaran extends Model
 
     protected $fillable = [
         'nama_pelanggaran',
+        'jenis_pelanggaran_id',
         'nama_foto',
         'deskripsi',
         'status',
@@ -29,5 +30,10 @@ class Pelanggaran extends Model
     public function terlaporSiswa(): BelongsTo
     {
         return $this->belongsTo(Siswa::class, 'terlapor');
+    }
+
+    public function jenisPelanggaran()
+    {
+        return $this->belongsTo(JenisPelanggaran::class, 'jenis_pelanggaran_id');
     }
 }

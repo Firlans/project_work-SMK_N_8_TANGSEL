@@ -12,13 +12,17 @@ class PelanggaranSeeder extends Seeder
         $pelanggaran = [
             [
                 'nama_pelanggaran' => 'Terlambat',
+                'jenis_pelanggaran_id' => 2, // contoh: 2 = Ringan
+                'nama_foto' => null,
                 'deskripsi' => 'Terlambat masuk sekolah 30 menit',
                 'status' => 'pengajuan',
-                'pelapor' => 1, // Make sure this user ID exists
-                'terlapor' => 1, // Make sure this siswa ID exists
+                'pelapor' => 1, // pastikan user ID 1 ada
+                'terlapor' => 1, // pastikan siswa ID 1 ada
             ],
             [
                 'nama_pelanggaran' => 'Tidak Berseragam Lengkap',
+                'jenis_pelanggaran_id' => 2, // contoh: 2 = Ringan
+                'nama_foto' => null,
                 'deskripsi' => 'Tidak memakai dasi',
                 'status' => 'ditolak',
                 'pelapor' => 1,
@@ -26,6 +30,8 @@ class PelanggaranSeeder extends Seeder
             ],
             [
                 'nama_pelanggaran' => 'Membolos',
+                'jenis_pelanggaran_id' => 1, // contoh: 1 = Berat
+                'nama_foto' => null,
                 'deskripsi' => 'Tidak mengikuti pelajaran jam ke 3-4',
                 'status' => 'proses',
                 'pelapor' => 1,

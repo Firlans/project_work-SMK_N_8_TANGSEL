@@ -63,7 +63,7 @@ class WaktuController extends Controller
 
             $waktu->delete();
 
-            return $this->handleDeleted('Waktu');
+            return $this->handleDeleted('Waktu', $id);
 
         } catch (\Exception $e) {
             return $this->handleError($e, 'deleteWaktu');
