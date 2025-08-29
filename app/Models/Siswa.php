@@ -48,7 +48,7 @@ class Siswa extends Model
 
     public function waliMurid()
     {
-        return $this->hasOne(WaliMurid::class, 'id_siswa');
+        return $this->hasMany(WaliMurid::class, 'id_siswa');
     }
 
     public function prestasi()
