@@ -78,13 +78,15 @@ class PelanggaranController extends Controller
                 'siswa.id',
                 'siswa.nama_lengkap',
                 'siswa.nisn',
+                'users.email',
                 \DB::raw('SUM(jenis_pelanggaran.poin) as total_poin'),
                 \DB::raw('COUNT(pelanggaran.id) as jumlah_pelanggaran')
             ])
+                ->leftJoin('users', 'users.id', '=', 'siswa.user_id')
                 ->leftJoin('pelanggaran', 'pelanggaran.terlapor', '=', 'siswa.id')
                 ->leftJoin('jenis_pelanggaran', 'jenis_pelanggaran.id', '=', 'pelanggaran.jenis_pelanggaran_id')
                 ->where('pelanggaran.status', '=', 'proses')
-                ->groupBy('siswa.id', 'siswa.nama_lengkap', 'siswa.nisn');
+                ->groupBy('siswa.id', 'siswa.nama_lengkap', 'siswa.nisn', 'users.email');
 
             // kalau ada ?per_page= di query param → pakai paginate
             if ($request->has('per_page')) {
