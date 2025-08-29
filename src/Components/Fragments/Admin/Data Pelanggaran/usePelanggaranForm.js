@@ -7,6 +7,7 @@ export const usePelanggaranForm = (initialData, isOpen) => {
     pelapor: "",
     terlapor: "", // Ini adalah id siswa yang melakukan pelanggaran
     nama_pelanggaran: "", // Jenis poin negatif
+    jenis_pelanggaran_id: "",
     deskripsi: "",
     nama_foto: null, // Ini akan menampung File object
     status: "pengajuan",
@@ -34,6 +35,8 @@ export const usePelanggaranForm = (initialData, isOpen) => {
   const [validationErrors, setValidationErrors] = useState({}); // State baru untuk client-side validation errors
   const [isSaving, setIsSaving] = useState(false); // State untuk loading saat menyimpan
   const [isFetchingSiswa, setIsFetchingSiswa] = useState(false); // State untuk loading saat fetch siswa
+  const [jenisPelanggaranList, setJenisPelanggaranList] = useState([]);
+  const [isFetchingJenis, setIsFetchingJenis] = useState(false);
 
   useEffect(() => {
     const privilegeData = Cookies.get("userPrivilege");
@@ -46,6 +49,22 @@ export const usePelanggaranForm = (initialData, isOpen) => {
       }
     }
   }, []);
+
+  useEffect(() => {
+    const fetchJenisPelanggaran = async () => {
+      setIsFetchingJenis(true);
+      try {
+        const res = await axiosClient.get("/jenis-pelanggaran");
+        setJenisPelanggaranList(res.data?.data || []);
+      } catch (err) {
+        console.error("Gagal ambil jenis pelanggaran:", err);
+      } finally {
+        setIsFetchingJenis(false);
+      }
+    };
+
+    if (isOpen) fetchJenisPelanggaran();
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -96,6 +115,7 @@ export const usePelanggaranForm = (initialData, isOpen) => {
           pelapor: userPrivilege?.id_user || "", // Pastikan pelapor di-set jika privilege ada
           terlapor: "",
           nama_pelanggaran: "",
+          jenis_pelanggaran_id: "",
           deskripsi: "",
           nama_foto: null,
           status: "pengajuan",
@@ -198,6 +218,7 @@ export const usePelanggaranForm = (initialData, isOpen) => {
     form.append("pelapor", isEdit ? formData.pelapor : userPrivilege?.id_user);
     form.append("terlapor", formData.terlapor);
     form.append("nama_pelanggaran", formData.nama_pelanggaran.trim());
+    form.append("jenis_pelanggaran_id", formData.jenis_pelanggaran_id);
     form.append("deskripsi", formData.deskripsi.trim());
     form.append("status", formData.status || "pengajuan");
 
@@ -274,5 +295,7 @@ export const usePelanggaranForm = (initialData, isOpen) => {
     backendError,
     validationErrors,
     handleSubmit,
+    jenisPelanggaranList,
+    isFetchingJenis,
   };
 };

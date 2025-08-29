@@ -10,6 +10,7 @@ import ImagePreview from "../../../Elements/Image Pop Up/ImagePreview";
 import { FaEye } from "react-icons/fa6";
 import { IoCloudDownloadOutline, IoCloudUploadOutline } from "react-icons/io5";
 import { downloadFile, uploadFile } from "../../../../services/fileService";
+import PelanggaranSummary from "./PelanggaranSummary";
 
 const DataPelanggaran = () => {
   const [loading, setLoading] = useState(true);
@@ -24,6 +25,20 @@ const DataPelanggaran = () => {
   const [userPrivilege, setUserPrivilege] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [error, setError] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [sortConfig, setSortConfig] = useState({
+    key: "created_at",
+    direction: "desc",
+  });
+
+  //paginaation
+  const [allData, setAllData] = useState([]);
+  const [page, setPage] = useState(1);
+  const [perPage] = useState(5); // bisa diubah sesuai kebutuhan
+  const [paginatedData, setPaginatedData] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [jenisPelanggaran, setJenisPelanggaran] = useState([]);
 
   const getBuktiPelanggaranURL = async (filename) => {
     try {
@@ -86,22 +101,26 @@ const DataPelanggaran = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const userRole = checkUserRole();
-      const res = await axiosClient.get("/pelanggaran");
 
-      let filteredData = res.data.data;
+      // ambil semua data tanpa pagination backend
+      const res = await axiosClient.get(`/pelanggaran`);
+      let allFetched = res.data.data;
 
+      // filter berdasarkan role
       if (
         (userRole === "guru" || userRole === "siswa") &&
         userPrivilege?.id_user
       ) {
-        filteredData = filteredData.filter(
+        allFetched = allFetched.filter(
           (item) => item.pelapor === userPrivilege.id_user
         );
       }
 
+      // mapping + inject nama terlapor
       const pelanggaranWithNama = await Promise.all(
-        filteredData.map(async (item) => {
+        allFetched.map(async (item) => {
           const siswa = await axiosClient.get(`/siswa/${item.terlapor}`);
           return {
             ...item,
@@ -110,13 +129,31 @@ const DataPelanggaran = () => {
         })
       );
 
-      setData(pelanggaranWithNama);
+      // simpan all data (buat sorting / pagination manual)
+      setAllData(pelanggaranWithNama);
+
+      // set total pages
+      setTotalPages(Math.ceil(pelanggaranWithNama.length / perPage));
     } catch (err) {
+      console.error(err);
       setError(true);
     } finally {
       setLoading(false);
     }
   };
+
+  // slice data setiap kali page / allData berubah
+  useEffect(() => {
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    setData(allData.slice(start, end));
+  }, [allData, page, perPage]);
+
+  useEffect(() => {
+    if (userPrivilege) {
+      fetchData();
+    }
+  }, [userPrivilege]);
 
   useEffect(() => {
     const privilegeData = Cookies.get("userPrivilege");
@@ -129,12 +166,6 @@ const DataPelanggaran = () => {
       }
     }
   }, []);
-
-  useEffect(() => {
-    if (userPrivilege) {
-      fetchData();
-    }
-  }, [userPrivilege]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Yakin ingin menghapus data ini?")) return;
@@ -164,6 +195,52 @@ const DataPelanggaran = () => {
   const canDeleteData = () => {
     const role = checkUserRole();
     return role === "superadmin";
+  };
+
+  // --- Handler sorting ---
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        // toggle direction kalo klik kolom yg sama
+        return { key, direction: prev.direction === "asc" ? "desc" : "asc" };
+      }
+      return { key, direction: "asc" };
+    });
+  };
+
+  useEffect(() => {
+    if (allData.length === 0) return;
+
+    // sorting seluruh data
+    const sortedAllData = [...allData].sort((a, b) => {
+      let valA = new Date(a[sortConfig.key]);
+      let valB = new Date(b[sortConfig.key]);
+      if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
+      if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    // slice setelah sort
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    setData(sortedAllData.slice(start, end));
+  }, [allData, page, sortConfig, perPage]);
+
+  useEffect(() => {
+    const fetchJenisPelanggaran = async () => {
+      try {
+        const res = await axiosClient.get("/jenis-pelanggaran");
+        setJenisPelanggaran(res.data.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchJenisPelanggaran();
+  }, []);
+
+  const getNamaJenis = (id) => {
+    const jenis = jenisPelanggaran.find((j) => j.id === id);
+    return jenis ? jenis.nama_jenis : "-";
   };
 
   return (
@@ -232,126 +309,187 @@ const DataPelanggaran = () => {
               </div>
             )}
           </div>
+          <>
+            <PelanggaranSummary refreshTrigger={refreshKey} />
 
-          {/* Table */}
-          <div className="-mx-4 sm:mx-0 overflow-x-auto">
-            <div className="inline-block min-w-full align-middle">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
-                <thead className="">
-                  <tr>
-                    {[
-                      "No",
-                      "Nama Siswa",
-                      "Tanggal",
-                      "Jenis Poin Negatif",
-                      "Bukti",
-                      "Deskripsi",
-                      "Status",
-                      "Aksi",
-                    ].map((head, i) => (
-                      <th
-                        key={i}
-                        className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 transition-colors"
-                      >
-                        {head}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
-                  {data.length === 0 ? (
+            {/* Section Title */}
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300 mt-8 mb-4">
+              Pelanggaran Terbaru
+            </h3>
+
+            {/* Table */}
+            <div className="-mx-4 sm:mx-0 overflow-x-auto">
+              <div className="inline-block min-w-full align-middle">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-300">
+                  <thead className="">
                     <tr>
-                      <td
-                        colSpan="8"
-                        className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
-                      >
-                        Tidak ada data pelanggaran.
-                      </td>
-                    </tr>
-                  ) : (
-                    data.map((item, idx) => (
-                      <tr
-                        key={item.id}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                      >
-                        <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
-                          <div className="max-w-xs break-words"> {idx + 1}</div>{" "}
-                        </td>
-                        <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
-                          <div className="max-w-xs break-words">
-                            {item.nama_terlapor}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
-                          <div className="max-w-xs break-words">
-                            {formatTanggal(item.created_at)}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
-                          <div className="max-w-xs break-words">
-                            {item.nama_pelanggaran}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex justify-center items-center min-h-[1.5rem]">
-                            {item.nama_foto ? (
-                              <button
-                                onClick={async () => {
-                                  const imageUrl = await getBuktiPelanggaranURL(
-                                    item.nama_foto
-                                  );
-                                  if (imageUrl) setPreviewImage(imageUrl);
-                                }}
-                                className="text-blue-600 hover:underline dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-300"
-                                aria-label="Lihat bukti pelanggaran"
-                              >
-                                <FaEye />
-                              </button>
-                            ) : (
-                              <span className="text-gray-400 dark:text-gray-500">
-                                -
+                      {[
+                        { key: "no", label: "No" },
+                        { key: "nama_terlapor", label: "Nama Siswa" },
+                        { key: "created_at", label: "Tanggal" },
+                        { key: "nama_pelanggaran", label: "Nama Poin Negatif" },
+                        {
+                          key: "jenis_pelanggaran_id",
+                          label: "Jenis Poin Negatif",
+                        },
+                        { key: "bukti", label: "Bukti" },
+                        { key: "deskripsi", label: "Deskripsi" },
+                        { key: "status", label: "Status" },
+                        { key: "aksi", label: "Aksi" },
+                      ].map((col, i) => (
+                        <th
+                          key={i}
+                          className="px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-300 cursor-pointer select-none"
+                          onClick={() =>
+                            [
+                              "nama_terlapor",
+                              "created_at",
+                              "nama_pelanggaran",
+                              "jenis_pelanggaran_id",
+                              "status",
+                            ].includes(col.key)
+                              ? handleSort(col.key)
+                              : null
+                          }
+                        >
+                          <div className="flex items-center gap-1">
+                            {col.label}
+                            {/* Icon arah sorting */}
+                            {sortConfig.key === col.key && (
+                              <span>
+                                {sortConfig.direction === "asc" ? "↑" : "↓"}
                               </span>
                             )}
                           </div>
-                        </td>
-                        <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
-                          <div className="max-w-xs break-words">
-                            {item.deskripsi}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <Badge status={item.status} />
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <div className="flex gap-2 justify-center">
-                            {canModifyData(item) && (
-                              <button
-                                onClick={() => {
-                                  setSelected(item);
-                                  setShowModal(true);
-                                }}
-                                className="text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
-                              >
-                                <FaEdit />
-                              </button>
-                            )}
-                            {canDeleteData() && (
-                              <button
-                                onClick={() => handleDelete(item.id)}
-                                className="text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
-                              >
-                                <FaTrash />
-                              </button>
-                            )}
-                          </div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900 transition-colors duration-300">
+                    {data.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan="8"
+                          className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
+                        >
+                          Tidak ada data pelanggaran.
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      data.map((item, idx) => (
+                        <tr
+                          key={item.id}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                        >
+                          <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
+                            <div className="max-w-xs break-words">
+                              {" "}
+                              {idx + 1}
+                            </div>{" "}
+                          </td>
+                          <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
+                            <div className="max-w-xs break-words">
+                              {item.nama_terlapor}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
+                            <div className="max-w-xs break-words">
+                              {formatTanggal(item.created_at)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
+                            <div className="max-w-xs break-words">
+                              {item.nama_pelanggaran}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
+                            <div className="text-center max-w-xs break-words">
+                              {getNamaJenis(item.jenis_pelanggaran_id)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex justify-center items-center min-h-[1.5rem]">
+                              {item.nama_foto ? (
+                                <button
+                                  onClick={async () => {
+                                    const imageUrl =
+                                      await getBuktiPelanggaranURL(
+                                        item.nama_foto
+                                      );
+                                    if (imageUrl) setPreviewImage(imageUrl);
+                                  }}
+                                  className="text-blue-600 hover:underline dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-300"
+                                  aria-label="Lihat bukti pelanggaran"
+                                >
+                                  <FaEye />
+                                </button>
+                              ) : (
+                                <span className="text-gray-400 dark:text-gray-500">
+                                  -
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-100">
+                            <div className="max-w-xs break-words">
+                              {item.deskripsi}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <Badge status={item.status} />
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <div className="flex gap-2 justify-center">
+                              {canModifyData(item) && (
+                                <button
+                                  onClick={() => {
+                                    setSelected(item);
+                                    setShowModal(true);
+                                  }}
+                                  className="text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors"
+                                >
+                                  <FaEdit />
+                                </button>
+                              )}
+                              {canDeleteData() && (
+                                <button
+                                  onClick={() => handleDelete(item.id)}
+                                  className="text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+                                >
+                                  <FaTrash />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+
+            {/* Pagination control */}
+            <div className="flex justify-center items-center mt-4 gap-4">
+              <button
+                disabled={page === 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
+              >
+                Prev
+              </button>
+              <span className="text-gray-700 dark:text-gray-200">
+                Page {page} / {totalPages}
+              </span>
+              <button
+                disabled={page === totalPages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </>
 
           {/* Modal & Preview */}
           {showModal && (
@@ -363,6 +501,7 @@ const DataPelanggaran = () => {
               }}
               onSuccess={() => {
                 fetchData();
+                setRefreshKey((prev) => prev + 1);
                 setShowModal(false);
               }}
               initialData={selected}

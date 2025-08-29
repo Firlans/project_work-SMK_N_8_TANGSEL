@@ -1,5 +1,5 @@
 import { usePelanggaranForm } from "./usePelanggaranForm";
-import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner"; 
+import LoadingSpinner from "../../../Elements/Loading/LoadingSpinner";
 
 const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
   const {
@@ -14,6 +14,8 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
     backendError, // Ambil error dari hook
     validationErrors, // Ambil validationErrors dari hook
     handleSubmit: hookHandleSubmit, // Ganti nama agar tidak konflik dengan handleSubmit lokal
+    jenisPelanggaranList,
+    isFetchingJenis,
   } = usePelanggaranForm(initialData, isOpen);
 
   const handleSubmit = async (e) => {
@@ -84,7 +86,7 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
           {/* Jenis Pelanggaran */}
           <div>
             <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors mb-1">
-              Jenis Poin Negatif
+              Nama Poin Negatif
             </label>
             <input
               type="text"
@@ -104,6 +106,42 @@ const ModalPelanggaran = ({ isOpen, onClose, onSuccess, initialData }) => {
             {validationErrors.nama_pelanggaran && (
               <p className="text-red-600 text-sm mt-1">
                 {validationErrors.nama_pelanggaran}
+              </p>
+            )}
+          </div>
+
+          {/* Jenis Pelanggaran */}
+          <div>
+            <label className="block text-sm text-gray-700 dark:text-gray-300 transition-colors mb-1">
+              Jenis Pelanggaran
+            </label>
+            <select
+              name="jenis_pelanggaran_id"
+              value={formData.jenis_pelanggaran_id}
+              onChange={handleChange}
+              required
+              className={`w-full border px-3 py-2 rounded transition-all
+                ${
+                  validationErrors.jenis_pelanggaran_id
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
+                }
+                bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100`}
+            >
+              <option value="">
+                {isFetchingJenis
+                  ? "Memuat data..."
+                  : "-- Pilih Jenis Pelanggaran --"}
+              </option>
+              {jenisPelanggaranList.map((jp) => (
+                <option key={jp.id} value={jp.id}>
+                  {jp.nama_jenis} (Poin: {jp.poin})
+                </option>
+              ))}
+            </select>
+            {validationErrors.jenis_pelanggaran_id && (
+              <p className="text-red-600 text-sm mt-1">
+                {validationErrors.jenis_pelanggaran_id}
               </p>
             )}
           </div>
