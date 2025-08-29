@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pelanggaran;
 use App\Models\Siswa;
+use App\Models\WaliMurid;
 use App\Traits\ApiResponseHandler;
 use Exception;
 use Illuminate\Http\Request;
@@ -74,7 +75,8 @@ class PelanggaranController extends Controller
     public function getSummaryPelanggar(Request $request)
     {
         try {
-            $query = Siswa::select([
+            $query = Siswa::with(['waliMurid:id,id_siswa,email'])
+            ->select([
                 'siswa.id',
                 'siswa.nama_lengkap',
                 'siswa.nisn',
@@ -85,6 +87,7 @@ class PelanggaranController extends Controller
                 ->leftJoin('users', 'users.id', '=', 'siswa.user_id')
                 ->leftJoin('pelanggaran', 'pelanggaran.terlapor', '=', 'siswa.id')
                 ->leftJoin('jenis_pelanggaran', 'jenis_pelanggaran.id', '=', 'pelanggaran.jenis_pelanggaran_id')
+                ->leftJoin('wali_murid', 'wali_murid.id_siswa', '=', 'siswa.id')
                 ->where('pelanggaran.status', '=', 'proses')
                 ->groupBy('siswa.id', 'siswa.nama_lengkap', 'siswa.nisn', 'users.email');
 
@@ -93,9 +96,8 @@ class PelanggaranController extends Controller
                 $perPage = (int) $request->get('per_page', 10); // default 10
                 $pelanggar = $query->paginate($perPage, ['*'], 'page', $request->get('page', 1));
                 return $this->handleReturnData($pelanggar->items(), 'Akumulasi Pelanggar');
-            } else {
-                $pelanggar = $query->get();
             }
+            $pelanggar = $query->get();
 
             return $this->handleReturnData($pelanggar, 'Akumulasi Pelanggar');
         } catch (\Exception $e) {
