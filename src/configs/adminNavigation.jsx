@@ -25,7 +25,7 @@ export const adminMenuItems = [
     label: "Jadwal Pelajaran dan Presensi",
     icon: <GrSchedules />,
   },
-  { id: "achievement", label: "Data Poin Positif", icon: <FiAward /> },
+  { id: "achievement", label: "Data Sikap Positif", icon: <FiAward /> },
   { id: "violation", label: "Data Poin Negatif", icon: <MdOutlineReport /> },
 ];
 

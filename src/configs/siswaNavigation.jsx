@@ -7,7 +7,7 @@ export const siswaMenuItems = [
   { id: "bk", label: "Layanan dan Bimbingan Konseling", icon: <FaComments /> },
   { id: "jadwal", label: "Jadwal Belajar", icon: <FaCalendarAlt /> },
   { id: "kehadiran", label: "Presensi Siswa", icon: <FaUserCheck /> },
-  { id: "prestasi", label: "Poin Positif", icon: <FiAward /> },
+  { id: "prestasi", label: "Sikap Positif", icon: <FiAward /> },
   { id: "pelaporan", label: "Poin Negatif", icon: <FaExclamationCircle /> },
 ];
 

@@ -79,7 +79,7 @@ const PrestasiSiswa = () => {
     <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-all duration-300 ease-in-out">
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
-          Daftar Poin Positif
+          Daftar Sikap Positif
         </h2>
         {/* {!isReadOnly && (
           <button

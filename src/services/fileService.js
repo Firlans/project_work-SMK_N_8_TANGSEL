@@ -2,9 +2,13 @@ import axiosClient from "../axiosClient";
 
 // Upload file
 export const uploadFile = async (file) => {
-  const renamedFile = new File([file], "Pedoman Poin Positif dan Negatif.pdf", {
-    type: file.type,
-  });
+  const renamedFile = new File(
+    [file],
+    "Pedoman Sikap Positif dan Negatif.pdf",
+    {
+      type: file.type,
+    }
+  );
 
   const formData = new FormData();
   formData.append("file", renamedFile);
@@ -27,7 +31,7 @@ export const uploadFile = async (file) => {
 
 // Download file
 export const downloadFile = async () => {
-  const filename = "Pedoman Poin Positif dan Negatif.pdf";
+  const filename = "Pedoman Sikap Positif dan Negatif.pdf";
 
   try {
     const response = await axiosClient.get(`/file/${filename}`, {

@@ -133,7 +133,7 @@ const DataPrestasi = () => {
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-6">
             {/* Title */}
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
-              Data Poin Positif
+              Data Sikap Positif
             </h2>
 
             {/* Button Group */}
@@ -148,7 +148,7 @@ const DataPrestasi = () => {
                   className="bg-amber-500 dark:bg-slate-600 text-white rounded-lg hover:bg-amber-600 dark:hover:bg-slate-700 px-4 py-2 flex items-center gap-2 transition-colors duration-300"
                 >
                   <FaPlus className="w-4 h-4" />
-                  Tambah Poin Positif
+                  Tambah Sikap Positif
                 </button>
               )}
 
@@ -202,7 +202,7 @@ const DataPrestasi = () => {
                       "No",
                       "Nama Siswa",
                       "Foto",
-                      "Jenis Poin Positif",
+                      "Jenis Sikap Positif",
                       "Deskripsi",
                       "Status",
                       "Aksi",
@@ -225,7 +225,7 @@ const DataPrestasi = () => {
                         colSpan="6"
                         className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
                       >
-                        Tidak ada data Poin Positif.
+                        Tidak ada data Sikap Positif.
                       </td>
                     </tr>
                   ) : (

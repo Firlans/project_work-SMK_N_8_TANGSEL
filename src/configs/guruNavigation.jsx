@@ -7,7 +7,7 @@ export const guruMenuItems = [
   { id: "schedule", label: "Jadwal Mengajar", icon: <FaRegCalendarAlt /> },
   {
     id: "prestasi",
-    label: "Poin Positif",
+    label: "Sikap Positif",
     icon: <FiAward />,
   },
   {

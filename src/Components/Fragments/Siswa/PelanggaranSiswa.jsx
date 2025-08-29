@@ -29,6 +29,7 @@ const PelanggaranSiswa = () => {
   const isReadOnly = useReadOnlyRole();
   const [previewImage, setPreviewImage] = useState(null);
   const [error, setError] = useState(false);
+  const [totalPoin, setTotalPoin] = useState(0);
 
   const fetchData = async () => {
     setLoading(true);
@@ -57,6 +58,17 @@ const PelanggaranSiswa = () => {
         id_siswa = siswaLogin.id;
       }
 
+      // =============================
+      // FETCH TOTAL POIN
+      // =============================
+      const summaryRes = await axiosClient.get("/pelanggaran/summary");
+      const summaryData = summaryRes.data.data;
+      const siswaSummary = summaryData.find((s) => s.id == id_siswa);
+      setTotalPoin(siswaSummary ? parseInt(siswaSummary.total_poin) : 0);
+
+      // =============================
+      // FETCH DATA PELAPOR
+      // =============================
       const pelaporRes = await axiosClient.get(
         `/pelanggaran/pelapor/${id_user}`
       );
@@ -66,21 +78,17 @@ const PelanggaranSiswa = () => {
         pelaporRaw.map(async (item) => {
           try {
             const siswaRes = await axiosClient.get(`/siswa/${item.terlapor}`);
-            return {
-              ...item,
-              nama_terlapor: siswaRes.data.data.nama_lengkap,
-            };
+            return { ...item, nama_terlapor: siswaRes.data.data.nama_lengkap };
           } catch (err) {
-            return {
-              ...item,
-              nama_terlapor: "Tidak ditemukan",
-            };
+            return { ...item, nama_terlapor: "Tidak ditemukan" };
           }
         })
       );
-
       setDataPelapor(enrichedPelapor);
 
+      // =============================
+      // FETCH DATA TERLAPOR
+      // =============================
       const terlaporRes = await axiosClient.get(
         `/pelanggaran/terlapor/${id_siswa}`
       );
@@ -98,14 +106,10 @@ const PelanggaranSiswa = () => {
                 pelaporUserRes.data.data.nama_lengkap || "Tidak ditemukan",
             };
           } catch (err) {
-            return {
-              ...item,
-              nama_pelapor: "Tidak ditemukan",
-            };
+            return { ...item, nama_pelapor: "Tidak ditemukan" };
           }
         })
       );
-
       setDataTerlapor(enrichedTerlapor);
     } catch (err) {
       setError(true);
@@ -219,9 +223,12 @@ const PelanggaranSiswa = () => {
 
           {/* BAGIAN TERLAPOR */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 transition-colors duration-300">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
               Poin Negatif yang Menimpa Kamu
             </h2>
+            <h1 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+              Total Poin Negatif: {totalPoin}
+            </h1>
             <div className="overflow-x-auto">
               <table className="w-full divide-y divide-gray-200 dark:divide-gray-700 transition-all duration-300 ease-in-out">
                 <thead className="bg-gray-50 dark:bg-gray-800 transition-colors duration-300">

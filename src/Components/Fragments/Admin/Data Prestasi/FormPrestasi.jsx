@@ -32,7 +32,7 @@ const ModalPrestasi = ({ isOpen, onClose, onSuccess, initialData }) => {
 
       <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg shadow-lg relative transition-colors duration-300">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white transition-colors">
-          {initialData ? "Edit Poin Positif" : "Tambah Poin Positif"}
+          {initialData ? "Edit Sikap Positif" : "Tambah Sikap Positif"}
         </h2>
 
         {/* Tampilkan error dari backend (jika ada) */}
@@ -44,7 +44,7 @@ const ModalPrestasi = ({ isOpen, onClose, onSuccess, initialData }) => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <InputField
-            label="Jenis Poin Positif"
+            label="Jenis Sikap Positif"
             name="nama_prestasi"
             placeholder="Contoh: Menjuarai lomba matematika tingkat nasional"
             value={formData.nama_prestasi}
